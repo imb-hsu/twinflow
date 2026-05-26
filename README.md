@@ -55,6 +55,21 @@ Please cite the paper when using this benchmark material.
 
 ## License
 
-The source code in this repository is licensed under the MIT License.
+This repository uses separate licenses for code and non-code material.
 
-The benchmark datasets, scenario definitions, labels, documentation, and other non-code material are licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0), unless stated otherwise.
+### Code
+
+All source code, scripts, baseline implementations, and software utilities in this repository are licensed under the **MIT License**.
+
+See [`LICENSE`](LICENSE) for details.
+
+### Data and Benchmark Material
+
+All datasets, scenario definitions, labels, documentation, figures, and other non-code benchmark material are licensed under the **Creative Commons Attribution 4.0 International License (CC BY 4.0)**.
+
+See [`LICENSE-DATA`](LICENSE-DATA) for details.
+
+### Summary
+
+- Code: MIT License
+- Datasets and benchmark material: CC BY 4.0
