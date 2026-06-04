@@ -1,0 +1,51 @@
+{
+  "runId": "0_0pct_faults_rep_4",
+  "scenarioId": "0_0pct_faults_rep_4",
+  "cycles": 1,
+  "duration": "60:00",
+  "startDate": "00:00",
+  "actions": [
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:00",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "14:49",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "20:48",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "26:07",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "27:40",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "53:46",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "57:45",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    }
+  ]
+}

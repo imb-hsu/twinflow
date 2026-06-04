@@ -1,0 +1,423 @@
+{
+  "runId": "10_0pct_faults_rep_1",
+  "scenarioId": "10_0pct_faults_rep_1",
+  "cycles": 1,
+  "duration": "60:00",
+  "startDate": "00:00",
+  "actions": [
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:00",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:17",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "PR_7",
+      "property": "IncreasedDampingFault",
+      "startsAt": "01:58",
+      "value": 0.798
+    },
+    {
+      "element": "PR_7",
+      "property": "IncreasedDampingFault",
+      "startsAt": "02:08",
+      "value": 0
+    },
+    {
+      "element": "RS_2",
+      "property": "IMeasurementFault",
+      "startsAt": "02:22",
+      "value": 0.869
+    },
+    {
+      "element": "RS_2",
+      "property": "IMeasurementFault",
+      "startsAt": "02:32",
+      "value": 0
+    },
+    {
+      "element": "RC_49",
+      "property": "IMeasurementFault",
+      "startsAt": "05:24",
+      "value": 0.013
+    },
+    {
+      "element": "RC_49",
+      "property": "IMeasurementFault",
+      "startsAt": "05:34",
+      "value": 0
+    },
+    {
+      "element": "AMR_1",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "06:27",
+      "value": 0.332
+    },
+    {
+      "element": "AMR_1",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "06:37",
+      "value": 0
+    },
+    {
+      "element": "RS_4",
+      "property": "PeDefect",
+      "startsAt": "12:03",
+      "value": true
+    },
+    {
+      "element": "RS_4",
+      "property": "PeDefect",
+      "startsAt": "12:13",
+      "value": false
+    },
+    {
+      "element": "RC_98",
+      "property": "PeDefect",
+      "startsAt": "13:59",
+      "value": true
+    },
+    {
+      "element": "RC_98",
+      "property": "PeDefect",
+      "startsAt": "14:09",
+      "value": false
+    },
+    {
+      "element": "RC_77",
+      "property": "PeDefect",
+      "startsAt": "16:31",
+      "value": true
+    },
+    {
+      "element": "RC_77",
+      "property": "PeDefect",
+      "startsAt": "16:41",
+      "value": false
+    },
+    {
+      "element": "CC_3",
+      "property": "EmergencyStop",
+      "startsAt": "19:52",
+      "value": true
+    },
+    {
+      "element": "CC_3",
+      "property": "EmergencyStop",
+      "startsAt": "20:02",
+      "value": false
+    },
+    {
+      "element": "RC_116",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "21:28",
+      "value": 0.239
+    },
+    {
+      "element": "RC_116",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "21:38",
+      "value": 0
+    },
+    {
+      "element": "AMR_1",
+      "property": "MotorFault",
+      "startsAt": "27:34",
+      "value": true
+    },
+    {
+      "element": "AMR_1",
+      "property": "MotorFault",
+      "startsAt": "27:44",
+      "value": false
+    },
+    {
+      "element": "PR_7",
+      "property": "IncreasedDampingFault",
+      "startsAt": "27:50",
+      "value": 0.34
+    },
+    {
+      "element": "PR_7",
+      "property": "IncreasedDampingFault",
+      "startsAt": "28:00",
+      "value": 0
+    },
+    {
+      "element": "CC_5",
+      "property": "IncreasedDampingFault",
+      "startsAt": "30:08",
+      "value": 0.101
+    },
+    {
+      "element": "CC_5",
+      "property": "IncreasedDampingFault",
+      "startsAt": "30:18",
+      "value": 0
+    },
+    {
+      "element": "AMR_1",
+      "property": "ChargeEmpty",
+      "startsAt": "32:21",
+      "value": true
+    },
+    {
+      "element": "AMR_1",
+      "property": "ChargeEmpty",
+      "startsAt": "32:31",
+      "value": false
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "32:58",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "RB_22",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "32:58",
+      "value": 1.934
+    },
+    {
+      "element": "RB_22",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "33:08",
+      "value": 0
+    },
+    {
+      "element": "AMR_3",
+      "property": "EmergencyStop",
+      "startsAt": "36:48",
+      "value": true
+    },
+    {
+      "element": "AMR_3",
+      "property": "EmergencyStop",
+      "startsAt": "36:58",
+      "value": false
+    },
+    {
+      "element": "PR_118",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "38:47",
+      "value": 0.181
+    },
+    {
+      "element": "PR_118",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "38:57",
+      "value": 0
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "39:37",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "PR_118",
+      "property": "EmergencyStop",
+      "startsAt": "44:14",
+      "value": true
+    },
+    {
+      "element": "PR_118",
+      "property": "EmergencyStop",
+      "startsAt": "44:24",
+      "value": false
+    },
+    {
+      "element": "RC_66",
+      "property": "MotorFault",
+      "startsAt": "45:37",
+      "value": true
+    },
+    {
+      "element": "RC_66",
+      "property": "MotorFault",
+      "startsAt": "45:47",
+      "value": false
+    },
+    {
+      "element": "CLT_96",
+      "property": "IncreasedDampingFault",
+      "startsAt": "45:55",
+      "value": 0.376
+    },
+    {
+      "element": "CLT_96",
+      "property": "IncreasedDampingFault",
+      "startsAt": "46:05",
+      "value": 0
+    },
+    {
+      "element": "RC_39",
+      "property": "IMeasurementFault",
+      "startsAt": "46:42",
+      "value": 0.379
+    },
+    {
+      "element": "RC_39",
+      "property": "IMeasurementFault",
+      "startsAt": "46:52",
+      "value": 0
+    },
+    {
+      "element": "CLT_125",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "47:14",
+      "value": -0.137
+    },
+    {
+      "element": "CLT_125",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "47:24",
+      "value": 0
+    },
+    {
+      "element": "RC_124",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "47:49",
+      "value": -0.746
+    },
+    {
+      "element": "RC_124",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "47:59",
+      "value": 0
+    },
+    {
+      "element": "RC_83",
+      "property": "PeWrongCalibration",
+      "startsAt": "48:54",
+      "value": 13.249
+    },
+    {
+      "element": "RC_83",
+      "property": "PeWrongCalibration",
+      "startsAt": "49:04",
+      "value": 0
+    },
+    {
+      "element": "RC_87",
+      "property": "EmergencyStop",
+      "startsAt": "50:10",
+      "value": true
+    },
+    {
+      "element": "RC_87",
+      "property": "EmergencyStop",
+      "startsAt": "50:20",
+      "value": false
+    },
+    {
+      "element": "CLT_89",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "51:36",
+      "value": -0.956
+    },
+    {
+      "element": "CLT_89",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "51:46",
+      "value": 0
+    },
+    {
+      "element": "CC_5",
+      "property": "EmergencyStop",
+      "startsAt": "53:40",
+      "value": true
+    },
+    {
+      "element": "CC_5",
+      "property": "EmergencyStop",
+      "startsAt": "53:50",
+      "value": false
+    },
+    {
+      "element": "AMR_3",
+      "property": "EmergencyStop",
+      "startsAt": "53:58",
+      "value": true
+    },
+    {
+      "element": "AMR_3",
+      "property": "EmergencyStop",
+      "startsAt": "54:08",
+      "value": false
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "54:33",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "CLT_47",
+      "property": "PeWrongCalibration",
+      "startsAt": "54:53",
+      "value": 64.638
+    },
+    {
+      "element": "CLT_47",
+      "property": "PeWrongCalibration",
+      "startsAt": "55:03",
+      "value": 0
+    },
+    {
+      "element": "RB_5",
+      "property": "MotorFault",
+      "startsAt": "55:42",
+      "value": true
+    },
+    {
+      "element": "RB_5",
+      "property": "MotorFault",
+      "startsAt": "55:52",
+      "value": false
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "56:49",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "RS_1",
+      "property": "WearFault",
+      "startsAt": "59:08",
+      "value": 0.652
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "59:11",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "RS_1",
+      "property": "WearFault",
+      "startsAt": "59:18",
+      "value": 0
+    },
+    {
+      "element": "AMR_3",
+      "property": "ChargeEmpty",
+      "startsAt": "59:39",
+      "value": true
+    },
+    {
+      "element": "AMR_3",
+      "property": "ChargeEmpty",
+      "startsAt": "59:49",
+      "value": false
+    }
+  ]
+}

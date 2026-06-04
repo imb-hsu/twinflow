@@ -1,0 +1,63 @@
+{
+  "runId": "1_0pct_faults_rep_4",
+  "scenarioId": "1_0pct_faults_rep_4",
+  "cycles": 1,
+  "duration": "60:00",
+  "startDate": "00:00",
+  "actions": [
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:00",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "04:38",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "18:13",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "19:09",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "PR_7",
+      "property": "IncreasedDampingFault",
+      "startsAt": "31:07",
+      "value": 0.495
+    },
+    {
+      "element": "PR_7",
+      "property": "IncreasedDampingFault",
+      "startsAt": "31:17",
+      "value": 0
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "43:54",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "RC_44",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "50:34",
+      "value": 1.401
+    },
+    {
+      "element": "RC_44",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "50:44",
+      "value": 0
+    }
+  ]
+}

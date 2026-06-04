@@ -1,0 +1,93 @@
+{
+  "runId": "1_0pct_faults_rep_3",
+  "scenarioId": "1_0pct_faults_rep_3",
+  "cycles": 1,
+  "duration": "60:00",
+  "startDate": "00:00",
+  "actions": [
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:00",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "01:33",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "CLT_59",
+      "property": "EmergencyStop",
+      "startsAt": "03:30",
+      "value": true
+    },
+    {
+      "element": "CLT_59",
+      "property": "EmergencyStop",
+      "startsAt": "03:40",
+      "value": false
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "12:25",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "13:55",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "20:15",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "27:52",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "41:15",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "42:29",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "PR_118",
+      "property": "IncreasedDampingFault",
+      "startsAt": "49:17",
+      "value": 0.693
+    },
+    {
+      "element": "PR_118",
+      "property": "IncreasedDampingFault",
+      "startsAt": "49:27",
+      "value": 0
+    },
+    {
+      "element": "RC_88",
+      "property": "MotorFault",
+      "startsAt": "52:34",
+      "value": true
+    },
+    {
+      "element": "RC_88",
+      "property": "MotorFault",
+      "startsAt": "52:44",
+      "value": false
+    }
+  ]
+}

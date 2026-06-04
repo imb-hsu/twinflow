@@ -1,0 +1,69 @@
+{
+  "runId": "1_0pct_faults_rep_1",
+  "scenarioId": "1_0pct_faults_rep_1",
+  "cycles": 1,
+  "duration": "60:00",
+  "startDate": "00:00",
+  "actions": [
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:00",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "RC_64",
+      "property": "IncreasedDampingFault",
+      "startsAt": "01:33",
+      "value": 0.678
+    },
+    {
+      "element": "RC_64",
+      "property": "IncreasedDampingFault",
+      "startsAt": "01:43",
+      "value": 0
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "09:53",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "RC_128",
+      "property": "IMeasurementFault",
+      "startsAt": "36:10",
+      "value": 1.756
+    },
+    {
+      "element": "RC_128",
+      "property": "IMeasurementFault",
+      "startsAt": "36:20",
+      "value": 0
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "45:30",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "CLT_59",
+      "property": "PeDefect",
+      "startsAt": "45:35",
+      "value": true
+    },
+    {
+      "element": "CLT_59",
+      "property": "PeDefect",
+      "startsAt": "45:45",
+      "value": false
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "55:18",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    }
+  ]
+}

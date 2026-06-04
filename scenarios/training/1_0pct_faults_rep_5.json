@@ -1,0 +1,69 @@
+{
+  "runId": "1_0pct_faults_rep_5",
+  "scenarioId": "1_0pct_faults_rep_5",
+  "cycles": 1,
+  "duration": "60:00",
+  "startDate": "00:00",
+  "actions": [
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:00",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "13:34",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "20:31",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "32:18",
+      "value": "HSU-1Box"
+    },
+    {
+      "element": "RC_71",
+      "property": "WearFault",
+      "startsAt": "33:23",
+      "value": 0.603
+    },
+    {
+      "element": "RC_71",
+      "property": "WearFault",
+      "startsAt": "33:33",
+      "value": 0
+    },
+    {
+      "element": "RB_12",
+      "property": "EmergencyStop",
+      "startsAt": "42:39",
+      "value": true
+    },
+    {
+      "element": "RB_12",
+      "property": "EmergencyStop",
+      "startsAt": "42:49",
+      "value": false
+    },
+    {
+      "element": "AMR_2",
+      "property": "EmergencyStop",
+      "startsAt": "48:33",
+      "value": true
+    },
+    {
+      "element": "AMR_2",
+      "property": "EmergencyStop",
+      "startsAt": "48:43",
+      "value": false
+    }
+  ]
+}
