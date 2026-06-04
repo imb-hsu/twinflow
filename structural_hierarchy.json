@@ -1,0 +1,219 @@
+{
+  "metadata": {
+    "name": "HSU TwinFlow structural hierarchy",
+    "description": "Structural hierarchy of the digital twin organized as area -> component type -> component identifiers. Variables, fault types, and other component knowledge are intentionally omitted.",
+    "hierarchyRule": "area -> component type prefix, e.g., CC, RC, CLT, PR, AMR, RB, RS -> list of component identifiers"
+  },
+  "areas": {
+    "AMR": {
+      "AMR": [
+        "AMR_1",
+        "AMR_2",
+        "AMR_3"
+      ],
+      "RB": [
+        "RB_1",
+        "RB_2",
+        "RB_3",
+        "RB_4",
+        "RB_5",
+        "RB_6"
+      ],
+      "RS": [
+        "RS_1",
+        "RS_2",
+        "RS_3",
+        "RS_4",
+        "RS_5",
+        "RS_6"
+      ]
+    },
+    "PAR": {
+      "CLT": [
+        "CLT_89",
+        "CLT_96",
+        "CLT_108",
+        "CLT_125",
+        "CLT_137"
+      ],
+      "RB": [
+        "RB_21",
+        "RB_22"
+      ],
+      "RC": [
+        "RC_87",
+        "RC_90",
+        "RC_91",
+        "RC_92",
+        "RC_93",
+        "RC_94",
+        "RC_95",
+        "RC_97",
+        "RC_98",
+        "RC_99",
+        "RC_100",
+        "RC_101",
+        "RC_102",
+        "RC_103",
+        "RC_104",
+        "RC_105",
+        "RC_106",
+        "RC_107",
+        "RC_109",
+        "RC_110",
+        "RC_111",
+        "RC_112",
+        "RC_113",
+        "RC_114",
+        "RC_115",
+        "RC_116",
+        "RC_117",
+        "RC_119",
+        "RC_120",
+        "RC_121",
+        "RC_122",
+        "RC_123",
+        "RC_124",
+        "RC_126",
+        "RC_127",
+        "RC_128",
+        "RC_129",
+        "RC_130",
+        "RC_131",
+        "RC_132",
+        "RC_133",
+        "RC_134",
+        "RC_135",
+        "RC_136",
+        "RC_138",
+        "RC_139",
+        "RC_140",
+        "RC_141",
+        "RC_142",
+        "RC_143",
+        "RC_144",
+        "RC_145",
+        "RC_146"
+      ]
+    },
+    "VZ": {
+      "CLT": [
+        "CLT_15",
+        "CLT_28",
+        "CLT_40",
+        "CLT_47",
+        "CLT_59"
+      ],
+      "RB": [
+        "RB_11",
+        "RB_12"
+      ],
+      "RC": [
+        "RC_8",
+        "RC_9",
+        "RC_10",
+        "RC_11",
+        "RC_12",
+        "RC_13",
+        "RC_14",
+        "RC_22",
+        "RC_23",
+        "RC_24",
+        "RC_25",
+        "RC_26",
+        "RC_27",
+        "RC_29",
+        "RC_30",
+        "RC_31",
+        "RC_32",
+        "RC_33",
+        "RC_34",
+        "RC_35",
+        "RC_36",
+        "RC_37",
+        "RC_38",
+        "RC_39",
+        "RC_41",
+        "RC_42",
+        "RC_43",
+        "RC_44",
+        "RC_45",
+        "RC_46",
+        "RC_48",
+        "RC_49",
+        "RC_50",
+        "RC_51",
+        "RC_52",
+        "RC_53",
+        "RC_54",
+        "RC_55",
+        "RC_56",
+        "RC_57",
+        "RC_58",
+        "RC_60",
+        "RC_61",
+        "RC_62",
+        "RC_63",
+        "RC_64",
+        "RC_65",
+        "RC_66",
+        "RC_67",
+        "RC_68",
+        "RC_69",
+        "RC_70",
+        "RC_71",
+        "RC_72",
+        "RC_74",
+        "RC_75",
+        "RC_76",
+        "RC_77",
+        "RC_78",
+        "RC_79",
+        "RC_80",
+        "RC_81",
+        "RC_82",
+        "RC_83",
+        "RC_84",
+        "RC_85",
+        "RC_86"
+      ]
+    },
+    "WA": {
+      "CC": [
+        "CC_147",
+        "CC_148",
+        "CC_149",
+        "CC_150",
+        "CC_151",
+        "CC_152",
+        "CC_153",
+        "CC_154",
+        "CC_155",
+        "CC_156",
+        "CC_157",
+        "CC_158"
+      ],
+      "PR": [
+        "PR_118"
+      ]
+    },
+    "WE": {
+      "CC": [
+        "CC_1",
+        "CC_2",
+        "CC_3",
+        "CC_4",
+        "CC_5",
+        "CC_6",
+        "CC_16",
+        "CC_17",
+        "CC_18",
+        "CC_19",
+        "CC_20"
+      ],
+      "PR": [
+        "PR_7"
+      ]
+    }
+  }
+}
