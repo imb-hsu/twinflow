@@ -6,8 +6,19 @@ The benchmark is designed for research on:
 
 - Anomaly detection
 - Fault diagnosis
+- Resilient systems
 - AI-based fault handling in production systems
 - Digital-twin-generated industrial datasets
+
+## Authors
+
+- Nemanja Hranisavljevic — Helmut Schmidt University, Hamburg, Germany
+- Alexander Diedrich — Helmut Schmidt University, Hamburg, Germany
+- Lukas Moddemann — Helmut Schmidt University, Hamburg, Germany
+- Domenic Schaeffer — Digital Twin Factory GmbH, Bad Oeynhausen, Germany
+- Frank Marek — Novatio Solutions GmbH, Monheim, Germany
+- Ingo Pill — Graz University of Technology, Graz, Austria
+- Oliver Niggemann — Helmut Schmidt University, Hamburg, Germany
 
 ## Overview
 
@@ -49,7 +60,9 @@ Initial fault categories include failures affecting conveyors, autonomous mobile
 
 This repository accompanies the paper:
 
-**HSU TwinFlow: A Living Benchmark for Evaluating Data-Driven Methods for Anomaly Detection and Diagnosis in Cyber-Physical Production Systems Using Digital-Twin-Generated Data**
+**HSU TwinFlow: A Living Benchmark for Evaluating Anomaly Detection and Diagnosis Methods in Cyber-Physical Production Systems Using Digital-Twin-Generated Data**
+
+submitted at the **The 37th International Conference on Principles of Diagnosis and Resilient Systems (DX'26)**.
 
 Please cite the paper when using this benchmark material.
 
