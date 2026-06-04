@@ -58,6 +58,18 @@ The benchmark uses high-level scenario definitions to generate reproducible simu
 
 Initial fault categories include failures affecting conveyors, autonomous mobile robots, and six-axis robots.
 
+## Pallet configurations
+
+The benchmark includes several predefined pallet configurations used by the scenario generator. These configurations define the product types placed on a pallet and their production routes through the robot stations.
+
+Currently, defined configurations include:
+
+- `PalletConfiguration-NOVA-6-DTF-6`
+- `PalletConfiguration-NOVA-DTF-HSU-Mix`
+- `HSU-1Box`
+
+For details on product layouts and production routes, see [`docs/pallet_configurations.md`](docs/pallet_configurations.md).
+
 ## Citation
 
 This repository accompanies the paper:
