@@ -1,0 +1,12 @@
+{
+  "PalletWithProducts": [
+    {
+      "HeightPosition": "1",
+      "LengthPosition": "1",
+      "ProductType": "HSU",
+      "ProductionRoute": "RS_1;RS_2;RS_2;RS_4;RS_5;RS_6",
+      "Weight": "1",
+      "WidthPosition": "1"
+    }
+  ]
+}

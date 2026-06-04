@@ -1,0 +1,100 @@
+{
+  "PalletWithProducts": [
+    {
+      "HeightPosition": "1",
+      "LengthPosition": "1",
+      "ProductType": "NOVA",
+      "Weight": "1",
+      "WidthPosition": "1",
+      "ProductionRoute": "RS_1;RS_3"
+    },
+    {
+      "HeightPosition": "1",
+      "LengthPosition": "2",
+      "ProductType": "NOVA",
+      "Weight": "1",
+      "WidthPosition": "1",
+      "ProductionRoute": "RS_1;RS_3"
+    },
+    {
+      "HeightPosition": "1",
+      "LengthPosition": "3",
+      "ProductType": "NOVA",
+      "Weight": "1",
+      "WidthPosition": "1",
+      "ProductionRoute": "RS_1;RS_3"
+    },
+    {
+      "HeightPosition": "1",
+      "LengthPosition": "1",
+      "ProductType": "NOVA",
+      "Weight": "2",
+      "WidthPosition": "2",
+      "ProductionRoute": "RS_1;RS_3"
+    },
+    {
+      "HeightPosition": "1",
+      "LengthPosition": "2",
+      "ProductType": "NOVA",
+      "Weight": "2",
+      "WidthPosition": "2",
+      "ProductionRoute": "RS_1;RS_3"
+    },
+    {
+      "HeightPosition": "1",
+      "LengthPosition": "3",
+      "ProductType": "NOVA",
+      "Weight": "2",
+      "WidthPosition": "2",
+      "ProductionRoute": "RS_1;RS_3"
+    },
+    {
+      "HeightPosition": "2",
+      "LengthPosition": "1",
+      "ProductType": "DTF",
+      "Weight": "1",
+      "WidthPosition": "1",
+      "ProductionRoute": "RS_2;RS_4"
+    },
+    {
+      "HeightPosition": "2",
+      "LengthPosition": "2",
+      "ProductType": "DTF",
+      "Weight": "1",
+      "WidthPosition": "1",
+      "ProductionRoute": "RS_2;RS_4"
+    },
+    {
+      "HeightPosition": "2",
+      "LengthPosition": "3",
+      "ProductType": "DTF",
+      "Weight": "1",
+      "WidthPosition": "1",
+      "ProductionRoute": "RS_2;RS_4"
+    },
+    {
+      "HeightPosition": "2",
+      "LengthPosition": "1",
+      "ProductType": "DTF",
+      "Weight": "2",
+      "WidthPosition": "2",
+      "ProductionRoute": "RS_2;RS_4"
+    },
+    {
+      "HeightPosition": "2",
+      "LengthPosition": "2",
+      "ProductType": "DTF",
+      "Weight": "2",
+      "WidthPosition": "2",
+      "ProductionRoute": "RS_2;RS_4"
+    },
+    {
+      "HeightPosition": "2",
+      "LengthPosition": "3",
+      "ProductType": "DTF",
+      "Weight": "2",
+      "WidthPosition": "2",
+      "ProductionRoute": "RS_2;RS_4"
+    }
+  ]
+}
