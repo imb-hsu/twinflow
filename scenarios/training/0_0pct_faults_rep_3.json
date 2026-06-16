@@ -1,33 +1,85 @@
 {
-  "runId": "0_0pct_faults_rep_3",
-  "scenarioId": "0_0pct_faults_rep_3",
-  "cycles": 1,
-  "duration": "60:00",
-  "startDate": "00:00",
+  "scenario": {
+    "author": "HSU TwinFlow Benchmark",
+    "createdAt": "2026-06-10T14:54:56.301Z",
+    "cycles": 1,
+    "duration": "60:00",
+    "id": "0_0pct_faults_rep_3",
+    "isAdmin": false,
+    "startDate": "00:00",
+    "updatedAt": "2026-06-10T14:54:56.301Z",
+    "version": ""
+  },
   "actions": [
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
       "startsAt": "00:00",
       "value": "PalletConfiguration-NOVA-6-DTF-6"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "02:21",
+      "startsAt": "00:01",
       "value": "PalletConfiguration-NOVA-6-DTF-6"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "03:04",
+      "startsAt": "00:02",
+      "value": "HSU-1Box"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:03",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:04",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:05",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:06",
       "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "30:19",
+      "startsAt": "00:07",
       "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:08",
+      "value": "HSU-1Box"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:09",
+      "value": "HSU-1Box"
     }
   ]
 }

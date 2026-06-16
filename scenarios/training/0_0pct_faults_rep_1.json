@@ -1,69 +1,85 @@
 {
-  "runId": "0_0pct_faults_rep_1",
-  "scenarioId": "0_0pct_faults_rep_1",
-  "cycles": 1,
-  "duration": "60:00",
-  "startDate": "00:00",
+  "scenario": {
+    "author": "HSU TwinFlow Benchmark",
+    "createdAt": "2026-06-10T14:54:56.293Z",
+    "cycles": 1,
+    "duration": "60:00",
+    "id": "0_0pct_faults_rep_1",
+    "isAdmin": false,
+    "startDate": "00:00",
+    "updatedAt": "2026-06-10T14:54:56.293Z",
+    "version": ""
+  },
   "actions": [
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
       "startsAt": "00:00",
       "value": "HSU-1Box"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "11:49",
+      "startsAt": "00:01",
       "value": "HSU-1Box"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "18:29",
-      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
-    },
-    {
-      "element": "PalletCreator",
-      "property": "CreatePallet",
-      "startsAt": "21:51",
-      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
-    },
-    {
-      "element": "PalletCreator",
-      "property": "CreatePallet",
-      "startsAt": "39:47",
-      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
-    },
-    {
-      "element": "PalletCreator",
-      "property": "CreatePallet",
-      "startsAt": "40:11",
-      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
-    },
-    {
-      "element": "PalletCreator",
-      "property": "CreatePallet",
-      "startsAt": "42:04",
+      "startsAt": "00:02",
       "value": "HSU-1Box"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "44:23",
+      "startsAt": "00:03",
       "value": "HSU-1Box"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "52:05",
+      "startsAt": "00:04",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:05",
       "value": "PalletConfiguration-NOVA-6-DTF-6"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "58:32",
-      "value": "PalletConfiguration-NOVA-6-DTF-6"
+      "startsAt": "00:06",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:07",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:08",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:09",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
     }
   ]
 }

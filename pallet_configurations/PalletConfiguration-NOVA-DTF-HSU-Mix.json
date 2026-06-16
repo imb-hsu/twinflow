@@ -30,7 +30,7 @@
       "ProductType": "HSU",
       "Weight": "2",
       "WidthPosition": "1",
-      "ProductionRoute": "RS_1;RS_2;RS_2;RS_4;RS_5;RS_6"
+      "ProductionRoute": "RS_5;RS_6"
     },
     {
       "HeightPosition": "1",
@@ -54,7 +54,7 @@
       "ProductType": "HSU",
       "Weight": "1",
       "WidthPosition": "1",
-      "ProductionRoute": "RS_1;RS_2;RS_2;RS_4;RS_5;RS_6"
+      "ProductionRoute": "RS_5;RS_6"
     },
     {
       "HeightPosition": "2",
@@ -78,7 +78,7 @@
       "ProductType": "HSU",
       "Weight": "2",
       "WidthPosition": "2",
-      "ProductionRoute": "RS_1;RS_2;RS_2;RS_4;RS_5;RS_6"
+      "ProductionRoute": "RS_5;RS_6"
     },
     {
       "HeightPosition": "2",

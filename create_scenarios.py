@@ -10,27 +10,33 @@ Generated scenarios are saved as JSON files for use in digital twin simulations.
 """
 
 import json
+import math
 import random
 from pathlib import Path
 from typing import Any
+from datetime import datetime, timezone
 
 PALLET_CONFIGURATIONS = [
     "PalletConfiguration-NOVA-6-DTF-6",
     "PalletConfiguration-NOVA-DTF-HSU-Mix",
     "HSU-1Box",
 ]
-NUM_REPETITIONS_TRAINING = 5
+NUM_REPETITIONS_TRAINING = 3
+AUTHOR = "HSU TwinFlow Benchmark"
 
 
 def format_time(minutes: float) -> str:
     """
     Convert minutes as float to MM:SS format.
 
+    Handles rounding of seconds, where values reaching 60 seconds are
+    automatically converted to an additional minute.
+
     Args:
         minutes: Time in minutes as a floating-point number.
 
     Returns:
-        Time formatted as "MM:SS" string.
+        Time formatted as "MM:SS" string with zero-padded values.
     """
     mm = int(minutes)
     ss = int(round((minutes - mm) * 60))
@@ -46,9 +52,15 @@ def sample_fault_value(fault_definition: dict, rng: random.Random) -> tuple[Any,
     """
     Sample fault activation value and return corresponding repair value.
 
+    For boolean faults, returns True as activation and the specified repairValue
+    (default: False). For numeric faults, samples a value uniformly from the
+    range [min, max] rounded to three decimal places, and returns the specified
+    repairValue (default: 0).
+
     Args:
         fault_definition: Dictionary containing fault type specification with keys
-                         'type', 'min', 'max', and optionally 'repairValue'.
+                         'type' (either 'boolean' or 'number'), 'min', 'max',
+                         and optionally 'repairValue'.
         rng: Random number generator instance for reproducible sampling.
 
     Returns:
@@ -85,21 +97,24 @@ def sample_random_fault(
     Sample random faults from the production system.
 
     Randomly selects area (if not specified), component type, element, fault type,
-    and generates activation and repair values. The structural hierarchy defines
-    available components organized as: area -> component type -> list of components.
-    The fault knowledge defines possible faults per component type.
+    and generates activation and repair values. When multi > 1, samples multiple
+    independent faults from the same area with potentially different component types
+    and fault types. The structural hierarchy defines available components organized
+    as: area -> component type -> list of components. The fault knowledge defines
+    possible faults per component type.
 
     Args:
         structural_hierarchy: Dictionary defining system structure with areas and components.
-        conveyor_segments: Dictionary mapping conveyor segments to component IDs.
+        conveyor_segments: Dictionary mapping conveyor segments to component IDs for
+                          conveyor components (RC, CC).
         fault_knowledge: Dictionary defining possible faults per component type.
         rng: Random number generator instance for reproducible sampling.
-        multi: Number of faults to sample from the same area (default: 1).
+        multi: Number of independent faults to sample from the same area (default: 1).
         area: Specific area to sample from, or None for random area selection.
 
     Returns:
-        List of fault dictionaries, each containing area, component_type, element,
-        property (fault name), activation_value, and repair_value.
+        List of fault dictionaries, each containing 'area', 'component_type', 'element'
+        (component ID), 'property' (fault name), 'activation_value', and 'repair_value'.
     """
 
     # Select area randomly if not specified
@@ -143,41 +158,54 @@ def sample_random_fault(
 
 
 def create_scenario(
-    run_id: str,
+    scenario_id: str,
     pallet_configurations: list[str],
     duration_minutes: int = 60,
-    duration_of_fault_intervals_sec: int = 10,
-    mean_interarrival_minutes: float = 10.0,
+    duration_of_fault_intervals_sec: float = 30,
+    num_pallets: int = 10,
     faulty_time_percentage: float = 0.0,
     multi_fault=1,
     seed: int = 42,
     area: str = None,
+    ramping_min: float = 5.0,
+    min_normal_between_faults: float = 30.0,
 ) -> dict[str, Any]:
     """
     Create a simulation scenario with pallet creation and fault injection actions.
 
-    Generates a scenario JSON containing pallet creation actions with exponentially
-    distributed inter-arrival times and randomly sampled fault intervals. Each fault
-    is automatically repaired after the specified fault interval duration.
+    Generates a scenario JSON containing pallet creation actions at one-second intervals
+    and randomly sampled fault intervals starting after a ramping period. Each fault
+    is automatically repaired after the specified fault interval duration. Fault start
+    times are sampled using an exponential distribution where the mean inter-arrival time
+    is calculated from the desired faulty_time_percentage and the total number of fault
+    intervals needed to achieve that percentage. The actual faulty time percentage may
+    differ slightly from the target due to rounding of fault interval counts and the
+    stochastic nature of exponential sampling.
 
     Args:
-        run_id: Unique identifier for the scenario run.
+        scenario_id: Unique identifier for the scenario run.
         pallet_configurations: List of pallet configuration names to randomly select from.
         duration_minutes: Total simulation duration in minutes (default: 60).
-        duration_of_fault_intervals_sec: Duration of each fault interval in seconds (default: 10).
-        mean_interarrival_minutes: Mean time between pallet arrivals in minutes (default: 10.0).
-        faulty_time_percentage: Percentage of simulation time with active faults (0-100) (default: 0.0).
+        duration_of_fault_intervals_sec: Duration of each fault interval in seconds (default: 30).
+        num_pallets: Number of pallets to generate at one-second intervals (default: 10).
+        faulty_time_percentage: Target percentage of simulation time with active faults,
+                               range 0-100 (default: 0.0). Actual percentage may vary.
         multi_fault: Number of simultaneous faults per interval (default: 1).
         seed: Random seed for reproducibility (default: 42).
         area: Specific area for fault injection, or None for random selection (default: None).
+        ramping_min: Minutes to wait before starting fault injection (default: 5.0).
+        min_normal_between_faults: Minimum normal operation time between faults in minutes
+                                  (currently not enforced, default: 30.0).
 
     Returns:
-        Dictionary representing the complete scenario with runId, scenarioId, cycles,
-        duration, startDate, and list of actions.
+        Dictionary containing 'scenario' metadata (id, duration, cycles, etc.) and 'actions'
+        list with all pallet creation, fault activation, and repair actions sorted by time.
 
     Raises:
         ValueError: If faulty_time_percentage is not between 0 and 100.
     """
+
+    print(f"\n*** Creating scenario: {scenario_id}")
 
     # Initialize random number generator with seed for reproducibility
     rng = random.Random(seed)
@@ -197,20 +225,17 @@ def create_scenario(
 
     # ------------------------------------------------------------
     # Pallet creation actions
-    # Generate pallet arrivals using exponential distribution to model
-    # realistic inter-arrival times in production systems
+    # Generate pallet arrivals at one-second intervals starting from 00:00
     # ------------------------------------------------------------
-    t = 0.0
-
-    while True:
-        if t > duration_minutes:
-            break
+    for i in range(num_pallets):
+        t = i / 60.0  # Convert seconds to minutes
 
         # Randomly select pallet configuration
         configuration_name = rng.choice(pallet_configurations)
 
         actions.append(
             {
+                "area": "WE",
                 "element": "PalletCreator",
                 "property": "CreatePallet",
                 "startsAt": format_time(t),
@@ -218,43 +243,62 @@ def create_scenario(
             }
         )
 
-        # Sample next arrival time from exponential distribution
-        t += rng.expovariate(1.0 / mean_interarrival_minutes)
-
     # ------------------------------------------------------------
     # Fault and repair actions
     # Calculate fault intervals based on desired faulty time percentage
-    # and ensure non-overlapping fault periods
+    # and ensure non-overlapping fault periods starting after ramping period
     # ------------------------------------------------------------
     if not 0 <= faulty_time_percentage <= 100:
         raise ValueError("faulty_time_percentage must be between 0 and 100.")
 
     # Calculate total faulty time and number of fault intervals
+    available_fault_duration = duration_minutes - ramping_min
     faulty_minutes = duration_minutes * faulty_time_percentage / 100.0
 
     number_of_fault_intervals = int(
-        faulty_minutes * 60 / duration_of_fault_intervals_sec
+        math.ceil(faulty_minutes * 60 / duration_of_fault_intervals_sec)
     )
 
-    # Generate random fault start times uniformly distributed across simulation duration
-    fault_start_minutes = [
-        rng.uniform(0, duration_minutes) for _ in range(number_of_fault_intervals)
-    ]
+    # Calculate mean time between fault starts using exponential distribution
+    # Mean = (total_available_time - total_fault_duration) / number_of_intervals
+    if faulty_time_percentage > 0:
+        fault_duration_min = duration_of_fault_intervals_sec / 60.0
+        total_fault_duration = number_of_fault_intervals * fault_duration_min
+        total_normal_time = available_fault_duration - total_fault_duration
 
-    # Sort and filter fault starts to prevent temporal overlap
-    fault_start_minutes.sort()
-    non_overlapping_starts = []
-    previous_fault_end_time = -float("inf")
+        if number_of_fault_intervals > 0 and total_normal_time > 0:
+            mean_between_faults = total_normal_time / number_of_fault_intervals
+        else:
+            mean_between_faults = available_fault_duration
+    else:
+        fault_duration_min = 0
+        mean_between_faults = 0
 
-    for start_time in fault_start_minutes:
-        # Only include fault if it starts after previous fault ends
-        if start_time >= previous_fault_end_time:
-            non_overlapping_starts.append(start_time)
-            previous_fault_end_time = (
-                start_time + duration_of_fault_intervals_sec / 60.0
+    # Generate fault start times using exponential distribution
+    fault_start_minutes = []
+    current_time = ramping_min
+
+    if mean_between_faults > 0:
+        while True:
+            # Sample inter-arrival time from exponential distribution
+            inter_arrival = (
+                rng.expovariate(1.0 / mean_between_faults)
+                if mean_between_faults > 0
+                else 0
             )
+            # print(inter_arrival)
+            current_time += inter_arrival
 
-    fault_start_minutes = non_overlapping_starts
+            # Stop if we exceed simulation duration
+            if current_time >= duration_minutes - fault_duration_min:
+                break
+
+            fault_start_minutes.append(current_time)
+            # Move past the fault duration for next fault
+            current_time += fault_duration_min
+
+    # Sort and filter fault starts to prevent temporal overlap and respect minimum normal time
+    fault_start_minutes.sort()
 
     for start_minute in fault_start_minutes:
         sampled_faults = sample_random_fault(
@@ -269,6 +313,7 @@ def create_scenario(
         for sampled_fault in sampled_faults:
             actions.append(
                 {
+                    "area": sampled_fault["area"],
                     "element": sampled_fault["element"],
                     "property": sampled_fault["property"],
                     "startsAt": format_time(start_minute),
@@ -278,6 +323,7 @@ def create_scenario(
 
             actions.append(
                 {
+                    "area": sampled_fault["area"],
                     "element": sampled_fault["element"],
                     "property": sampled_fault["property"],
                     "startsAt": format_time(
@@ -289,24 +335,46 @@ def create_scenario(
 
     actions.sort(key=lambda a: a["startsAt"])
 
+    now = (
+        datetime.now(timezone.utc)
+        .isoformat(timespec="milliseconds")
+        .replace("+00:00", "Z")
+    )
+
     scenario = {
-        "runId": run_id,
-        "scenarioId": run_id,
+        "author": AUTHOR,
+        "createdAt": now,
         "cycles": 1,
         "duration": f"{duration_minutes:02d}:00",
+        "id": scenario_id,
+        "isAdmin": False,
         "startDate": "00:00",
-        "actions": actions,
+        "updatedAt": now,
+        "version": "",
     }
 
-    print(f"Created scenario: {run_id}")
+    actual_number_of_fault_intervals = len(fault_start_minutes)
+
+    print(f"*** Created scenario: {scenario_id}")
     print(
         f"Pallet creation actions: {sum(a['property'] == 'CreatePallet' for a in actions)}"
     )
-    print(f"Fault intervals: {number_of_fault_intervals}")
+    print(f"Fault intervals: {actual_number_of_fault_intervals}")
     print(
-        f"Faulty time: {number_of_fault_intervals * duration_of_fault_intervals_sec/60} min / {duration_minutes} min"
+        f"Faulty time: {actual_number_of_fault_intervals * duration_of_fault_intervals_sec / 60} min / {duration_minutes} min"
     )
-    return scenario
+
+    if faulty_time_percentage > 0:
+        actual_faulty_time_pct = (
+            actual_number_of_fault_intervals
+            * duration_of_fault_intervals_sec
+            / 60
+            / duration_minutes
+        ) * 100
+        print(f"Actual faulty time percentage: {actual_faulty_time_pct:.2f}%")
+        print(f"Mean inter-arrival time between faults: {mean_between_faults:.2f} min")
+
+    return {"scenario": scenario, "actions": actions}
 
 
 if __name__ == "__main__":
@@ -325,19 +393,20 @@ if __name__ == "__main__":
     for repetition in range(1, NUM_REPETITIONS_TRAINING + 1):
         percentages = [0.0, 1.0, 10.0]
         for pct in percentages:
-            run_id = f"{str(pct).replace('.', '_')}pct_faults_rep_{repetition}"
+            scenario_id = f"{str(pct).replace('.', '_')}pct_faults_rep_{repetition}"
 
             scn = create_scenario(
-                run_id=run_id,
+                scenario_id=scenario_id,
                 pallet_configurations=PALLET_CONFIGURATIONS,
                 duration_minutes=60,
-                duration_of_fault_intervals_sec=10,
-                mean_interarrival_minutes=10.0,
+                duration_of_fault_intervals_sec=30,
+                num_pallets=10,
+                ramping_min=5,
                 faulty_time_percentage=pct,
                 seed=42 + int(pct * 10) + int(repetition * 100),
             )
 
-            scenario_file = training_dir / f"{run_id}.json"
+            scenario_file = training_dir / f"{scenario_id}.json"
             scenario_file.write_text(
                 json.dumps(scn, indent=2),
                 encoding="utf-8",
@@ -347,19 +416,22 @@ if __name__ == "__main__":
     # Each scenario targets a specific production area for evaluation
     pct = 30
     for area in ["WE", "VZ", "AMR", "PAR", "WA"]:
-        run_id = f"{area}_{str(pct).replace('.', '_')}pct_faults"
+        scenario_id = f"{area}_{str(pct).replace('.', '_')}pct_faults"
 
         scn = create_scenario(
-            run_id=run_id,
+            scenario_id=scenario_id,
             pallet_configurations=PALLET_CONFIGURATIONS,
             duration_minutes=60,
-            duration_of_fault_intervals_sec=10,
-            mean_interarrival_minutes=5.0,
+            duration_of_fault_intervals_sec=30,
+            num_pallets=10,
             faulty_time_percentage=pct,
+            area=area,
+            ramping_min=5,
+            min_normal_between_faults=30,
             seed=142 + int(pct * 10),
         )
 
-        scenario_file = test_dir / f"{run_id}.json"
+        scenario_file = test_dir / f"{scenario_id}.json"
         scenario_file.write_text(
             json.dumps(scn, indent=2),
             encoding="utf-8",
@@ -369,20 +441,25 @@ if __name__ == "__main__":
         # These scenarios test diagnosis capabilities with simultaneous faults
         pct = 30
         multi_fault = 2
-        run_id = f"{area}_multi_{multi_fault}_{str(pct).replace('.', '_')}pct_faults"
+        scenario_id = (
+            f"{area}_multi_{multi_fault}_{str(pct).replace('.', '_')}pct_faults"
+        )
 
         scn = create_scenario(
-            run_id=run_id,
+            scenario_id=scenario_id,
             pallet_configurations=PALLET_CONFIGURATIONS,
             duration_minutes=60,
-            duration_of_fault_intervals_sec=10,
-            mean_interarrival_minutes=5.0,
+            duration_of_fault_intervals_sec=30,
+            num_pallets=10,
             faulty_time_percentage=pct,
             multi_fault=multi_fault,
+            area=area,
+            ramping_min=5,
+            min_normal_between_faults=30,
             seed=142 + int(pct * 10) + multi_fault * 1000,
         )
 
-        scenario_file = test_dir / f"{run_id}.json"
+        scenario_file = test_dir / f"{scenario_id}.json"
         scenario_file.write_text(
             json.dumps(scn, indent=2),
             encoding="utf-8",

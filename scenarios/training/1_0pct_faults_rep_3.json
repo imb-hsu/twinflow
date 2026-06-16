@@ -1,93 +1,113 @@
 {
-  "runId": "1_0pct_faults_rep_3",
-  "scenarioId": "1_0pct_faults_rep_3",
-  "cycles": 1,
-  "duration": "60:00",
-  "startDate": "00:00",
+  "scenario": {
+    "author": "HSU TwinFlow Benchmark",
+    "createdAt": "2026-06-10T14:54:56.303Z",
+    "cycles": 1,
+    "duration": "60:00",
+    "id": "1_0pct_faults_rep_3",
+    "isAdmin": false,
+    "startDate": "00:00",
+    "updatedAt": "2026-06-10T14:54:56.303Z",
+    "version": ""
+  },
   "actions": [
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
       "startsAt": "00:00",
       "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "01:33",
+      "startsAt": "00:01",
       "value": "PalletConfiguration-NOVA-6-DTF-6"
     },
     {
-      "element": "CLT_59",
-      "property": "EmergencyStop",
-      "startsAt": "03:30",
-      "value": true
-    },
-    {
-      "element": "CLT_59",
-      "property": "EmergencyStop",
-      "startsAt": "03:40",
-      "value": false
-    },
-    {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "12:25",
-      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
-    },
-    {
-      "element": "PalletCreator",
-      "property": "CreatePallet",
-      "startsAt": "13:55",
-      "value": "PalletConfiguration-NOVA-6-DTF-6"
-    },
-    {
-      "element": "PalletCreator",
-      "property": "CreatePallet",
-      "startsAt": "20:15",
-      "value": "PalletConfiguration-NOVA-6-DTF-6"
-    },
-    {
-      "element": "PalletCreator",
-      "property": "CreatePallet",
-      "startsAt": "27:52",
+      "startsAt": "00:02",
       "value": "HSU-1Box"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "41:15",
+      "startsAt": "00:03",
       "value": "PalletConfiguration-NOVA-6-DTF-6"
     },
     {
+      "area": "WE",
       "element": "PalletCreator",
       "property": "CreatePallet",
-      "startsAt": "42:29",
+      "startsAt": "00:04",
+      "value": "HSU-1Box"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:05",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:06",
       "value": "PalletConfiguration-NOVA-6-DTF-6"
     },
     {
-      "element": "PR_118",
-      "property": "IncreasedDampingFault",
-      "startsAt": "49:17",
-      "value": 0.693
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:07",
+      "value": "HSU-1Box"
     },
     {
-      "element": "PR_118",
-      "property": "IncreasedDampingFault",
-      "startsAt": "49:27",
-      "value": 0
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:08",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
     },
     {
-      "element": "RC_88",
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:09",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "area": "AMR",
+      "element": "AMR_1",
       "property": "MotorFault",
-      "startsAt": "52:34",
+      "startsAt": "06:59",
       "value": true
     },
     {
-      "element": "RC_88",
+      "area": "AMR",
+      "element": "AMR_1",
       "property": "MotorFault",
-      "startsAt": "52:44",
+      "startsAt": "07:29",
       "value": false
+    },
+    {
+      "area": "PAR",
+      "element": "RB_22",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "28:02",
+      "value": -0.65
+    },
+    {
+      "area": "PAR",
+      "element": "RB_22",
+      "property": "SpeedCalibrationFault",
+      "startsAt": "28:32",
+      "value": 0
     }
   ]
 }
