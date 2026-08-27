@@ -1,13 +1,13 @@
 {
   "scenario": {
     "author": "HSU TwinFlow Benchmark",
-    "createdAt": "2026-06-10T14:54:56.313Z",
+    "createdAt": "2026-08-26T09:40:38.903Z",
     "cycles": 1,
     "duration": "60:00",
     "id": "VZ_30pct_faults",
     "isAdmin": false,
     "startDate": "00:00",
-    "updatedAt": "2026-06-10T14:54:56.313Z",
+    "updatedAt": "2026-08-26T09:40:38.903Z",
     "version": ""
   },
   "actions": [
@@ -86,504 +86,504 @@
       "element": "RB_12",
       "property": "EmergencyStop",
       "startsAt": "07:41",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RB_12",
       "property": "EmergencyStop",
       "startsAt": "08:11",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "RB_11",
       "property": "SpeedCalibrationFault",
       "startsAt": "08:28",
-      "value": 1.74
+      "value": "1,74"
     },
     {
       "area": "VZ",
       "element": "RB_11",
       "property": "SpeedCalibrationFault",
       "startsAt": "08:58",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CLT_47",
       "property": "SpeedCalibrationFault",
       "startsAt": "09:30",
-      "value": 2.957
+      "value": "2,957"
     },
     {
       "area": "VZ",
       "element": "CLT_47",
       "property": "SpeedCalibrationFault",
       "startsAt": "10:00",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RB_11",
       "property": "MotorFault",
       "startsAt": "10:17",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RB_11",
       "property": "MotorFault",
       "startsAt": "10:47",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "RC_67",
       "property": "SpeedCalibrationFault",
       "startsAt": "11:12",
-      "value": 2.493
+      "value": "2,493"
     },
     {
       "area": "VZ",
       "element": "RC_67",
       "property": "SpeedCalibrationFault",
       "startsAt": "11:42",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RC_27",
       "property": "SpeedCalibrationFault",
       "startsAt": "11:54",
-      "value": 0.309
+      "value": "0,309"
     },
     {
       "area": "VZ",
       "element": "RC_27",
       "property": "SpeedCalibrationFault",
       "startsAt": "12:24",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RC_67",
       "property": "MotorFault",
       "startsAt": "13:00",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RC_67",
       "property": "MotorFault",
       "startsAt": "13:30",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "CC_150",
       "property": "IMeasurementFault",
       "startsAt": "15:12",
-      "value": 2.811
+      "value": "2,811"
     },
     {
       "area": "VZ",
       "element": "CC_150",
       "property": "IMeasurementFault",
       "startsAt": "15:42",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RB_11",
       "property": "EmergencyStop",
       "startsAt": "16:12",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RB_11",
       "property": "EmergencyStop",
       "startsAt": "16:42",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "RC_33",
       "property": "IMeasurementFault",
       "startsAt": "18:34",
-      "value": 3.772
+      "value": "3,772"
     },
     {
       "area": "VZ",
       "element": "RC_33",
       "property": "IMeasurementFault",
       "startsAt": "19:04",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CLT_28",
       "property": "SpeedCalibrationFault",
       "startsAt": "19:17",
-      "value": 4.756
+      "value": "4,756"
     },
     {
       "area": "VZ",
       "element": "CLT_28",
       "property": "SpeedCalibrationFault",
       "startsAt": "19:47",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RB_12",
       "property": "EmergencyStop",
       "startsAt": "21:13",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RB_12",
       "property": "EmergencyStop",
       "startsAt": "21:43",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "CC_154",
       "property": "WearFault",
       "startsAt": "22:18",
-      "value": 0.353
+      "value": "0,353"
     },
     {
       "area": "VZ",
       "element": "CC_154",
       "property": "WearFault",
       "startsAt": "22:48",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RC_93",
       "property": "IncreasedDampingFault",
       "startsAt": "22:57",
-      "value": 0.788
+      "value": "0,788"
     },
     {
       "area": "VZ",
       "element": "RC_93",
       "property": "IncreasedDampingFault",
       "startsAt": "23:27",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CLT_28",
       "property": "SpeedCalibrationFault",
       "startsAt": "23:48",
-      "value": 4.374
+      "value": "4,374"
     },
     {
       "area": "VZ",
       "element": "CLT_28",
       "property": "SpeedCalibrationFault",
       "startsAt": "24:18",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CLT_59",
       "property": "MotorFault",
       "startsAt": "24:49",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "CLT_59",
       "property": "MotorFault",
       "startsAt": "25:19",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "CC_157",
       "property": "IMeasurementFault",
       "startsAt": "26:11",
-      "value": 1.022
+      "value": "1,022"
     },
     {
       "area": "VZ",
       "element": "CC_157",
       "property": "IMeasurementFault",
       "startsAt": "26:41",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RC_27",
       "property": "PeWrongCalibration",
       "startsAt": "30:31",
-      "value": 90.874
+      "value": "90,874"
     },
     {
       "area": "VZ",
       "element": "RC_27",
       "property": "PeWrongCalibration",
       "startsAt": "31:01",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CLT_28",
       "property": "IMeasurementFault",
       "startsAt": "31:58",
-      "value": 0.904
+      "value": "0,904"
     },
     {
       "area": "VZ",
       "element": "CLT_28",
       "property": "IMeasurementFault",
       "startsAt": "32:28",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CC_2",
       "property": "IncreasedDampingFault",
       "startsAt": "33:01",
-      "value": 0.76
+      "value": "0,76"
     },
     {
       "area": "VZ",
       "element": "CC_2",
       "property": "IncreasedDampingFault",
       "startsAt": "33:31",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RB_11",
       "property": "EmergencyStop",
       "startsAt": "37:07",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RB_11",
       "property": "EmergencyStop",
       "startsAt": "37:37",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "RB_12",
       "property": "SpeedCalibrationFault",
       "startsAt": "38:41",
-      "value": 4.07
+      "value": "4,07"
     },
     {
       "area": "VZ",
       "element": "RB_12",
       "property": "SpeedCalibrationFault",
       "startsAt": "39:11",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RC_113",
       "property": "IMeasurementFault",
       "startsAt": "39:28",
-      "value": 3.43
+      "value": "3,43"
     },
     {
       "area": "VZ",
       "element": "RC_113",
       "property": "IMeasurementFault",
       "startsAt": "39:58",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CLT_40",
       "property": "MotorFault",
       "startsAt": "40:10",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "CLT_40",
       "property": "MotorFault",
       "startsAt": "40:40",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "CLT_15",
       "property": "EmergencyStop",
       "startsAt": "40:53",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "CLT_15",
       "property": "EmergencyStop",
       "startsAt": "41:23",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "CLT_47",
       "property": "WearFault",
       "startsAt": "42:03",
-      "value": 0.947
+      "value": "0,947"
     },
     {
       "area": "VZ",
       "element": "CLT_47",
       "property": "WearFault",
       "startsAt": "42:33",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RC_105",
       "property": "IncreasedDampingFault",
       "startsAt": "42:44",
-      "value": 0.56
+      "value": "0,56"
     },
     {
       "area": "VZ",
       "element": "RC_105",
       "property": "IncreasedDampingFault",
       "startsAt": "43:14",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RC_128",
       "property": "PeWrongCalibration",
       "startsAt": "43:27",
-      "value": 25.606
+      "value": "25,606"
     },
     {
       "area": "VZ",
       "element": "RC_128",
       "property": "PeWrongCalibration",
       "startsAt": "43:57",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RB_12",
       "property": "MotorFault",
       "startsAt": "44:34",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RB_12",
       "property": "MotorFault",
       "startsAt": "45:04",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "CLT_59",
       "property": "WearFault",
       "startsAt": "47:06",
-      "value": 0.936
+      "value": "0,936"
     },
     {
       "area": "VZ",
       "element": "CLT_59",
       "property": "WearFault",
       "startsAt": "47:36",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CC_156",
       "property": "PeWrongCalibration",
       "startsAt": "49:48",
-      "value": 42.251
+      "value": "42,251"
     },
     {
       "area": "VZ",
       "element": "CC_156",
       "property": "PeWrongCalibration",
       "startsAt": "50:18",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CLT_47",
       "property": "PeDefect",
       "startsAt": "51:13",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "CLT_47",
       "property": "PeDefect",
       "startsAt": "51:43",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "RC_136",
       "property": "IncreasedDampingFault",
       "startsAt": "54:06",
-      "value": 0.996
+      "value": "0,996"
     },
     {
       "area": "VZ",
       "element": "RC_136",
       "property": "IncreasedDampingFault",
       "startsAt": "54:36",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RB_12",
       "property": "MotorFault",
       "startsAt": "54:50",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RB_12",
       "property": "MotorFault",
       "startsAt": "55:20",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "RC_114",
       "property": "IMeasurementFault",
       "startsAt": "55:55",
-      "value": 3.729
+      "value": "3,729"
     },
     {
       "area": "VZ",
       "element": "RC_114",
       "property": "IMeasurementFault",
       "startsAt": "56:25",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "RC_66",
       "property": "EmergencyStop",
       "startsAt": "58:50",
-      "value": true
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RC_66",
       "property": "EmergencyStop",
       "startsAt": "59:20",
-      "value": false
+      "value": "false"
     }
   ]
 }

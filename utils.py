@@ -1,10 +1,35 @@
 import csv
 import json
+import re
 import warnings
 from pathlib import Path
 
 import pandas as pd
 import zstandard as zstd
+
+
+GERMAN_NUMBER_PATTERN = re.compile(
+    r"""
+    ^[+-]?                              # optional sign
+    (?:
+        \d{1,3}(?:\.\d{3})+            # 1.234 or 1.234.567
+        |
+        \d+                             # 0, 123, 1234
+    )
+    (?:,\d+)?                           # optional decimal part
+    (?:[eE][+-]?\d+)?                   # optional exponent
+    $
+    """,
+    re.VERBOSE,
+)
+
+EXCLUDED_COLUMNS = {"runId", "scenarioId"}
+EXCLUDED_COLUMN_PREFIXES = ("DTF", "NOVA", "HSU", "Pallet")
+
+
+def should_skip_column(column: str) -> bool:
+    """Return whether a column should be omitted from the result."""
+    return column in EXCLUDED_COLUMNS or column.startswith(EXCLUDED_COLUMN_PREFIXES)
 
 
 def read_zst_text(path: Path) -> str:
@@ -52,8 +77,6 @@ def flatten_sample(sample: dict) -> dict:
     row = {
         "emulationRealtime": sample.get("emulationRealtime"),
         "novaRealtime": sample.get("novaRealtime"),
-        "runId": sample.get("runId"),
-        "scenarioId": sample.get("scenarioId"),
         "simulationTime": sample.get("simulationTime"),
     }
 
@@ -65,8 +88,23 @@ def flatten_sample(sample: dict) -> dict:
 
     for entity_entry in values:
         for _, variables in entity_entry.items():
-            row.update(variables)
+            for k, v in variables.items():
+                if should_skip_column(k):
+                    continue
 
+                if isinstance(v, str):
+                    stripped = v.strip()
+
+                    if stripped == "True":
+                        v = True
+                    elif stripped == "False":
+                        v = False
+                    elif stripped in {"?", "-?", "+?"} or stripped.casefold() == "nan":
+                        v = float("nan")
+                    elif GERMAN_NUMBER_PATTERN.fullmatch(stripped):
+                        normalized = stripped.replace(".", "").replace(",", ".")
+                        v = float(normalized)
+                row[k] = v
     return row
 
 
@@ -133,6 +171,8 @@ def read_data(input_path: Path, filename=None) -> pd.DataFrame:
             text = read_zst_text(actual_file)
             df = _process_json_text(text)
 
+        df = df.loc[:, [column for column in df.columns if not should_skip_column(column)]]
+
         all_dataframes.append(df)
 
     # Concatenate all dataframes if multiple files were read
@@ -158,8 +198,6 @@ def _process_json_text(text: str) -> pd.DataFrame:
     metadata_columns = [
         "emulationRealtime",
         "novaRealtime",
-        "runId",
-        "scenarioId",
         "simulationTime",
     ]
 
@@ -171,5 +209,28 @@ def _process_json_text(text: str) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    df = read_data(Path("data") / "training" / "run_2026-06-07T154603.json.zst")
-    print("Finished reading.")
+    training_dir = Path("data") / "training"
+    supported_suffixes = (".json.zst", ".json", ".csv")
+    input_files = sorted(
+        path
+        for path in training_dir.iterdir()
+        if path.is_file() and path.name.endswith(supported_suffixes)
+    )
+
+    for input_file in input_files:
+        if input_file.name.endswith(".json.zst"):
+            output_file = input_file.with_name(
+                f"{input_file.name.removesuffix('.json.zst')}.parquet"
+            )
+        else:
+            output_file = input_file.with_suffix(".parquet")
+
+        df = read_data(input_file)
+        df.to_parquet(output_file, index=False)
+        size_bytes = df.memory_usage(deep=True).sum()
+        print(
+            f"Saved {output_file} "
+            f"({len(df):,} rows, {size_bytes / 1024 ** 3:.2f} GB in memory)"
+        )
+
+    print(f"Finished processing {len(input_files)} files.")

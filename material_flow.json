@@ -1,0 +1,2722 @@
+{
+  "directed": true,
+  "metadata": {
+    "name": "HSU TwinFlow expanded material-flow graph",
+    "description": "Expanded nodes and edges extracted from the TikZ material-flow diagram. Ranges such as CC_1--6 and RC_8--14 are expanded into individual conveyor nodes.",
+    "expansion_rule": "A label PREFIX_i--j is represented as individual nodes PREFIX_i, PREFIX_{i+1}, ..., PREFIX_j with internal_sequence edges.",
+    "bidirectional_edges": "Bidirectional TikZ arrows are encoded as two directed edges."
+  },
+  "nodes": [
+    {
+      "id": "input_pallets",
+      "label": "input pallets",
+      "type": "material_source",
+      "area": "WE",
+      "expanded_from": null
+    },
+    {
+      "id": "pallet_sink",
+      "label": "pallet sink",
+      "type": "material_sink",
+      "area": "WE",
+      "expanded_from": null
+    },
+    {
+      "id": "empty_pallets_WA",
+      "label": "empty pallets",
+      "type": "material_source",
+      "area": "WA",
+      "expanded_from": null
+    },
+    {
+      "id": "finished_products",
+      "label": "finished products",
+      "type": "material_sink",
+      "area": "WA",
+      "expanded_from": null
+    },
+    {
+      "id": "NIO_1",
+      "label": "NIO_1",
+      "type": "nonconforming_output",
+      "area": "VZ",
+      "expanded_from": null
+    },
+    {
+      "id": "NIO_2",
+      "label": "NIO_2",
+      "type": "nonconforming_output",
+      "area": "VZ",
+      "expanded_from": null
+    },
+    {
+      "id": "CC_1",
+      "label": "CC_1",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_1--6"
+    },
+    {
+      "id": "CC_2",
+      "label": "CC_2",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_1--6"
+    },
+    {
+      "id": "CC_3",
+      "label": "CC_3",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_1--6"
+    },
+    {
+      "id": "CC_4",
+      "label": "CC_4",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_1--6"
+    },
+    {
+      "id": "CC_5",
+      "label": "CC_5",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_1--6"
+    },
+    {
+      "id": "CC_6",
+      "label": "CC_6",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_1--6"
+    },
+    {
+      "id": "CC_16",
+      "label": "CC_16",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_16--20"
+    },
+    {
+      "id": "CC_17",
+      "label": "CC_17",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_16--20"
+    },
+    {
+      "id": "CC_18",
+      "label": "CC_18",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_16--20"
+    },
+    {
+      "id": "CC_19",
+      "label": "CC_19",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_16--20"
+    },
+    {
+      "id": "CC_20",
+      "label": "CC_20",
+      "type": "chain_conveyor",
+      "area": "WE",
+      "expanded_from": "CC_16--20"
+    },
+    {
+      "id": "PR_7",
+      "label": "PR_7",
+      "type": "portal_robot",
+      "area": "WE",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_8",
+      "label": "RC_8",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_8--14"
+    },
+    {
+      "id": "RC_9",
+      "label": "RC_9",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_8--14"
+    },
+    {
+      "id": "RC_10",
+      "label": "RC_10",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_8--14"
+    },
+    {
+      "id": "RC_11",
+      "label": "RC_11",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_8--14"
+    },
+    {
+      "id": "RC_12",
+      "label": "RC_12",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_8--14"
+    },
+    {
+      "id": "RC_13",
+      "label": "RC_13",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_8--14"
+    },
+    {
+      "id": "RC_14",
+      "label": "RC_14",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_8--14"
+    },
+    {
+      "id": "CLT_15",
+      "label": "CLT_15",
+      "type": "chain_lift_conveyor",
+      "area": "VZ",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_22",
+      "label": "RC_22",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_22--27"
+    },
+    {
+      "id": "RC_23",
+      "label": "RC_23",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_22--27"
+    },
+    {
+      "id": "RC_24",
+      "label": "RC_24",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_22--27"
+    },
+    {
+      "id": "RC_25",
+      "label": "RC_25",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_22--27"
+    },
+    {
+      "id": "RC_26",
+      "label": "RC_26",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_22--27"
+    },
+    {
+      "id": "RC_27",
+      "label": "RC_27",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_22--27"
+    },
+    {
+      "id": "CLT_28",
+      "label": "CLT_28",
+      "type": "chain_lift_conveyor",
+      "area": "VZ",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_29",
+      "label": "RC_29",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_30",
+      "label": "RC_30",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_31",
+      "label": "RC_31",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_32",
+      "label": "RC_32",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_33",
+      "label": "RC_33",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_34",
+      "label": "RC_34",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_35",
+      "label": "RC_35",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_36",
+      "label": "RC_36",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_37",
+      "label": "RC_37",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_38",
+      "label": "RC_38",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "RC_39",
+      "label": "RC_39",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_29--39"
+    },
+    {
+      "id": "CLT_40",
+      "label": "CLT_40",
+      "type": "chain_lift_conveyor",
+      "area": "VZ",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_60",
+      "label": "RC_60",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_60--62"
+    },
+    {
+      "id": "RC_61",
+      "label": "RC_61",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_60--62"
+    },
+    {
+      "id": "RC_62",
+      "label": "RC_62",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_60--62"
+    },
+    {
+      "id": "RC_63",
+      "label": "RC_63",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_63--67"
+    },
+    {
+      "id": "RC_64",
+      "label": "RC_64",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_63--67"
+    },
+    {
+      "id": "RC_65",
+      "label": "RC_65",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_63--67"
+    },
+    {
+      "id": "RC_66",
+      "label": "RC_66",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_63--67"
+    },
+    {
+      "id": "RC_67",
+      "label": "RC_67",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_63--67"
+    },
+    {
+      "id": "RC_68",
+      "label": "RC_68",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_68--72"
+    },
+    {
+      "id": "RC_69",
+      "label": "RC_69",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_68--72"
+    },
+    {
+      "id": "RC_70",
+      "label": "RC_70",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_68--72"
+    },
+    {
+      "id": "RC_71",
+      "label": "RC_71",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_68--72"
+    },
+    {
+      "id": "RC_72",
+      "label": "RC_72",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_68--72"
+    },
+    {
+      "id": "RB_12",
+      "label": "RB_12",
+      "type": "six_axis_robot",
+      "area": "VZ",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_41",
+      "label": "RC_41",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_41--46"
+    },
+    {
+      "id": "RC_42",
+      "label": "RC_42",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_41--46"
+    },
+    {
+      "id": "RC_43",
+      "label": "RC_43",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_41--46"
+    },
+    {
+      "id": "RC_44",
+      "label": "RC_44",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_41--46"
+    },
+    {
+      "id": "RC_45",
+      "label": "RC_45",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_41--46"
+    },
+    {
+      "id": "RC_46",
+      "label": "RC_46",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_41--46"
+    },
+    {
+      "id": "CLT_47",
+      "label": "CLT_47",
+      "type": "chain_lift_conveyor",
+      "area": "VZ",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_48",
+      "label": "RC_48",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_49",
+      "label": "RC_49",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_50",
+      "label": "RC_50",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_51",
+      "label": "RC_51",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_52",
+      "label": "RC_52",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_53",
+      "label": "RC_53",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_54",
+      "label": "RC_54",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_55",
+      "label": "RC_55",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_56",
+      "label": "RC_56",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_57",
+      "label": "RC_57",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "RC_58",
+      "label": "RC_58",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_48--58"
+    },
+    {
+      "id": "CLT_59",
+      "label": "CLT_59",
+      "type": "chain_lift_conveyor",
+      "area": "VZ",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_84",
+      "label": "RC_84",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_84--86"
+    },
+    {
+      "id": "RC_85",
+      "label": "RC_85",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_84--86"
+    },
+    {
+      "id": "RC_86",
+      "label": "RC_86",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_84--86"
+    },
+    {
+      "id": "RC_74",
+      "label": "RC_74",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_74--78"
+    },
+    {
+      "id": "RC_75",
+      "label": "RC_75",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_74--78"
+    },
+    {
+      "id": "RC_76",
+      "label": "RC_76",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_74--78"
+    },
+    {
+      "id": "RC_77",
+      "label": "RC_77",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_74--78"
+    },
+    {
+      "id": "RC_78",
+      "label": "RC_78",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_74--78"
+    },
+    {
+      "id": "RC_79",
+      "label": "RC_79",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_79--83"
+    },
+    {
+      "id": "RC_80",
+      "label": "RC_80",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_79--83"
+    },
+    {
+      "id": "RC_81",
+      "label": "RC_81",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_79--83"
+    },
+    {
+      "id": "RC_82",
+      "label": "RC_82",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_79--83"
+    },
+    {
+      "id": "RC_83",
+      "label": "RC_83",
+      "type": "roller_conveyor",
+      "area": "VZ",
+      "expanded_from": "RC_79--83"
+    },
+    {
+      "id": "RB_11",
+      "label": "RB_11",
+      "type": "six_axis_robot",
+      "area": "VZ",
+      "expanded_from": null
+    },
+    {
+      "id": "AMR_1",
+      "label": "AMR_1",
+      "type": "autonomous_mobile_robot",
+      "area": "AMR",
+      "expanded_from": null
+    },
+    {
+      "id": "AMR_2",
+      "label": "AMR_2",
+      "type": "autonomous_mobile_robot",
+      "area": "AMR",
+      "expanded_from": null
+    },
+    {
+      "id": "AMR_3",
+      "label": "AMR_3",
+      "type": "autonomous_mobile_robot",
+      "area": "AMR",
+      "expanded_from": null
+    },
+    {
+      "id": "RS_1",
+      "label": "RS_1",
+      "type": "robot_station",
+      "area": "AMR",
+      "expanded_from": null
+    },
+    {
+      "id": "RS_2",
+      "label": "RS_2",
+      "type": "robot_station",
+      "area": "AMR",
+      "expanded_from": null
+    },
+    {
+      "id": "RS_3",
+      "label": "RS_3",
+      "type": "robot_station",
+      "area": "AMR",
+      "expanded_from": null
+    },
+    {
+      "id": "RS_4",
+      "label": "RS_4",
+      "type": "robot_station",
+      "area": "AMR",
+      "expanded_from": null
+    },
+    {
+      "id": "RS_5",
+      "label": "RS_5",
+      "type": "robot_station",
+      "area": "AMR",
+      "expanded_from": null
+    },
+    {
+      "id": "RS_6",
+      "label": "RS_6",
+      "type": "robot_station",
+      "area": "AMR",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_87",
+      "label": "RC_87",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": null
+    },
+    {
+      "id": "CLT_89",
+      "label": "CLT_89",
+      "type": "chain_lift_conveyor",
+      "area": "PAR",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_90",
+      "label": "RC_90",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_90--95"
+    },
+    {
+      "id": "RC_91",
+      "label": "RC_91",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_90--95"
+    },
+    {
+      "id": "RC_92",
+      "label": "RC_92",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_90--95"
+    },
+    {
+      "id": "RC_93",
+      "label": "RC_93",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_90--95"
+    },
+    {
+      "id": "RC_94",
+      "label": "RC_94",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_90--95"
+    },
+    {
+      "id": "RC_95",
+      "label": "RC_95",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_90--95"
+    },
+    {
+      "id": "CLT_96",
+      "label": "CLT_96",
+      "type": "chain_lift_conveyor",
+      "area": "PAR",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_97",
+      "label": "RC_97",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_98",
+      "label": "RC_98",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_99",
+      "label": "RC_99",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_100",
+      "label": "RC_100",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_101",
+      "label": "RC_101",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_102",
+      "label": "RC_102",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_103",
+      "label": "RC_103",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_104",
+      "label": "RC_104",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_105",
+      "label": "RC_105",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_106",
+      "label": "RC_106",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "RC_107",
+      "label": "RC_107",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_97--107"
+    },
+    {
+      "id": "CLT_108",
+      "label": "CLT_108",
+      "type": "chain_lift_conveyor",
+      "area": "PAR",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_109",
+      "label": "RC_109",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_109--113"
+    },
+    {
+      "id": "RC_110",
+      "label": "RC_110",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_109--113"
+    },
+    {
+      "id": "RC_111",
+      "label": "RC_111",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_109--113"
+    },
+    {
+      "id": "RC_112",
+      "label": "RC_112",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_109--113"
+    },
+    {
+      "id": "RC_113",
+      "label": "RC_113",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_109--113"
+    },
+    {
+      "id": "RC_114",
+      "label": "RC_114",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_114--117"
+    },
+    {
+      "id": "RC_115",
+      "label": "RC_115",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_114--117"
+    },
+    {
+      "id": "RC_116",
+      "label": "RC_116",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_114--117"
+    },
+    {
+      "id": "RC_117",
+      "label": "RC_117",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_114--117"
+    },
+    {
+      "id": "RB_22",
+      "label": "RB_22",
+      "type": "six_axis_robot",
+      "area": "PAR",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_119",
+      "label": "RC_119",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_119--124"
+    },
+    {
+      "id": "RC_120",
+      "label": "RC_120",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_119--124"
+    },
+    {
+      "id": "RC_121",
+      "label": "RC_121",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_119--124"
+    },
+    {
+      "id": "RC_122",
+      "label": "RC_122",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_119--124"
+    },
+    {
+      "id": "RC_123",
+      "label": "RC_123",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_119--124"
+    },
+    {
+      "id": "RC_124",
+      "label": "RC_124",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_119--124"
+    },
+    {
+      "id": "CLT_125",
+      "label": "CLT_125",
+      "type": "chain_lift_conveyor",
+      "area": "PAR",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_126",
+      "label": "RC_126",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_127",
+      "label": "RC_127",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_128",
+      "label": "RC_128",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_129",
+      "label": "RC_129",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_130",
+      "label": "RC_130",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_131",
+      "label": "RC_131",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_132",
+      "label": "RC_132",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_133",
+      "label": "RC_133",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_134",
+      "label": "RC_134",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_135",
+      "label": "RC_135",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "RC_136",
+      "label": "RC_136",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_126--136"
+    },
+    {
+      "id": "CLT_137",
+      "label": "CLT_137",
+      "type": "chain_lift_conveyor",
+      "area": "PAR",
+      "expanded_from": null
+    },
+    {
+      "id": "RC_138",
+      "label": "RC_138",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_138--142"
+    },
+    {
+      "id": "RC_139",
+      "label": "RC_139",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_138--142"
+    },
+    {
+      "id": "RC_140",
+      "label": "RC_140",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_138--142"
+    },
+    {
+      "id": "RC_141",
+      "label": "RC_141",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_138--142"
+    },
+    {
+      "id": "RC_142",
+      "label": "RC_142",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_138--142"
+    },
+    {
+      "id": "RC_143",
+      "label": "RC_143",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_143--146"
+    },
+    {
+      "id": "RC_144",
+      "label": "RC_144",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_143--146"
+    },
+    {
+      "id": "RC_145",
+      "label": "RC_145",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_143--146"
+    },
+    {
+      "id": "RC_146",
+      "label": "RC_146",
+      "type": "roller_conveyor",
+      "area": "PAR",
+      "expanded_from": "RC_143--146"
+    },
+    {
+      "id": "RB_21",
+      "label": "RB_21",
+      "type": "six_axis_robot",
+      "area": "PAR",
+      "expanded_from": null
+    },
+    {
+      "id": "PR_118",
+      "label": "PR_118",
+      "type": "portal_palletizing_robot",
+      "area": "WA",
+      "expanded_from": null
+    },
+    {
+      "id": "CC_147",
+      "label": "CC_147",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_147--153"
+    },
+    {
+      "id": "CC_148",
+      "label": "CC_148",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_147--153"
+    },
+    {
+      "id": "CC_149",
+      "label": "CC_149",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_147--153"
+    },
+    {
+      "id": "CC_150",
+      "label": "CC_150",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_147--153"
+    },
+    {
+      "id": "CC_151",
+      "label": "CC_151",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_147--153"
+    },
+    {
+      "id": "CC_152",
+      "label": "CC_152",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_147--153"
+    },
+    {
+      "id": "CC_153",
+      "label": "CC_153",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_147--153"
+    },
+    {
+      "id": "CC_154",
+      "label": "CC_154",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_154--158"
+    },
+    {
+      "id": "CC_155",
+      "label": "CC_155",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_154--158"
+    },
+    {
+      "id": "CC_156",
+      "label": "CC_156",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_154--158"
+    },
+    {
+      "id": "CC_157",
+      "label": "CC_157",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_154--158"
+    },
+    {
+      "id": "CC_158",
+      "label": "CC_158",
+      "type": "chain_conveyor",
+      "area": "WA",
+      "expanded_from": "CC_154--158"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "CC_1",
+      "target": "CC_2",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e2",
+      "source": "CC_2",
+      "target": "CC_3",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e3",
+      "source": "CC_3",
+      "target": "CC_4",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e4",
+      "source": "CC_4",
+      "target": "CC_5",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e5",
+      "source": "CC_5",
+      "target": "CC_6",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e6",
+      "source": "CC_16",
+      "target": "CC_17",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e7",
+      "source": "CC_17",
+      "target": "CC_18",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e8",
+      "source": "CC_18",
+      "target": "CC_19",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e9",
+      "source": "CC_19",
+      "target": "CC_20",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e10",
+      "source": "RC_8",
+      "target": "RC_9",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e11",
+      "source": "RC_9",
+      "target": "RC_10",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e12",
+      "source": "RC_10",
+      "target": "RC_11",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e13",
+      "source": "RC_11",
+      "target": "RC_12",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e14",
+      "source": "RC_12",
+      "target": "RC_13",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e15",
+      "source": "RC_13",
+      "target": "RC_14",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e16",
+      "source": "RC_22",
+      "target": "RC_23",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e17",
+      "source": "RC_23",
+      "target": "RC_24",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e18",
+      "source": "RC_24",
+      "target": "RC_25",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e19",
+      "source": "RC_25",
+      "target": "RC_26",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e20",
+      "source": "RC_26",
+      "target": "RC_27",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e21",
+      "source": "RC_29",
+      "target": "RC_30",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e22",
+      "source": "RC_30",
+      "target": "RC_31",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e23",
+      "source": "RC_31",
+      "target": "RC_32",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e24",
+      "source": "RC_32",
+      "target": "RC_33",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e25",
+      "source": "RC_33",
+      "target": "RC_34",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e26",
+      "source": "RC_34",
+      "target": "RC_35",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e27",
+      "source": "RC_35",
+      "target": "RC_36",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e28",
+      "source": "RC_36",
+      "target": "RC_37",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e29",
+      "source": "RC_37",
+      "target": "RC_38",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e30",
+      "source": "RC_38",
+      "target": "RC_39",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e31",
+      "source": "RC_60",
+      "target": "RC_61",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e32",
+      "source": "RC_61",
+      "target": "RC_62",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e33",
+      "source": "RC_63",
+      "target": "RC_64",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e34",
+      "source": "RC_64",
+      "target": "RC_65",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e35",
+      "source": "RC_65",
+      "target": "RC_66",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e36",
+      "source": "RC_66",
+      "target": "RC_67",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e37",
+      "source": "RC_68",
+      "target": "RC_69",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e38",
+      "source": "RC_69",
+      "target": "RC_70",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e39",
+      "source": "RC_70",
+      "target": "RC_71",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e40",
+      "source": "RC_71",
+      "target": "RC_72",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e41",
+      "source": "RC_41",
+      "target": "RC_42",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e42",
+      "source": "RC_42",
+      "target": "RC_43",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e43",
+      "source": "RC_43",
+      "target": "RC_44",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e44",
+      "source": "RC_44",
+      "target": "RC_45",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e45",
+      "source": "RC_45",
+      "target": "RC_46",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e46",
+      "source": "RC_48",
+      "target": "RC_49",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e47",
+      "source": "RC_49",
+      "target": "RC_50",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e48",
+      "source": "RC_50",
+      "target": "RC_51",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e49",
+      "source": "RC_51",
+      "target": "RC_52",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e50",
+      "source": "RC_52",
+      "target": "RC_53",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e51",
+      "source": "RC_53",
+      "target": "RC_54",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e52",
+      "source": "RC_54",
+      "target": "RC_55",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e53",
+      "source": "RC_55",
+      "target": "RC_56",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e54",
+      "source": "RC_56",
+      "target": "RC_57",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e55",
+      "source": "RC_57",
+      "target": "RC_58",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e56",
+      "source": "RC_84",
+      "target": "RC_85",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e57",
+      "source": "RC_85",
+      "target": "RC_86",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e58",
+      "source": "RC_74",
+      "target": "RC_75",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e59",
+      "source": "RC_75",
+      "target": "RC_76",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e60",
+      "source": "RC_76",
+      "target": "RC_77",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e61",
+      "source": "RC_77",
+      "target": "RC_78",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e62",
+      "source": "RC_79",
+      "target": "RC_80",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e63",
+      "source": "RC_80",
+      "target": "RC_81",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e64",
+      "source": "RC_81",
+      "target": "RC_82",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e65",
+      "source": "RC_82",
+      "target": "RC_83",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e66",
+      "source": "RC_90",
+      "target": "RC_91",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e67",
+      "source": "RC_91",
+      "target": "RC_92",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e68",
+      "source": "RC_92",
+      "target": "RC_93",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e69",
+      "source": "RC_93",
+      "target": "RC_94",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e70",
+      "source": "RC_94",
+      "target": "RC_95",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e71",
+      "source": "RC_97",
+      "target": "RC_98",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e72",
+      "source": "RC_98",
+      "target": "RC_99",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e73",
+      "source": "RC_99",
+      "target": "RC_100",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e74",
+      "source": "RC_100",
+      "target": "RC_101",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e75",
+      "source": "RC_101",
+      "target": "RC_102",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e76",
+      "source": "RC_102",
+      "target": "RC_103",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e77",
+      "source": "RC_103",
+      "target": "RC_104",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e78",
+      "source": "RC_104",
+      "target": "RC_105",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e79",
+      "source": "RC_105",
+      "target": "RC_106",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e80",
+      "source": "RC_106",
+      "target": "RC_107",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e81",
+      "source": "RC_109",
+      "target": "RC_110",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e82",
+      "source": "RC_110",
+      "target": "RC_111",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e83",
+      "source": "RC_111",
+      "target": "RC_112",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e84",
+      "source": "RC_112",
+      "target": "RC_113",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e85",
+      "source": "RC_114",
+      "target": "RC_115",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e86",
+      "source": "RC_115",
+      "target": "RC_116",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e87",
+      "source": "RC_116",
+      "target": "RC_117",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e88",
+      "source": "RC_119",
+      "target": "RC_120",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e89",
+      "source": "RC_120",
+      "target": "RC_121",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e90",
+      "source": "RC_121",
+      "target": "RC_122",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e91",
+      "source": "RC_122",
+      "target": "RC_123",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e92",
+      "source": "RC_123",
+      "target": "RC_124",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e93",
+      "source": "RC_126",
+      "target": "RC_127",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e94",
+      "source": "RC_127",
+      "target": "RC_128",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e95",
+      "source": "RC_128",
+      "target": "RC_129",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e96",
+      "source": "RC_129",
+      "target": "RC_130",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e97",
+      "source": "RC_130",
+      "target": "RC_131",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e98",
+      "source": "RC_131",
+      "target": "RC_132",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e99",
+      "source": "RC_132",
+      "target": "RC_133",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e100",
+      "source": "RC_133",
+      "target": "RC_134",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e101",
+      "source": "RC_134",
+      "target": "RC_135",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e102",
+      "source": "RC_135",
+      "target": "RC_136",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e103",
+      "source": "RC_138",
+      "target": "RC_139",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e104",
+      "source": "RC_139",
+      "target": "RC_140",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e105",
+      "source": "RC_140",
+      "target": "RC_141",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e106",
+      "source": "RC_141",
+      "target": "RC_142",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e107",
+      "source": "RC_143",
+      "target": "RC_144",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e108",
+      "source": "RC_144",
+      "target": "RC_145",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e109",
+      "source": "RC_145",
+      "target": "RC_146",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e110",
+      "source": "CC_147",
+      "target": "CC_148",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e111",
+      "source": "CC_148",
+      "target": "CC_149",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e112",
+      "source": "CC_149",
+      "target": "CC_150",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e113",
+      "source": "CC_150",
+      "target": "CC_151",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e114",
+      "source": "CC_151",
+      "target": "CC_152",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e115",
+      "source": "CC_152",
+      "target": "CC_153",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e116",
+      "source": "CC_154",
+      "target": "CC_155",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e117",
+      "source": "CC_155",
+      "target": "CC_156",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e118",
+      "source": "CC_156",
+      "target": "CC_157",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e119",
+      "source": "CC_157",
+      "target": "CC_158",
+      "relation": "internal_sequence",
+      "directed": true
+    },
+    {
+      "id": "e120",
+      "source": "input_pallets",
+      "target": "CC_1",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e121",
+      "source": "CC_6",
+      "target": "PR_7",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e122",
+      "source": "CC_6",
+      "target": "CC_16",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e123",
+      "source": "CC_20",
+      "target": "pallet_sink",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e124",
+      "source": "PR_7",
+      "target": "RC_8",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e125",
+      "source": "RC_14",
+      "target": "CLT_15",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e126",
+      "source": "CLT_15",
+      "target": "RC_22",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e127",
+      "source": "RC_27",
+      "target": "CLT_28",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e128",
+      "source": "CLT_28",
+      "target": "RC_29",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e129",
+      "source": "RC_39",
+      "target": "CLT_40",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e130",
+      "source": "CLT_40",
+      "target": "RC_60",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e131",
+      "source": "RC_62",
+      "target": "NIO_2",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e132",
+      "source": "CLT_40",
+      "target": "RC_63",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e133",
+      "source": "RC_67",
+      "target": "RC_68",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e134",
+      "source": "RC_34",
+      "target": "RB_12",
+      "relation": "robot_processing",
+      "directed": true
+    },
+    {
+      "id": "e135",
+      "source": "RB_12",
+      "target": "RC_34",
+      "relation": "robot_processing",
+      "directed": true
+    },
+    {
+      "id": "e136",
+      "source": "CLT_15",
+      "target": "RC_41",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e137",
+      "source": "RC_46",
+      "target": "CLT_47",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e138",
+      "source": "CLT_47",
+      "target": "RC_48",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e139",
+      "source": "RC_58",
+      "target": "CLT_59",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e140",
+      "source": "CLT_59",
+      "target": "RC_84",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e141",
+      "source": "RC_86",
+      "target": "NIO_1",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e142",
+      "source": "CLT_59",
+      "target": "RC_74",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e143",
+      "source": "RC_78",
+      "target": "RC_79",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e144",
+      "source": "RC_52",
+      "target": "RB_11",
+      "relation": "robot_processing",
+      "directed": true
+    },
+    {
+      "id": "e145",
+      "source": "RB_11",
+      "target": "RC_52",
+      "relation": "robot_processing",
+      "directed": true
+    },
+    {
+      "id": "e146",
+      "source": "RC_72",
+      "target": "AMR_1",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e147",
+      "source": "RC_83",
+      "target": "AMR_1",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e148",
+      "source": "RC_72",
+      "target": "AMR_2",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e149",
+      "source": "RC_83",
+      "target": "AMR_2",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e150",
+      "source": "RC_72",
+      "target": "AMR_3",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e151",
+      "source": "RC_83",
+      "target": "AMR_3",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e152",
+      "source": "AMR_1",
+      "target": "RS_1",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e153",
+      "source": "RS_1",
+      "target": "AMR_1",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e154",
+      "source": "AMR_1",
+      "target": "RS_2",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e155",
+      "source": "RS_2",
+      "target": "AMR_1",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e156",
+      "source": "AMR_1",
+      "target": "RS_3",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e157",
+      "source": "RS_3",
+      "target": "AMR_1",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e158",
+      "source": "AMR_1",
+      "target": "RS_4",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e159",
+      "source": "RS_4",
+      "target": "AMR_1",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e160",
+      "source": "AMR_1",
+      "target": "RS_5",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e161",
+      "source": "RS_5",
+      "target": "AMR_1",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e162",
+      "source": "AMR_1",
+      "target": "RS_6",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e163",
+      "source": "RS_6",
+      "target": "AMR_1",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e164",
+      "source": "AMR_2",
+      "target": "RS_1",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e165",
+      "source": "RS_1",
+      "target": "AMR_2",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e166",
+      "source": "AMR_2",
+      "target": "RS_2",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e167",
+      "source": "RS_2",
+      "target": "AMR_2",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e168",
+      "source": "AMR_2",
+      "target": "RS_3",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e169",
+      "source": "RS_3",
+      "target": "AMR_2",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e170",
+      "source": "AMR_2",
+      "target": "RS_4",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e171",
+      "source": "RS_4",
+      "target": "AMR_2",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e172",
+      "source": "AMR_2",
+      "target": "RS_5",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e173",
+      "source": "RS_5",
+      "target": "AMR_2",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e174",
+      "source": "AMR_2",
+      "target": "RS_6",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e175",
+      "source": "RS_6",
+      "target": "AMR_2",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e176",
+      "source": "AMR_3",
+      "target": "RS_1",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e177",
+      "source": "RS_1",
+      "target": "AMR_3",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e178",
+      "source": "AMR_3",
+      "target": "RS_2",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e179",
+      "source": "RS_2",
+      "target": "AMR_3",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e180",
+      "source": "AMR_3",
+      "target": "RS_3",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e181",
+      "source": "RS_3",
+      "target": "AMR_3",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e182",
+      "source": "AMR_3",
+      "target": "RS_4",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e183",
+      "source": "RS_4",
+      "target": "AMR_3",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e184",
+      "source": "AMR_3",
+      "target": "RS_5",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e185",
+      "source": "RS_5",
+      "target": "AMR_3",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e186",
+      "source": "AMR_3",
+      "target": "RS_6",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e187",
+      "source": "RS_6",
+      "target": "AMR_3",
+      "relation": "amr_station_transport",
+      "directed": true
+    },
+    {
+      "id": "e188",
+      "source": "AMR_1",
+      "target": "RC_87",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e189",
+      "source": "AMR_2",
+      "target": "RC_87",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e190",
+      "source": "AMR_3",
+      "target": "RC_87",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e191",
+      "source": "RC_87",
+      "target": "CLT_89",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e192",
+      "source": "CLT_89",
+      "target": "RC_90",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e193",
+      "source": "RC_95",
+      "target": "CLT_96",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e194",
+      "source": "CLT_96",
+      "target": "RC_97",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e195",
+      "source": "RC_107",
+      "target": "CLT_108",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e196",
+      "source": "CLT_108",
+      "target": "RC_109",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e197",
+      "source": "RC_113",
+      "target": "RC_114",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e198",
+      "source": "RC_102",
+      "target": "RB_22",
+      "relation": "robot_processing",
+      "directed": true
+    },
+    {
+      "id": "e199",
+      "source": "RB_22",
+      "target": "RC_102",
+      "relation": "robot_processing",
+      "directed": true
+    },
+    {
+      "id": "e200",
+      "source": "CLT_89",
+      "target": "RC_119",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e201",
+      "source": "RC_124",
+      "target": "CLT_125",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e202",
+      "source": "CLT_125",
+      "target": "RC_126",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e203",
+      "source": "RC_136",
+      "target": "CLT_137",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e204",
+      "source": "CLT_137",
+      "target": "RC_138",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e205",
+      "source": "RC_142",
+      "target": "RC_143",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e206",
+      "source": "RC_131",
+      "target": "RB_21",
+      "relation": "robot_processing",
+      "directed": true
+    },
+    {
+      "id": "e207",
+      "source": "RB_21",
+      "target": "RC_131",
+      "relation": "robot_processing",
+      "directed": true
+    },
+    {
+      "id": "e208",
+      "source": "RC_117",
+      "target": "PR_118",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e209",
+      "source": "RC_146",
+      "target": "PR_118",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e210",
+      "source": "empty_pallets_WA",
+      "target": "CC_147",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e211",
+      "source": "PR_118",
+      "target": "CC_147",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e212",
+      "source": "CC_153",
+      "target": "CC_154",
+      "relation": "material_flow",
+      "directed": true
+    },
+    {
+      "id": "e213",
+      "source": "CC_158",
+      "target": "finished_products",
+      "relation": "material_flow",
+      "directed": true
+    }
+  ]
+}

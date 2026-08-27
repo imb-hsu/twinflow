@@ -1,13 +1,13 @@
 {
   "scenario": {
     "author": "HSU TwinFlow Benchmark",
-    "createdAt": "2026-06-10T14:54:56.324Z",
+    "createdAt": "2026-08-26T09:40:38.911Z",
     "cycles": 1,
     "duration": "60:00",
     "id": "AMR_multi_2_30pct_faults",
     "isAdmin": false,
     "startDate": "00:00",
-    "updatedAt": "2026-06-10T14:54:56.324Z",
+    "updatedAt": "2026-08-26T09:40:38.911Z",
     "version": ""
   },
   "actions": [
@@ -86,1064 +86,1064 @@
       "element": "AMR_3",
       "property": "EmergencyStop",
       "startsAt": "05:07",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "EmergencyStop",
       "startsAt": "05:07",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "EmergencyStop",
       "startsAt": "05:37",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "EmergencyStop",
       "startsAt": "05:37",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "SpeedCalibrationFault",
       "startsAt": "05:39",
-      "value": -0.438
+      "value": "-0,438"
     },
     {
       "area": "AMR",
       "element": "RB_5",
       "property": "SpeedCalibrationFault",
       "startsAt": "05:39",
-      "value": 0.13
+      "value": "0,13"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "SpeedCalibrationFault",
       "startsAt": "06:09",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_5",
       "property": "SpeedCalibrationFault",
       "startsAt": "06:09",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "SpeedCalibrationFault",
       "startsAt": "06:24",
-      "value": 1.736
+      "value": "1,736"
     },
     {
       "area": "AMR",
       "element": "RB_4",
       "property": "EmergencyStop",
       "startsAt": "06:24",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "SpeedCalibrationFault",
       "startsAt": "06:54",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_4",
       "property": "EmergencyStop",
       "startsAt": "06:54",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "EmergencyStop",
       "startsAt": "09:36",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "MotorFault",
       "startsAt": "09:36",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "EmergencyStop",
       "startsAt": "10:06",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "MotorFault",
       "startsAt": "10:06",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "IMeasurementFault",
       "startsAt": "10:18",
-      "value": 1.043
+      "value": "1,043"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "PeWrongCalibration",
       "startsAt": "10:18",
-      "value": 90.187
+      "value": "90,187"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "IMeasurementFault",
       "startsAt": "10:48",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "PeWrongCalibration",
       "startsAt": "10:48",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "ChargeEmpty",
       "startsAt": "14:00",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "IMeasurementFault",
       "startsAt": "14:00",
-      "value": 1.638
+      "value": "1,638"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "ChargeEmpty",
       "startsAt": "14:30",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "IMeasurementFault",
       "startsAt": "14:30",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "EmergencyStop",
       "startsAt": "14:55",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "MotorFault",
       "startsAt": "14:55",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "EmergencyStop",
       "startsAt": "15:25",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "MotorFault",
       "startsAt": "15:25",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "SpeedCalibrationFault",
       "startsAt": "15:30",
-      "value": 1.09
+      "value": "1,09"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "SpeedCalibrationFault",
       "startsAt": "15:30",
-      "value": 0.855
+      "value": "0,855"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "SpeedCalibrationFault",
       "startsAt": "16:00",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "SpeedCalibrationFault",
       "startsAt": "16:00",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "WearFault",
       "startsAt": "16:32",
-      "value": 0.239
+      "value": "0,239"
     },
     {
       "area": "AMR",
       "element": "RS_2",
       "property": "PeDefect",
       "startsAt": "16:32",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "WearFault",
       "startsAt": "17:02",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_2",
       "property": "PeDefect",
       "startsAt": "17:02",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RB_5",
       "property": "MotorFault",
       "startsAt": "17:18",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_5",
       "property": "MotorFault",
       "startsAt": "17:18",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_5",
       "property": "MotorFault",
       "startsAt": "17:48",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RB_5",
       "property": "MotorFault",
       "startsAt": "17:48",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "SpeedCalibrationFault",
       "startsAt": "18:22",
-      "value": 3.964
+      "value": "3,964"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "MotorFault",
       "startsAt": "18:22",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "SpeedCalibrationFault",
       "startsAt": "18:52",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "MotorFault",
       "startsAt": "18:52",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "EmergencyStop",
       "startsAt": "19:34",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "EmergencyStop",
       "startsAt": "19:34",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "EmergencyStop",
       "startsAt": "20:04",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "EmergencyStop",
       "startsAt": "20:04",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "EmergencyStop",
       "startsAt": "21:28",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "MotorFault",
       "startsAt": "21:28",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "EmergencyStop",
       "startsAt": "21:58",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "MotorFault",
       "startsAt": "21:58",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "EmergencyStop",
       "startsAt": "22:53",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "EmergencyStop",
       "startsAt": "22:53",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "EmergencyStop",
       "startsAt": "23:23",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "EmergencyStop",
       "startsAt": "23:23",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "EmergencyStop",
       "startsAt": "23:38",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_2",
       "property": "EmergencyStop",
       "startsAt": "23:38",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "EmergencyStop",
       "startsAt": "24:08",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RB_2",
       "property": "EmergencyStop",
       "startsAt": "24:08",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "EmergencyStop",
       "startsAt": "25:37",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "SpeedCalibrationFault",
       "startsAt": "25:37",
-      "value": -0.737
+      "value": "-0,737"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "EmergencyStop",
       "startsAt": "26:07",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "SpeedCalibrationFault",
       "startsAt": "26:07",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "SpeedCalibrationFault",
       "startsAt": "26:32",
-      "value": 0.18
+      "value": "0,18"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "MotorFault",
       "startsAt": "26:32",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "SpeedCalibrationFault",
       "startsAt": "27:02",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "MotorFault",
       "startsAt": "27:02",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "MotorFault",
       "startsAt": "27:57",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "PeWrongCalibration",
       "startsAt": "27:57",
-      "value": 88.579
+      "value": "88,579"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "MotorFault",
       "startsAt": "28:27",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "PeWrongCalibration",
       "startsAt": "28:27",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "PeDefect",
       "startsAt": "29:14",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "EmergencyStop",
       "startsAt": "29:14",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "PeDefect",
       "startsAt": "29:44",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "EmergencyStop",
       "startsAt": "29:44",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "EmergencyStop",
       "startsAt": "30:16",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "PeDefect",
       "startsAt": "30:16",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "EmergencyStop",
       "startsAt": "30:46",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "PeDefect",
       "startsAt": "30:46",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "SpeedCalibrationFault",
       "startsAt": "32:07",
-      "value": -0.302
+      "value": "-0,302"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "SpeedCalibrationFault",
       "startsAt": "32:07",
-      "value": 3.198
+      "value": "3,198"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "SpeedCalibrationFault",
       "startsAt": "32:37",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "SpeedCalibrationFault",
       "startsAt": "32:37",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "EmergencyStop",
       "startsAt": "34:11",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "IMeasurementFault",
       "startsAt": "34:11",
-      "value": 1.631
+      "value": "1,631"
     },
     {
       "area": "AMR",
       "element": "AMR_2",
       "property": "EmergencyStop",
       "startsAt": "34:41",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "IMeasurementFault",
       "startsAt": "34:41",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_3",
       "property": "MotorFault",
       "startsAt": "36:05",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "IMeasurementFault",
       "startsAt": "36:05",
-      "value": 1.753
+      "value": "1,753"
     },
     {
       "area": "AMR",
       "element": "RB_3",
       "property": "MotorFault",
       "startsAt": "36:35",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "IMeasurementFault",
       "startsAt": "36:35",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_4",
       "property": "MotorFault",
       "startsAt": "36:36",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "IncreasedDampingFault",
       "startsAt": "36:36",
-      "value": 0.28
+      "value": "0,28"
     },
     {
       "area": "AMR",
       "element": "RB_4",
       "property": "MotorFault",
       "startsAt": "37:06",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "IncreasedDampingFault",
       "startsAt": "37:06",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "WearFault",
       "startsAt": "38:32",
-      "value": 0.707
+      "value": "0,707"
     },
     {
       "area": "AMR",
       "element": "RB_4",
       "property": "SpeedCalibrationFault",
       "startsAt": "38:32",
-      "value": 1.299
+      "value": "1,299"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "WearFault",
       "startsAt": "39:02",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_4",
       "property": "SpeedCalibrationFault",
       "startsAt": "39:02",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_5",
       "property": "EmergencyStop",
       "startsAt": "41:04",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "WearFault",
       "startsAt": "41:04",
-      "value": 0.656
+      "value": "0,656"
     },
     {
       "area": "AMR",
       "element": "RB_5",
       "property": "EmergencyStop",
       "startsAt": "41:34",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "WearFault",
       "startsAt": "41:34",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_2",
       "property": "PeDefect",
       "startsAt": "42:21",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "IncreasedDampingFault",
       "startsAt": "42:21",
-      "value": 0.495
+      "value": "0,495"
     },
     {
       "area": "AMR",
       "element": "RS_2",
       "property": "PeDefect",
       "startsAt": "42:51",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "IncreasedDampingFault",
       "startsAt": "42:51",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "IncreasedDampingFault",
       "startsAt": "43:45",
-      "value": 0.062
+      "value": "0,062"
     },
     {
       "area": "AMR",
       "element": "RB_3",
       "property": "EmergencyStop",
       "startsAt": "43:45",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "IncreasedDampingFault",
       "startsAt": "44:15",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_3",
       "property": "EmergencyStop",
       "startsAt": "44:15",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_2",
       "property": "IncreasedDampingFault",
       "startsAt": "44:34",
-      "value": 0.017
+      "value": "0,017"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "MotorFault",
       "startsAt": "44:34",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_2",
       "property": "IncreasedDampingFault",
       "startsAt": "45:04",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_6",
       "property": "MotorFault",
       "startsAt": "45:04",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "MotorFault",
       "startsAt": "45:17",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "MotorFault",
       "startsAt": "45:17",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "MotorFault",
       "startsAt": "45:47",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "MotorFault",
       "startsAt": "45:47",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "WearFault",
       "startsAt": "47:26",
-      "value": 0.866
+      "value": "0,866"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "WearFault",
       "startsAt": "47:26",
-      "value": 0.639
+      "value": "0,639"
     },
     {
       "area": "AMR",
       "element": "RS_3",
       "property": "WearFault",
       "startsAt": "47:56",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "WearFault",
       "startsAt": "47:56",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "EmergencyStop",
       "startsAt": "49:30",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "WearFault",
       "startsAt": "49:30",
-      "value": 0.416
+      "value": "0,416"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "EmergencyStop",
       "startsAt": "50:00",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "WearFault",
       "startsAt": "50:00",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_2",
       "property": "SpeedCalibrationFault",
       "startsAt": "50:03",
-      "value": 0.98
+      "value": "0,98"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "MotorFault",
       "startsAt": "50:03",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_2",
       "property": "SpeedCalibrationFault",
       "startsAt": "50:33",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_6",
       "property": "MotorFault",
       "startsAt": "50:33",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "MotorFault",
       "startsAt": "51:40",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "IncreasedDampingFault",
       "startsAt": "51:40",
-      "value": 0.228
+      "value": "0,228"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "MotorFault",
       "startsAt": "52:10",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "IncreasedDampingFault",
       "startsAt": "52:10",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "WearFault",
       "startsAt": "53:52",
-      "value": 0.947
+      "value": "0,947"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "SpeedCalibrationFault",
       "startsAt": "53:52",
-      "value": -0.351
+      "value": "-0,351"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "WearFault",
       "startsAt": "54:22",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_1",
       "property": "SpeedCalibrationFault",
       "startsAt": "54:22",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "WearFault",
       "startsAt": "57:14",
-      "value": 0.6
+      "value": "0,6"
     },
     {
       "area": "AMR",
       "element": "RB_4",
       "property": "SpeedCalibrationFault",
       "startsAt": "57:14",
-      "value": 2.172
+      "value": "2,172"
     },
     {
       "area": "AMR",
       "element": "RS_5",
       "property": "WearFault",
       "startsAt": "57:44",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RB_4",
       "property": "SpeedCalibrationFault",
       "startsAt": "57:44",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "ChargeEmpty",
       "startsAt": "58:06",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "SpeedCalibrationFault",
       "startsAt": "58:06",
-      "value": 4.872
+      "value": "4,872"
     },
     {
       "area": "AMR",
       "element": "AMR_1",
       "property": "ChargeEmpty",
       "startsAt": "58:36",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "SpeedCalibrationFault",
       "startsAt": "58:36",
-      "value": 0
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "PeDefect",
       "startsAt": "59:01",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "MotorFault",
       "startsAt": "59:01",
-      "value": true
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "RS_4",
       "property": "PeDefect",
       "startsAt": "59:31",
-      "value": false
+      "value": "false"
     },
     {
       "area": "AMR",
       "element": "RB_1",
       "property": "MotorFault",
       "startsAt": "59:31",
-      "value": false
+      "value": "false"
     }
   ]
 }

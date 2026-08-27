@@ -1,13 +1,13 @@
 {
   "scenario": {
     "author": "HSU TwinFlow Benchmark",
-    "createdAt": "2026-06-10T14:54:56.300Z",
+    "createdAt": "2026-08-26T09:40:38.890Z",
     "cycles": 1,
     "duration": "60:00",
     "id": "10_0pct_faults_rep_2",
     "isAdmin": false,
     "startDate": "00:00",
-    "updatedAt": "2026-06-10T14:54:56.300Z",
+    "updatedAt": "2026-08-26T09:40:38.890Z",
     "version": ""
   },
   "actions": [
@@ -82,172 +82,200 @@
       "value": "HSU-1Box"
     },
     {
-      "area": "WA",
-      "element": "PR_118",
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:10",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:11",
+      "value": "HSU-1Box"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:12",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:13",
+      "value": "HSU-1Box"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:14",
+      "value": "HSU-1Box"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:15",
+      "value": "HSU-1Box"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:16",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:17",
+      "value": "PalletConfiguration-NOVA-DTF-HSU-Mix"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:18",
+      "value": "PalletConfiguration-NOVA-6-DTF-6"
+    },
+    {
+      "area": "WE",
+      "element": "PalletCreator",
+      "property": "CreatePallet",
+      "startsAt": "00:19",
+      "value": "HSU-1Box"
+    },
+    {
+      "area": "PAR",
+      "element": "CLT_108",
       "property": "MotorFault",
-      "startsAt": "06:29",
-      "value": true
+      "startsAt": "10:53",
+      "value": "true"
     },
     {
-      "area": "WA",
-      "element": "PR_118",
+      "area": "PAR",
+      "element": "CLT_108",
       "property": "MotorFault",
-      "startsAt": "06:59",
-      "value": false
+      "startsAt": "11:23",
+      "value": "false"
     },
     {
-      "area": "AMR",
-      "element": "RB_5",
-      "property": "EmergencyStop",
-      "startsAt": "10:24",
-      "value": true
-    },
-    {
-      "area": "AMR",
-      "element": "RB_5",
-      "property": "EmergencyStop",
-      "startsAt": "10:54",
-      "value": false
+      "area": "VZ",
+      "element": "RC_49",
+      "property": "PeDefect",
+      "startsAt": "16:04",
+      "value": "true"
     },
     {
       "area": "VZ",
       "element": "RC_49",
       "property": "PeDefect",
       "startsAt": "16:34",
-      "value": true
-    },
-    {
-      "area": "VZ",
-      "element": "RC_49",
-      "property": "PeDefect",
-      "startsAt": "17:04",
-      "value": false
+      "value": "false"
     },
     {
       "area": "VZ",
       "element": "CLT_47",
-      "property": "IncreasedDampingFault",
-      "startsAt": "21:20",
-      "value": 0.508
-    },
-    {
-      "area": "VZ",
-      "element": "CLT_47",
-      "property": "IncreasedDampingFault",
-      "startsAt": "21:50",
-      "value": 0
-    },
-    {
-      "area": "WA",
-      "element": "RC_41",
       "property": "IncreasedDampingFault",
       "startsAt": "23:24",
-      "value": 0.327
+      "value": "0,508"
+    },
+    {
+      "area": "VZ",
+      "element": "CLT_47",
+      "property": "IncreasedDampingFault",
+      "startsAt": "23:54",
+      "value": "0"
     },
     {
       "area": "WA",
       "element": "RC_41",
       "property": "IncreasedDampingFault",
-      "startsAt": "23:54",
-      "value": 0
+      "startsAt": "31:51",
+      "value": "0,327"
+    },
+    {
+      "area": "WA",
+      "element": "RC_41",
+      "property": "IncreasedDampingFault",
+      "startsAt": "32:21",
+      "value": "0"
     },
     {
       "area": "WA",
       "element": "PR_118",
       "property": "IncreasedDampingFault",
-      "startsAt": "26:41",
-      "value": 0.736
+      "startsAt": "33:11",
+      "value": "0,736"
     },
     {
       "area": "WA",
       "element": "PR_118",
       "property": "IncreasedDampingFault",
-      "startsAt": "27:11",
-      "value": 0
+      "startsAt": "33:41",
+      "value": "0"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "ChargeEmpty",
-      "startsAt": "32:01",
-      "value": true
+      "startsAt": "33:45",
+      "value": "true"
     },
     {
       "area": "AMR",
       "element": "AMR_3",
       "property": "ChargeEmpty",
-      "startsAt": "32:31",
-      "value": false
+      "startsAt": "34:15",
+      "value": "false"
     },
     {
       "area": "PAR",
       "element": "CLT_125",
       "property": "PeWrongCalibration",
-      "startsAt": "33:05",
-      "value": 5.843
+      "startsAt": "49:55",
+      "value": "5,843"
     },
     {
       "area": "PAR",
       "element": "CLT_125",
       "property": "PeWrongCalibration",
-      "startsAt": "33:35",
-      "value": 0
+      "startsAt": "50:25",
+      "value": "0"
     },
     {
       "area": "PAR",
       "element": "CLT_89",
       "property": "PeWrongCalibration",
-      "startsAt": "45:31",
-      "value": 26.21
+      "startsAt": "51:53",
+      "value": "26,21"
     },
     {
       "area": "PAR",
       "element": "CLT_89",
       "property": "PeWrongCalibration",
-      "startsAt": "46:01",
-      "value": 0
+      "startsAt": "52:23",
+      "value": "0"
     },
     {
       "area": "VZ",
       "element": "CLT_59",
       "property": "IMeasurementFault",
-      "startsAt": "46:27",
-      "value": 1.328
+      "startsAt": "56:43",
+      "value": "1,328"
     },
     {
       "area": "VZ",
       "element": "CLT_59",
       "property": "IMeasurementFault",
-      "startsAt": "46:57",
-      "value": 0
-    },
-    {
-      "area": "AMR",
-      "element": "AMR_3",
-      "property": "EmergencyStop",
-      "startsAt": "51:57",
-      "value": true
-    },
-    {
-      "area": "AMR",
-      "element": "AMR_3",
-      "property": "EmergencyStop",
-      "startsAt": "52:27",
-      "value": false
-    },
-    {
-      "area": "WA",
-      "element": "PR_118",
-      "property": "EmergencyStop",
-      "startsAt": "56:14",
-      "value": true
-    },
-    {
-      "area": "WA",
-      "element": "PR_118",
-      "property": "EmergencyStop",
-      "startsAt": "56:44",
-      "value": false
+      "startsAt": "57:13",
+      "value": "0"
     }
   ]
 }

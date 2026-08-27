@@ -50,7 +50,7 @@ def format_time(minutes: float) -> str:
 
 def sample_fault_value(fault_definition: dict, rng: random.Random) -> tuple[Any, Any]:
     """
-    Sample fault activation value and return corresponding repair value.
+    Sample fault activation value and return the corresponding repair value.
 
     For boolean faults, returns True as activation and the specified repairValue
     (default: False). For numeric faults, samples a value uniformly from the
@@ -310,6 +310,11 @@ def create_scenario(
             area=area,
         )
 
+        def to_string(value):
+            if isinstance(value, bool):
+                return str(value).lower()
+            return str(value).replace(".", ",")
+
         for sampled_fault in sampled_faults:
             actions.append(
                 {
@@ -317,7 +322,7 @@ def create_scenario(
                     "element": sampled_fault["element"],
                     "property": sampled_fault["property"],
                     "startsAt": format_time(start_minute),
-                    "value": sampled_fault["activation_value"],
+                    "value": to_string(sampled_fault["activation_value"]),
                 }
             )
 
@@ -329,7 +334,7 @@ def create_scenario(
                     "startsAt": format_time(
                         start_minute + duration_of_fault_intervals_sec / 60.0
                     ),
-                    "value": sampled_fault["repair_value"],
+                    "value": to_string(sampled_fault["repair_value"]),
                 }
             )
 
@@ -400,7 +405,7 @@ if __name__ == "__main__":
                 pallet_configurations=PALLET_CONFIGURATIONS,
                 duration_minutes=60,
                 duration_of_fault_intervals_sec=30,
-                num_pallets=10,
+                num_pallets=20,
                 ramping_min=5,
                 faulty_time_percentage=pct,
                 seed=42 + int(pct * 10) + int(repetition * 100),
