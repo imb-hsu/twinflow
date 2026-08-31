@@ -42,6 +42,14 @@ This repository is intended to store:
 - Example anomaly detection and diagnosis baselines
 - Documentation for reproducing experiments
 
+## System Knowledge Files
+
+The repository contains several machine-readable files that describe the benchmark system independently from the generated time-series data:
+
+- [`component_type_knowledge.json`](component_type_knowledge.json) defines reusable knowledge per component type prefix, such as `CC`, `RC`, `CLT`, `AMR`, `PR`, `RB`, and `RS`. Each entry separates observable variables, configurable parameters, and injectable fault types. Numeric configurable parameters include their valid `min` and `max` range, while fault types include the value used to repair or reset the injected fault.
+- [`conveyor_segments.json`](conveyor_segments.json) groups adjacent conveyor components into named logical segments, for example consecutive `CC_*` or `RC_*` transport paths. These groups are useful for plotting, aggregation, and interpreting faults that affect a local transport section rather than a single isolated conveyor.
+- [`structural_hierarchy.json`](structural_hierarchy.json) defines the physical hierarchy of the digital twin as area -> component type -> component identifiers. It assigns components to functional areas such as AMR, PAR, VZ, WA, and WE, and intentionally keeps variable and fault definitions separate from the hierarchy.
+
 ## Benchmark Tasks
 
 ### Anomaly Detection
@@ -57,6 +65,43 @@ Diagnosis methods are evaluated by their ability to identify the affected compon
 The benchmark uses high-level scenario definitions to generate reproducible simulation runs. Faults are introduced, kept active for defined intervals, and then repaired. Ground truth is derived directly from the scenario actions, including the affected component, fault type, and timestamps.
 
 Initial fault categories include failures affecting conveyors, autonomous mobile robots, and six-axis robots.
+
+Raw simulation export files are stored in the [`data`](data) folder. These files are kept close to the simulator output format. Cleaner, better prepared benchmark datasets will be added later through Zenodo.
+
+Current raw training files in [`data/training`](data/training):
+
+- `0_0pct_faults_rep_1.json.zst`
+- `0_0pct_faults_rep_2.json.zst`
+- `0_0pct_faults_rep_3.json.zst`
+- `1_0pct_faults_rep_1.json.zst`
+- `1_0pct_faults_rep_2.json.zst`
+- `1_0pct_faults_rep_3.json.zst`
+- `10_0pct_faults_rep_1.json.zst`
+- `10_0pct_faults_rep_2.json.zst`
+- `10_0pct_faults_rep_3.json.zst`
+
+Current raw test files in [`data/test`](data/test):
+
+- `AMR_30pct_faults.json.zst`
+- `AMR_multi_2_30pct_faults.json.zst`
+- `PAR_30pct_faults.json.zst`
+- `PAR_multi_2_30pct_faults.json.zst`
+- `VZ_30pct_faults.json.zst`
+- `VZ_multi_2_30pct_faults.json.zst`
+- `WA_30pct_faults.json.zst`
+- `WA_multi_2_30pct_faults.json.zst`
+- `WE_30pct_faults.json.zst`
+- `WE_multi_2_30pct_faults.json.zst`
+
+Example loading workflow:
+
+```python
+from utils import read_json_zst
+
+df = read_json_zst("data/training/0_0pct_faults_rep_1.json.zst")
+```
+
+This reads the compressed simulator export into a pandas DataFrame indexed by `simulationTime`.
 
 ## Pallet configurations
 
