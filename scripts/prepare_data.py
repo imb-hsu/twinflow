@@ -15,9 +15,9 @@ import sys
 import traceback
 from pathlib import Path
 from utils import (
-    process_json_text,
-    read_zst_text,
-    should_skip_column,
+    EXCLUDED_COLUMNS,
+    EXCLUDED_COLUMN_PREFIXES,
+    read_json_zst,
     split_dataframe,
 )
 
@@ -35,14 +35,18 @@ for dir_tr in dirs_to_transform:
     for input_file in input_files:
         try:
             output_dir = input_file.with_name(input_file.name.removesuffix(".json.zst"))
-            text = read_zst_text(input_file)
-            df = process_json_text(text)
+            df = read_json_zst(input_file, max_samples=1000)
             df = df.loc[
-                :, [column for column in df.columns if not should_skip_column(column)]
+                :,
+                [
+                    column
+                    for column in df.columns
+                    if column not in EXCLUDED_COLUMNS
+                    and not column.startswith(EXCLUDED_COLUMN_PREFIXES)
+                ],
             ]
             output_dir.mkdir(exist_ok=True)
             split_dataframe(df, output_dir)
-            size_bytes = df.memory_usage(deep=True).sum()
             print(f"Saved prepared parquet files to {output_dir}")
             processed_files += 1
         except Exception as error:

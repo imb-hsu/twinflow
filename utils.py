@@ -24,55 +24,73 @@ GERMAN_NUMBER_PATTERN = re.compile(
 
 EXCLUDED_COLUMNS = {"runId", "scenarioId"}
 EXCLUDED_COLUMN_PREFIXES = ("DTF", "NOVA", "HSU", "Pallet")
+COMPONENT_TYPE_KNOWLEDGE_PATH = Path(__file__).with_name(
+    "component_type_knowledge.json"
+)
 
 
-def should_skip_column(column: str) -> bool:
-    """Return whether a column should be omitted from the result."""
-    return column in EXCLUDED_COLUMNS or column.startswith(EXCLUDED_COLUMN_PREFIXES)
+def load_fault_endings() -> tuple[str, ...]:
+    with COMPONENT_TYPE_KNOWLEDGE_PATH.open(encoding="utf-8") as file:
+        component_type_knowledge = json.load(file)
+
+    fault_names = {
+        fault_type["name"]
+        for component_knowledge in component_type_knowledge.values()
+        for fault_type in component_knowledge["faultTypes"]
+    }
+    return tuple(f".{fault_name}".casefold() for fault_name in sorted(fault_names))
 
 
-def read_zst_text(path: Path, max_samples: int | None = -1) -> str:
-    """Read up to ``max_samples`` complete JSONL samples from a .zst file."""
-    with path.open("rb") as compressed_file:
-        dctx = zstd.ZstdDecompressor()
-        with dctx.stream_reader(compressed_file) as raw:
-            with io.TextIOWrapper(raw, encoding="utf-8") as reader:
-                lines = reader if max_samples is None else itertools.islice(
-                    reader, max_samples
-                )
-                return "".join(lines)
-
-
-def iter_json_samples_from_text(text: str):
+def iter_json_samples(path: Path, max_samples: int | None = -1):
     """
-    Yield JSON samples from one of these formats:
+    Yield up to ``max_samples`` JSON samples from a compressed .zst export.
+
+    Supported formats:
     - JSONL: one JSON object per line
     - JSON array: [{...}, {...}]
     - single JSON object: {...}
     """
-    text = text.strip()
+    if max_samples is not None and max_samples < 0:
+        max_samples = None
 
-    if not text:
+    if max_samples == 0:
         return
 
-    if text.startswith("["):
-        samples = json.loads(text)
-        yield from samples
-        return
+    with path.open("rb") as compressed_file:
+        dctx = zstd.ZstdDecompressor()
+        with dctx.stream_reader(compressed_file) as raw:
+            with io.TextIOWrapper(raw, encoding="utf-8") as reader:
+                first_line = next((line for line in reader if line.strip()), "")
 
-    if text.startswith("{"):
-        lines = text.splitlines()
+                if not first_line:
+                    return
 
-        if len(lines) > 1:
-            for line in lines:
-                line = line.strip()
-                if line:
-                    yield json.loads(line)
-        else:
-            yield json.loads(text)
-        return
+                first_line = first_line.strip()
 
-    raise ValueError("Unsupported JSON format.")
+                if first_line.startswith("["):
+                    text = first_line + reader.read()
+                    samples = json.loads(text)
+                    if max_samples is not None:
+                        samples = itertools.islice(samples, max_samples)
+                    yield from samples
+                    return
+
+                if first_line.startswith("{"):
+                    sample_count = 0
+                    for line in itertools.chain([first_line], reader):
+                        line = line.strip()
+                        if not line:
+                            continue
+                        yield json.loads(line)
+                        sample_count += 1
+                        if (
+                            max_samples is not None
+                            and sample_count >= max_samples
+                        ):
+                            return
+                    return
+
+                raise ValueError("Unsupported JSON format.")
 
 
 def flatten_sample(sample: dict) -> dict:
@@ -90,7 +108,7 @@ def flatten_sample(sample: dict) -> dict:
     for entity_entry in values:
         for _, variables in entity_entry.items():
             for k, v in variables.items():
-                if should_skip_column(k):
+                if k in EXCLUDED_COLUMNS or k.startswith(EXCLUDED_COLUMN_PREFIXES):
                     continue
 
                 if isinstance(v, str):
@@ -111,10 +129,40 @@ def flatten_sample(sample: dict) -> dict:
 
 def process_json_text(text: str) -> pd.DataFrame:
     """Process JSON text and return a DataFrame."""
+    text = text.strip()
+
+    if not text:
+        return pd.DataFrame()
+
+    if text.startswith("["):
+        samples = json.loads(text)
+    elif text.startswith("{"):
+        lines = text.splitlines()
+        samples = [json.loads(line.strip()) for line in lines if line.strip()]
+    else:
+        raise ValueError("Unsupported JSON format.")
+
+    return process_json_samples(samples)
+
+
+def read_json_zst(
+    input_file: str | Path,
+    max_samples: int | None = -1,
+) -> pd.DataFrame:
+    """Process a compressed .zst JSON export and return a DataFrame."""
+    if isinstance(input_file, str):
+        input_file = Path(input_file)
+    return process_json_samples(
+        iter_json_samples(input_file, max_samples=max_samples)
+    )
+
+
+def process_json_samples(samples) -> pd.DataFrame:
+    """Process JSON samples and return a DataFrame."""
     rows = []
     all_columns = set()
 
-    for sample in iter_json_samples_from_text(text):
+    for sample in samples:
         row = flatten_sample(sample)
         rows.append(row)
         all_columns.update(row.keys())
@@ -123,11 +171,11 @@ def process_json_text(text: str) -> pd.DataFrame:
         return pd.DataFrame()
 
     metadata_columns = ["simulationTime"]
-
     variable_columns = sorted(c for c in all_columns if c not in metadata_columns)
-    columns = metadata_columns + variable_columns
 
-    return pd.DataFrame(rows, columns=columns).set_index("simulationTime")
+    return pd.DataFrame(rows, columns=metadata_columns + variable_columns).set_index(
+        "simulationTime"
+    )
 
 
 
@@ -166,24 +214,12 @@ def expand_vector_columns(
     return result
 
 
-def split_dataframe(df: pd.DataFrame, output_dir: Path) -> None:
+def split_dataframe(df: pd.DataFrame, output_dir: Path|str) -> None:
     """Split a dataframe into measurement, fault, and parameter parquet files."""
+    output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Keywords commonly used for component fault variables
-    fault_keywords = [
-        "fault",
-        "failure",
-        "failed",
-        "error",
-        "alarm",
-        "malfunction",
-        "defect",
-        "breakdown",
-        "wrongcalibration",
-        "emergencystop",
-        "chargeempty"
-    ]
+    fault_endings = load_fault_endings()
 
     parameter_keywords = [
         r"(?!AMR).*\.deceleration",
@@ -214,7 +250,7 @@ def split_dataframe(df: pd.DataFrame, output_dir: Path) -> None:
     # Identify fault columns, case-insensitively
     fault_cols = [
         col for col in df.columns
-        if any(keyword in str(col).lower() for keyword in fault_keywords)
+        if str(col).casefold().endswith(fault_endings)
     ]
 
     # Identify parameter columns, case-insensitively
