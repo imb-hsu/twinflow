@@ -66,7 +66,15 @@ The benchmark uses high-level scenario definitions to generate reproducible simu
 
 Initial fault categories include failures affecting conveyors, autonomous mobile robots, and six-axis robots.
 
-Raw simulation export files are stored in the [`data`](data) folder. These files are kept close to the simulator output format. Cleaner, better prepared benchmark datasets will be added later through Zenodo.
+## Scenarios
+
+Scenario files are stored in [`scenarios/training`](scenarios/training) and [`scenarios/test`](scenarios/test). They are the simulator input definitions used to generate the raw files in [`data/training`](data/training) and [`data/test`](data/test).
+
+Each scenario JSON contains metadata under `scenario` and a time-ordered `actions` list. Actions create pallets with the `PalletCreator` or inject and repair faults by setting a component property at a specific `startsAt` timestamp. Fault actions are paired with repair actions, so the scenarios define the ground truth for anomaly labels and fault-diagnosis targets.
+
+The training scenarios contain repeated nominal or low-fault-rate runs, such as `0_0pct_faults_rep_1.json`, `1_0pct_faults_rep_1.json`, and `10_0pct_faults_rep_1.json`. The test scenarios contain area-specific and multi-fault evaluations, such as `AMR_30pct_faults.json`, `VZ_multi_2_30pct_faults.json`, and `WE_multi_2_30pct_faults.json`.
+
+Raw simulation export files are stored in the [`data`](data) folder. These files are kept close to the simulator output format. More comprehensable benchmark datasets will be added later through Zenodo.
 
 Current raw training files in [`data/training`](data/training):
 
