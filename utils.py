@@ -1,9 +1,8 @@
-import csv
+import io
+import itertools
 import json
 import re
-import warnings
 from pathlib import Path
-
 import pandas as pd
 import zstandard as zstd
 
@@ -32,12 +31,16 @@ def should_skip_column(column: str) -> bool:
     return column in EXCLUDED_COLUMNS or column.startswith(EXCLUDED_COLUMN_PREFIXES)
 
 
-def read_zst_text(path: Path) -> str:
-    """Read and decompress a .zst text file."""
+def read_zst_text(path: Path, max_samples: int | None = -1) -> str:
+    """Read up to ``max_samples`` complete JSONL samples from a .zst file."""
     with path.open("rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
-        with dctx.stream_reader(compressed_file) as reader:
-            return reader.read().decode("utf-8")
+        with dctx.stream_reader(compressed_file) as raw:
+            with io.TextIOWrapper(raw, encoding="utf-8") as reader:
+                lines = reader if max_samples is None else itertools.islice(
+                    reader, max_samples
+                )
+                return "".join(lines)
 
 
 def iter_json_samples_from_text(text: str):
@@ -75,8 +78,6 @@ def iter_json_samples_from_text(text: str):
 def flatten_sample(sample: dict) -> dict:
     """Flatten one simulation sample into one CSV row."""
     row = {
-        "emulationRealtime": sample.get("emulationRealtime"),
-        "novaRealtime": sample.get("novaRealtime"),
         "simulationTime": sample.get("simulationTime"),
     }
 
@@ -108,81 +109,7 @@ def flatten_sample(sample: dict) -> dict:
     return row
 
 
-def read_data(input_path: Path, filename=None) -> pd.DataFrame:
-    """Read a .zst simulation file and return a pandas DataFrame."""
-
-    # If input_path is already a file, ignore filename parameter
-    if input_path.is_file():
-        files_to_read = [input_path]
-    else:
-        # Handle filename as list or single value
-        if filename is None:
-            raise ValueError("filename must be provided when input_path is a directory")
-
-        if isinstance(filename, list):
-            files_to_read = [input_path / fn for fn in filename]
-        else:
-            files_to_read = [input_path / filename]
-
-    all_dataframes = []
-
-    for file_path in files_to_read:
-        # Check for alternative file formats
-        base_path = file_path.with_suffix("").with_suffix("")  # Remove .json.zst
-        json_path = base_path.with_suffix(".json")
-        csv_path = base_path.with_suffix(".csv")
-        zst_path = Path(str(base_path) + ".json.zst")
-
-        actual_file = None
-        file_type = None
-
-        # Priority: .json > .csv > .json.zst
-        if json_path.exists():
-            actual_file = json_path
-            file_type = "json"
-            warnings.warn(f"Using {json_path} instead of .json.zst file")
-        elif csv_path.exists():
-            actual_file = csv_path
-            file_type = "csv"
-            warnings.warn(f"Using {csv_path} instead of .json.zst file")
-        elif zst_path.exists():
-            actual_file = zst_path
-            file_type = "zst"
-        elif file_path.exists():
-            actual_file = file_path
-            # Determine type from extension
-            if file_path.suffix == ".csv":
-                file_type = "csv"
-            elif file_path.suffix == ".json":
-                file_type = "json"
-            else:
-                file_type = "zst"
-        else:
-            raise FileNotFoundError(f"No file found for {file_path}")
-
-        # Read the file based on type
-        if file_type == "csv":
-            df = pd.read_csv(actual_file)
-        elif file_type == "json":
-            with actual_file.open("r", encoding="utf-8") as f:
-                text = f.read()
-            df = _process_json_text(text)
-        else:  # zst
-            text = read_zst_text(actual_file)
-            df = _process_json_text(text)
-
-        df = df.loc[:, [column for column in df.columns if not should_skip_column(column)]]
-
-        all_dataframes.append(df)
-
-    # Concatenate all dataframes if multiple files were read
-    if len(all_dataframes) == 1:
-        return all_dataframes[0]
-    else:
-        return pd.concat(all_dataframes, ignore_index=True)
-
-
-def _process_json_text(text: str) -> pd.DataFrame:
+def process_json_text(text: str) -> pd.DataFrame:
     """Process JSON text and return a DataFrame."""
     rows = []
     all_columns = set()
@@ -195,42 +122,162 @@ def _process_json_text(text: str) -> pd.DataFrame:
     if not rows:
         return pd.DataFrame()
 
-    metadata_columns = [
-        "emulationRealtime",
-        "novaRealtime",
-        "simulationTime",
-    ]
+    metadata_columns = ["simulationTime"]
 
     variable_columns = sorted(c for c in all_columns if c not in metadata_columns)
     columns = metadata_columns + variable_columns
 
-    df = pd.DataFrame(rows, columns=columns)
-    return df
+    return pd.DataFrame(rows, columns=columns).set_index("simulationTime")
 
 
-if __name__ == "__main__":
-    training_dir = Path("data") / "training"
-    supported_suffixes = (".json.zst", ".json", ".csv")
-    input_files = sorted(
-        path
-        for path in training_dir.iterdir()
-        if path.is_file() and path.name.endswith(supported_suffixes)
-    )
 
-    for input_file in input_files:
-        if input_file.name.endswith(".json.zst"):
-            output_file = input_file.with_name(
-                f"{input_file.name.removesuffix('.json.zst')}.parquet"
-            )
-        else:
-            output_file = input_file.with_suffix(".parquet")
+def expand_vector_columns(
+    df: pd.DataFrame,
+    columns: list[str]
+) -> pd.DataFrame:
+    result = df.copy()
 
-        df = read_data(input_file)
-        df.to_parquet(output_file, index=False)
-        size_bytes = df.memory_usage(deep=True).sum()
-        print(
-            f"Saved {output_file} "
-            f"({len(df):,} rows, {size_bytes / 1024 ** 3:.2f} GB in memory)"
+    for column in columns:
+        components = (
+            result[column]
+            .astype("string")
+            .str.strip("<>")
+            .str.split(r"\.\s*", n=2, expand=True)
         )
 
-    print(f"Finished processing {len(input_files)} files.")
+        if components.shape[1] != 3:
+            raise ValueError(f"{column!r} does not consistently contain 3 values")
+
+        components = components.apply(
+            lambda values: pd.to_numeric(
+                values.str.replace(",", ".", regex=False),
+                errors="coerce",
+            )
+        ).astype("float64")
+
+        components.columns = [
+            f"{column}.X",
+            f"{column}.Y",
+            f"{column}.Z",
+        ]
+
+        result[components.columns] = components
+    result = result.drop(columns=columns)
+    return result
+
+
+def split_dataframe(df: pd.DataFrame, output_dir: Path) -> None:
+    """Split a dataframe into measurement, fault, and parameter parquet files."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Keywords commonly used for component fault variables
+    fault_keywords = [
+        "fault",
+        "failure",
+        "failed",
+        "error",
+        "alarm",
+        "malfunction",
+        "defect",
+        "breakdown",
+        "wrongcalibration",
+        "emergencystop",
+        "chargeempty"
+    ]
+
+    parameter_keywords = [
+        r"(?!AMR).*\.deceleration",
+        r".*\.acceleration",
+        r".*\.resistance",
+        r".*rollerdamping",
+        r".*targetspeed",
+        r".*maximumtorque",
+        r"cc.*\.height",
+        r"rc.*\.height",
+        r"cc.*\.width",
+        r"rc.*\.width",
+        r".*limit",
+        r".*length",
+        r".*width",
+        r"(?!(?:AMP|Lift)).*height",
+        r".*processtime",
+        r".*pe1",
+        r".*pe2",
+        r".*pe3",
+        r".*pe4",
+        r".*mass",
+        r"(CC|RC|CLT).*currentdirection",
+        r".*maximumforce",
+        r".*worldy",
+    ]
+
+    # Identify fault columns, case-insensitively
+    fault_cols = [
+        col for col in df.columns
+        if any(keyword in str(col).lower() for keyword in fault_keywords)
+    ]
+
+    # Identify parameter columns, case-insensitively
+    parameter_cols = [
+        col for col in df.columns
+        if any(re.compile(keyword, re.IGNORECASE).fullmatch(str(col)) for keyword in parameter_keywords)
+    ]
+
+    # Split the original dataframe by columns
+    faults = df[fault_cols].copy()
+    parameters = df[parameter_cols].copy()
+    data = df.drop(columns=fault_cols + parameter_cols).copy()
+
+    print(f"Regular dataframe shape: {data.shape}")
+    print(f"Faults dataframe shape: {faults.shape}")
+    print(f"Parameters dataframe shape: {parameters.shape}")
+
+    mapping = {
+        "Forwards": 0.0,
+        "Reverse": 1.0,
+    }
+
+    categorical_columns = df.select_dtypes(
+        include=["object", "string", "category"]
+    ).columns
+
+    for column in categorical_columns:
+        values = set(df[column].dropna().unique())
+
+        if values == set(mapping):
+            df[column] = df[column].map(mapping).astype("Float64")
+
+    categorical_columns = df.select_dtypes(
+        include=["object", "string", "category"]
+    ).columns
+
+    category_counts = df[categorical_columns].nunique()
+
+    for i, cc in enumerate(category_counts):
+        if cc > 2:
+            print(categorical_columns[i])
+            print(df[categorical_columns[i]].unique())
+
+    print("Parameter")
+    for c in parameter_cols:
+        if parameters[c].nunique() != 1:
+            print(c)
+            print(parameters[c].nunique())
+
+    print("Data")
+    for c in data:
+        if data[c].nunique() == 1:
+            print(c)
+            print(data[c].nunique())
+    print("Data")
+
+    for c in data:
+        if data[c].dtype not in [float, bool]:
+            print(c)
+            print(data[c].dtype)
+            data[c] = data[c].astype(str)
+            print(data[c].head())
+
+    data.to_parquet(output_dir / "measurements.parquet", index=True)
+    faults.to_parquet(output_dir / "faults.parquet", index=True)
+    parameters.to_parquet(output_dir / "parameters.parquet", index=True)
