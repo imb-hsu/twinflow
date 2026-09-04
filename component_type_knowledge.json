@@ -3,7 +3,7 @@
     "observableVariables": [
       {
         "name": "CurrentAcceleration",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentDirection",
@@ -15,11 +15,11 @@
       },
       {
         "name": "CurrentI",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentSpeed",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentState",
@@ -27,7 +27,7 @@
       },
       {
         "name": "ElectricPower",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "PE1",
@@ -37,55 +37,55 @@
     "configurableParameters": [
       {
         "name": "Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Height",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Length",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "MaximumTorque",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Resistance",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "RollerDamping",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10
       },
       {
         "name": "Width",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       }
@@ -98,14 +98,14 @@
       },
       {
         "name": "IMeasurementFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "IncreasedDampingFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -122,21 +122,21 @@
       },
       {
         "name": "PeWrongCalibration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 100,
         "repairValue": 0
       },
       {
         "name": "SpeedCalibrationFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "WearFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -147,7 +147,7 @@
     "observableVariables": [
       {
         "name": "ChargeLevel",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentDirection",
@@ -159,7 +159,7 @@
       },
       {
         "name": "CurrentSpeed",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentState",
@@ -167,33 +167,33 @@
       },
       {
         "name": "WorldX",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "WorldY",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "WorldZ",
-        "type": "numeric"
+        "type": "number"
       }
     ],
     "configurableParameters": [
       {
         "name": "Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10
       }
@@ -216,7 +216,7 @@
       },
       {
         "name": "SpeedCalibrationFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
@@ -227,7 +227,7 @@
     "observableVariables": [
       {
         "name": "CurrentAcceleration",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentDirection",
@@ -239,11 +239,11 @@
       },
       {
         "name": "CurrentI",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentSpeed",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentState",
@@ -251,7 +251,7 @@
       },
       {
         "name": "ElectricPower",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "PE1",
@@ -261,55 +261,55 @@
     "configurableParameters": [
       {
         "name": "Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Height",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Length",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "MaximumTorque",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Resistance",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "RollerDamping",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10
       },
       {
         "name": "Width",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       }
@@ -322,14 +322,14 @@
       },
       {
         "name": "IMeasurementFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "IncreasedDampingFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -346,21 +346,21 @@
       },
       {
         "name": "PeWrongCalibration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 100,
         "repairValue": 0
       },
       {
         "name": "SpeedCalibrationFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "WearFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -371,7 +371,7 @@
     "observableVariables": [
       {
         "name": "CurrentAcceleration",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentDirection",
@@ -383,11 +383,11 @@
       },
       {
         "name": "CurrentI",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentSpeed",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentState",
@@ -395,7 +395,7 @@
       },
       {
         "name": "ElectricPower",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "PE1",
@@ -417,55 +417,55 @@
     "configurableParameters": [
       {
         "name": "Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Height",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Length",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "MaximumTorque",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Resistance",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "RollerDamping",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10
       },
       {
         "name": "Width",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       }
@@ -478,14 +478,14 @@
       },
       {
         "name": "IMeasurementFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "IncreasedDampingFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -502,21 +502,21 @@
       },
       {
         "name": "PeWrongCalibration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 100,
         "repairValue": 0
       },
       {
         "name": "SpeedCalibrationFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "WearFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -535,7 +535,7 @@
       },
       {
         "name": "X.CurrentAcceleration",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "X.CurrentDirection",
@@ -547,19 +547,19 @@
       },
       {
         "name": "X.CurrentForce",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "X.CurrentI",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "X.CurrentPosition",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "X.CurrentSpeed",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "X.CurrentState",
@@ -567,7 +567,7 @@
       },
       {
         "name": "X.ElectricPower",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "X.IsAccelerating",
@@ -591,7 +591,7 @@
       },
       {
         "name": "Y.CurrentAcceleration",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Y.CurrentDirection",
@@ -603,19 +603,19 @@
       },
       {
         "name": "Y.CurrentForce",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Y.CurrentI",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Y.CurrentPosition",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Y.CurrentSpeed",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Y.CurrentState",
@@ -623,7 +623,7 @@
       },
       {
         "name": "Y.ElectricPower",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Y.IsAccelerating",
@@ -647,7 +647,7 @@
       },
       {
         "name": "Z.CurrentAcceleration",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Z.CurrentDirection",
@@ -659,19 +659,19 @@
       },
       {
         "name": "Z.CurrentForce",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Z.CurrentI",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Z.CurrentPosition",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Z.CurrentSpeed",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Z.CurrentState",
@@ -679,7 +679,7 @@
       },
       {
         "name": "Z.ElectricPower",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Z.IsAccelerating",
@@ -697,91 +697,91 @@
     "configurableParameters": [
       {
         "name": "X.Mass",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "X.MaximumForce",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1000000
       },
       {
         "name": "X.Resistance",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "X.TargetPosition",
-        "type": "numeric",
+        "type": "number",
         "min": -10,
         "max": 10
       },
       {
         "name": "X.TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Y.Mass",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Y.MaximumForce",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1000000
       },
       {
         "name": "Y.Resistance",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "Y.TargetPosition",
-        "type": "numeric",
+        "type": "number",
         "min": -10,
         "max": 10
       },
       {
         "name": "Y.TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Z.Mass",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Z.MaximumForce",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1000000
       },
       {
         "name": "Z.Resistance",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "Z.TargetPosition",
-        "type": "numeric",
+        "type": "number",
         "min": -10,
         "max": 10
       },
       {
         "name": "Z.TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       }
@@ -794,7 +794,7 @@
       },
       {
         "name": "IncreasedDampingFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -806,14 +806,14 @@
       },
       {
         "name": "SpeedCalibrationFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "WearFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -824,213 +824,213 @@
     "observableVariables": [
       {
         "name": "Axis1.CurrentPosition",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Axis2.CurrentPosition",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Axis3.CurrentPosition",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Axis4.CurrentPosition",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Axis5.CurrentPosition",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "Axis6.CurrentPosition",
-        "type": "numeric"
+        "type": "number"
       }
     ],
     "configurableParameters": [
       {
         "name": "Axis1.Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis1.Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis1.PositionLowerLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis1.PositionUpperLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis1.TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis2.Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis2.Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis2.PositionLowerLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis2.PositionUpperLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis2.TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis3.Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis3.Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis3.PositionLowerLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis3.PositionUpperLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis3.TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis4.Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis4.Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis4.PositionLowerLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis4.PositionUpperLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis4.TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis5.Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis5.Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis5.PositionLowerLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis5.PositionUpperLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis5.TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis6.Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis6.Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "Axis6.PositionLowerLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis6.PositionUpperLimit",
-        "type": "numeric",
+        "type": "number",
         "min": -3600,
         "max": 3600
       },
       {
         "name": "Axis6.TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 3600
       },
       {
         "name": "ProcessTime",
-        "type": "numeric",
+        "type": "number",
         "min": 0.01,
         "max": 1000
       }
@@ -1048,7 +1048,7 @@
       },
       {
         "name": "SpeedCalibrationFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
@@ -1059,7 +1059,7 @@
     "observableVariables": [
       {
         "name": "CurrentAcceleration",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentDirection",
@@ -1071,11 +1071,11 @@
       },
       {
         "name": "CurrentI",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentSpeed",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentState",
@@ -1083,7 +1083,7 @@
       },
       {
         "name": "ElectricPower",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "PE1",
@@ -1093,55 +1093,55 @@
     "configurableParameters": [
       {
         "name": "Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Height",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Length",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "MaximumTorque",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Resistance",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "RollerDamping",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10
       },
       {
         "name": "Width",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       }
@@ -1154,14 +1154,14 @@
       },
       {
         "name": "IMeasurementFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "IncreasedDampingFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -1178,21 +1178,21 @@
       },
       {
         "name": "PeWrongCalibration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 100,
         "repairValue": 0
       },
       {
         "name": "SpeedCalibrationFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "WearFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -1203,7 +1203,7 @@
     "observableVariables": [
       {
         "name": "CurrentAcceleration",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentDirection",
@@ -1215,11 +1215,11 @@
       },
       {
         "name": "CurrentI",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentSpeed",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "CurrentState",
@@ -1227,7 +1227,7 @@
       },
       {
         "name": "ElectricPower",
-        "type": "numeric"
+        "type": "number"
       },
       {
         "name": "PE1",
@@ -1237,55 +1237,55 @@
     "configurableParameters": [
       {
         "name": "Acceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Deceleration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Height",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Length",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "MaximumTorque",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       },
       {
         "name": "Resistance",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "RollerDamping",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1
       },
       {
         "name": "TargetSpeed",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10
       },
       {
         "name": "Width",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 10000
       }
@@ -1298,14 +1298,14 @@
       },
       {
         "name": "IMeasurementFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "IncreasedDampingFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -1322,21 +1322,21 @@
       },
       {
         "name": "PeWrongCalibration",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 100,
         "repairValue": 0
       },
       {
         "name": "SpeedCalibrationFault",
-        "type": "numeric",
+        "type": "number",
         "min": -1,
         "max": 5,
         "repairValue": 0
       },
       {
         "name": "WearFault",
-        "type": "numeric",
+        "type": "number",
         "min": 0,
         "max": 1,
         "repairValue": 0
@@ -1344,3 +1344,4 @@
     ]
   }
 }
+
