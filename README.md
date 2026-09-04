@@ -113,7 +113,7 @@ This reads the compressed simulator export into a pandas DataFrame indexed by `s
 
 ## Pallet configurations
 
-The benchmark includes several predefined pallet configurations used by the scenario generator. These configurations define the product types placed on a pallet and their production routes through the robot stations.
+The benchmark includes several predefined pallet configurations used by the scenario generator. These configurations define the product types placed on a pallet and their production routes through the robot stations. They are defined in [`pallet_configurations.json`](pallet_configurations.json).
 
 Currently, defined configurations include:
 

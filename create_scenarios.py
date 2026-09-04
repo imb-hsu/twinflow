@@ -16,11 +16,17 @@ from pathlib import Path
 from typing import Any
 from datetime import datetime, timezone
 
-PALLET_CONFIGURATIONS = [
-    "PalletConfiguration-NOVA-6-DTF-6",
-    "PalletConfiguration-NOVA-DTF-HSU-Mix",
-    "HSU-1Box",
-]
+PALLET_CONFIGURATIONS_PATH = Path("pallet_configurations.json")
+
+
+def load_pallet_configuration_names(
+    path: Path = PALLET_CONFIGURATIONS_PATH,
+) -> list[str]:
+    with path.open("r", encoding="utf-8-sig") as f:
+        return list(json.load(f).keys())
+
+
+PALLET_CONFIGURATIONS = load_pallet_configuration_names()
 NUM_REPETITIONS_TRAINING = 3
 AUTHOR = "HSU TwinFlow Benchmark"
 
