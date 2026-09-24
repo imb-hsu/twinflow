@@ -1,0 +1,95 @@
+.benchmark_results {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 40px);
+  color: var(--text, #191835);
+}
+
+.benchmark_heading h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.benchmark_heading p,
+.benchmark_legend {
+  color: #66677c;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.benchmark_heading { margin-bottom: 28px; }
+
+.benchmark_card {
+  margin-bottom: 24px;
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #e5e7ef;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(25, 24, 53, 0.04);
+}
+
+.benchmark_card:focus-visible {
+  outline: 2px solid #247e78 !important;
+  outline-offset: 3px;
+}
+
+.benchmark_table {
+  width: 100%;
+  min-width: 580px;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: var(--text, #191835);
+}
+
+.benchmark_table .benchmark_caption {
+  caption-side: top;
+  padding: 20px 24px;
+  text-align: left;
+  color: var(--text, #191835);
+  font-size: 17px;
+  font-weight: 600;
+  border-bottom: 3px solid var(--accent, #7bfcef);
+}
+
+.benchmark_table th,
+.benchmark_table td {
+  padding: 18px 24px;
+  border-bottom: 1px solid #eceef4;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.benchmark_table thead th {
+  background: #f5f6fa;
+  color: #606177;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.benchmark_table th:first-child,
+.benchmark_table td:first-child {
+  text-align: left;
+  width: 40%;
+}
+
+.benchmark_table tbody th,
+.benchmark_table tbody td:first-child { font-weight: 500; }
+.benchmark_table tbody tr:nth-child(even) { background: #fafbfc; }
+.benchmark_table tbody tr:hover { background: #effbf9; }
+.benchmark_table tbody tr:last-child > * { border-bottom: 0; }
+.benchmark_table td[colspan] { text-align: left; color: #66677c; }
+.benchmark_legend { margin: 4px 0 0; }
+
+.benchmark_table.confusion_table { min-width: 0; table-layout: fixed; }
+.benchmark_table.confusion_table td { width: 50%; text-align: center; }
+.confusion_table td + td { border-left: 1px solid #eceef4; }
+.confusion_label { display: block; color: #606177; font-size: 12px; margin-bottom: 6px; }
+.confusion_value { font-size: 22px; font-weight: 600; }
+
+@media (max-width: 640px) {
+  .benchmark_table th, .benchmark_table td { padding: 14px 16px; }
+  .benchmark_table .benchmark_caption { padding: 18px 16px; }
+}

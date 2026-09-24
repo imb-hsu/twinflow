@@ -4,15 +4,19 @@ from __future__ import annotations
 
 import math
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Any
+from zipfile import ZipFile
 
 import pandas as pd
-from dash import Input, Output, dcc, html
+from dash import Input, Output, State, dcc, html, no_update
+from dash.exceptions import PreventUpdate
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
 from selfx.backend import features
+from selfx.dash.routing_utils import construct_id
 
 try:
     from ml4cps import plot_stateflow
@@ -23,7 +27,6 @@ except ImportError:
 DATA_PATH = Path(__file__).resolve().parents[2] / "data"
 SCENARIOS_PATH = Path(__file__).resolve().parents[2] / "scenarios"
 MAX_DEFAULT_COLUMNS = 3
-MAX_PLOT_POINTS = 5_000
 SCENARIO_EVENT_DURATION_SECONDS = 20
 TABLES = {
     "measurements": "measurements.parquet",
@@ -37,6 +40,8 @@ class DataPlots(features.Feature):
     """Render selectable line plots for prepared scenario parquet data."""
 
     abstract = False
+    # Maximum measurement samples per trace; None plots the full recording.
+    max_plot_points: int | None = 5_000
 
     def __init__(
         self,
@@ -45,11 +50,40 @@ class DataPlots(features.Feature):
         fetching: bool = False,
     ) -> None:
         super().__init__(tr=tr, periodic=periodic, fetching=fetching)
+        if self.max_plot_points is not None and (
+            isinstance(self.max_plot_points, bool)
+            or not isinstance(self.max_plot_points, int)
+            or self.max_plot_points < 1
+        ):
+            raise ValueError("max_plot_points must be a positive integer or None")
+        self.config = {
+            "max_plot_points": {
+                "label": "Maximum measurement samples per trace (leave blank for all)",
+                "type": "number",
+                "value": self.max_plot_points,
+            },
+        }
         self._callbacks_registered = False
         self._set_component_ids()
         self._datasets = self._discover_datasets()
         self._validate_datasets()
-        self._split_names = tuple(sorted(self._datasets))
+        self._split_names = tuple(sorted(self._datasets, key=self._split_sort_key))
+
+    # Splits are listed training-first (0pct, 1pct, 10pct, ...), then test/other splits.
+    _SPLIT_ORDER = {"training": 0, "test": 1}
+
+    @classmethod
+    def _split_sort_key(cls, split_name: str) -> tuple[int, str]:
+        return cls._SPLIT_ORDER.get(split_name, len(cls._SPLIT_ORDER)), split_name
+
+    @staticmethod
+    def _scenario_sort_key(scenario_name: str) -> tuple[float, str]:
+        # Scenario names look like "10_0pct_faults_rep_1"; sort by the numeric
+        # percentage (0, 1, 10, ...) instead of lexicographically ("10" < "1_").
+        match = re.match(r"(\d+)_(\d+)pct", scenario_name)
+        if match is None:
+            return float("inf"), scenario_name
+        return float(f"{match.group(1)}.{match.group(2)}"), scenario_name
 
     @staticmethod
     def _css_token(value: str) -> str:
@@ -63,9 +97,13 @@ class DataPlots(features.Feature):
         prefix = f"{system_name}-data-plots"
         self._file_selector_id = f"{prefix}-file-selector"
         self._columns_selector_id = f"{prefix}-columns-selector"
+        self._parameters_selector_id = f"{prefix}-parameters-selector"
         self._graph_id = f"{prefix}-graph"
         self._scenario_info_id = f"{prefix}-scenario-info"
         self._summary_id = f"{prefix}-summary"
+        self._download_button_id = f"{prefix}-download-button"
+        self._download_id = f"{prefix}-download"
+        self._download_status_id = f"{prefix}-download-status"
 
     @staticmethod
     def _discover_datasets() -> dict[str, dict[str, Path]]:
@@ -105,7 +143,9 @@ class DataPlots(features.Feature):
                 "value": self._file_value(split_name, scenario_name),
             }
             for split_name in self._split_names
-            for scenario_name in sorted(self._datasets[split_name])
+            for scenario_name in sorted(
+                self._datasets[split_name], key=self._scenario_sort_key
+            )
         ]
 
     @staticmethod
@@ -205,11 +245,107 @@ class DataPlots(features.Feature):
         if table_path is None:
             raise ValueError("Selected data table does not exist")
 
+        max_plot_points = self.config["max_plot_points"]["value"]
+        if max_plot_points is not None and (
+            isinstance(max_plot_points, bool)
+            or not isinstance(max_plot_points, (int, float))
+            or not math.isfinite(max_plot_points)
+            or max_plot_points < 1
+            or int(max_plot_points) != max_plot_points
+        ):
+            raise ValueError("Maximum measurement samples must be a positive whole number, or blank for all")
         dataframe = pd.read_parquet(table_path, columns=columns)
-        if len(dataframe) > MAX_PLOT_POINTS:
-            step = math.ceil(len(dataframe) / MAX_PLOT_POINTS)
+        total_samples = len(dataframe)
+        if max_plot_points is not None and len(dataframe) > max_plot_points:
+            step = math.ceil(len(dataframe) / max_plot_points)
             dataframe = dataframe.iloc[::step]
+        dataframe.attrs["total_samples"] = total_samples
         return dataframe
+
+    def _read_active_faults(self, split_name: str, scenario_name: str) -> pd.DataFrame:
+        """Select nonzero faults before reducing repeated values for plotting."""
+        path = self._table_path(split_name, scenario_name, "faults")
+        if path is None:
+            raise ValueError("faults.parquet is unavailable")
+        faults = pd.read_parquet(path).apply(pd.to_numeric, errors="raise").astype(float)
+
+        # TwinFlow often stores fault columns under namespaced identifiers such as
+        # "AMP_1.IncreasedDampingFault". The actual fault signal still uses the same semantics:
+        # 0.1 is a default/nominal baseline value assigned by the simulation, not a real fault, and
+        # should not be highlighted. For this specific signal, only values that differ from both
+        # 0 (reset/normal) and 0.1 (default baseline) are treated as active faults in the plots.
+        active_columns = []
+        for column in faults.columns:
+            series = faults[column]
+            normalized_name = str(column).lower()
+            is_increased_damping_fault = normalized_name.endswith("increaseddampingfault")
+            if is_increased_damping_fault:
+                is_active = series.notna() & series.ne(0) & series.ne(0.1)
+            else:
+                is_active = series.notna() & series.ne(0)
+            if is_active.any():
+                active_columns.append(column)
+
+        faults = faults.loc[:, active_columns]
+        return self._transition_rows(faults)
+
+    def _read_constant_parameters(self, split_name: str, scenario_name: str) -> pd.DataFrame:
+        """Validate all recorded parameters, even when none are selected for plotting."""
+        path = self._table_path(split_name, scenario_name, "parameters")
+        if path is None:
+            raise ValueError("parameters.parquet is unavailable")
+        parameters = pd.read_parquet(path)
+        counts = parameters.nunique(dropna=True)
+        invalid = counts[counts != 1]
+        if not invalid.empty:
+            details = "; ".join(
+                f"{column}: {count} distinct non-null values"
+                for column, count in invalid.items()
+            )
+            raise ValueError(f"Parameters must be constant within a recording: {details}")
+        return parameters
+
+    @staticmethod
+    def _transition_rows(dataframe: pd.DataFrame) -> pd.DataFrame:
+        """Keep endpoints and both sides of each value or missing-data transition."""
+        if dataframe.empty:
+            return dataframe
+        previous = dataframe.shift()
+        same = dataframe.eq(previous) | (dataframe.isna() & previous.isna())
+        changed = (~same.fillna(False)).any(axis=1)
+        keep = changed | changed.shift(-1, fill_value=False)
+        keep.iloc[0] = keep.iloc[-1] = True
+        return dataframe.loc[keep]
+
+    def _download_files(self, file_value: str | None) -> list[Path]:
+        """Resolve a complete bundle only for a discovered dataset selection."""
+        split_name, scenario_name = self._split_file(file_value)
+        if self._scenario_path(split_name, scenario_name) is None:
+            raise ValueError("Select an available scenario")
+        scenario = self._scenario_definition_path(split_name, scenario_name)
+        if scenario is None:
+            raise ValueError("Scenario JSON is unavailable")
+        paths = [scenario]
+        for table in TABLES:
+            path = self._table_path(split_name, scenario_name, table)
+            if path is None:
+                raise ValueError(f"{TABLES[table]} is unavailable")
+            paths.append(path)
+        return paths
+
+    def _download_bundle(self, file_value: str) -> dict[str, Any]:
+        paths = self._download_files(file_value)
+        split_name, scenario_name = self._split_file(file_value)
+
+        def write_archive(buffer: Any) -> None:
+            # Parquet is already compressed; store files without recompressing them.
+            with ZipFile(buffer, "w") as archive:
+                for path in paths:
+                    archive.write(path, arcname=path.name)
+
+        return dcc.send_bytes(
+            write_archive, f"{split_name}_{scenario_name}.zip", type="application/zip"
+        )
 
     @staticmethod
     def _empty_figure(message: str) -> dict[str, Any]:
@@ -555,8 +691,10 @@ class DataPlots(features.Feature):
         scenario_name: str,
         table_name: str,
         columns: list[str] | None,
+        parameter_columns: list[str] | None = None,
     ) -> tuple[Any, html.Div]:
         selected_columns = [column for column in columns or [] if column]
+        selected_parameters = [column for column in parameter_columns or [] if column]
         scenario_definition = self._read_scenario_definition(split_name, scenario_name)
         stateflow = (
             self._scenario_stateflow_dataframe(scenario_definition)
@@ -587,15 +725,33 @@ class DataPlots(features.Feature):
             if "Task" in stateflow and not stateflow.empty
             else 1
         )
+        fault_error = None
+        faults = pd.DataFrame()
+        try:
+            faults = self._read_active_faults(split_name, scenario_name)
+        except Exception as error:
+            fault_error = error
+
+        parameter_error = None
+        parameters = pd.DataFrame()
+        try:
+            all_parameters = self._read_constant_parameters(split_name, scenario_name)
+            if selected_parameters:
+                parameters = self._transition_rows(all_parameters[selected_parameters])
+        except Exception as error:
+            parameter_error = error
+
         figure = make_subplots(
-            rows=3,
+            rows=5,
             cols=1,
             shared_xaxes=True,
-            vertical_spacing=0.055,
-            row_heights=[0.26, 0.12, 0.62],
+            vertical_spacing=0.045,
+            row_heights=[0.17, 0.08, 0.22, 0.20, 0.33],
             subplot_titles=[
                 "Scenario stateflow",
                 "PalletCreator events",
+                "Faults with nonzero values",
+                "Parameters",
                 f"{TABLES.get(table_name, table_name)} data",
             ],
         )
@@ -658,11 +814,11 @@ class DataPlots(features.Feature):
         if data_load_error is not None:
             self._add_empty_row_message(
                 figure,
-                3,
+                5,
                 f"Could not load data: {data_load_error}",
             )
         elif not selected_columns:
-            self._add_empty_row_message(figure, 3, "Select at least one column")
+            self._add_empty_row_message(figure, 5, "Select at least one column")
         else:
             data_traces = [
                 go.Scatter(
@@ -683,26 +839,85 @@ class DataPlots(features.Feature):
             if not data_traces:
                 self._add_empty_row_message(
                     figure,
-                    3,
+                    5,
                     "Selected columns were not found",
                 )
             for trace in data_traces:
-                figure.add_trace(trace, row=3, col=1)
+                figure.add_trace(trace, row=5, col=1)
+
+        if fault_error is not None:
+            self._add_empty_row_message(figure, 3, f"Could not load faults: {fault_error}")
+        elif faults.empty:
+            self._add_empty_row_message(figure, 3, "No nonzero faults in this recording")
+        else:
+            for column in faults:
+                figure.add_trace(
+                    go.Scatter(
+                        x=self._json_values(faults.index),
+                        y=self._json_values(faults[column]),
+                        mode="lines+markers",
+                        marker={"size": 3},
+                        line={"shape": "hv"},
+                        name=column,
+                        legendgroup="faults",
+                        legendgrouptitle_text="Faults",
+                        connectgaps=False,
+                        hovertemplate=(
+                            f"<b>{column}</b><br>Time: %{{x}}s<br>"
+                            "Fault value: %{y}<extra></extra>"
+                        ),
+                    ),
+                    row=3,
+                    col=1,
+                )
+
+        if parameter_error is not None:
+            self._add_empty_row_message(figure, 4, f"Could not load parameters: {parameter_error}")
+        elif not selected_parameters:
+            self._add_empty_row_message(figure, 4, "Select parameter signals to plot")
+        elif parameters.empty:
+            self._add_empty_row_message(figure, 4, "No parameters in this recording")
+        else:
+            for column in parameters:
+                figure.add_trace(
+                    go.Scatter(
+                        x=self._json_values(parameters.index),
+                        y=self._json_values(parameters[column]),
+                        mode="lines+markers",
+                        marker={"size": 3},
+                        line={"shape": "hv"},
+                        name=column,
+                        legendgroup="parameters",
+                        legendgrouptitle_text="Parameters",
+                        connectgaps=False,
+                        hovertemplate=(
+                            f"<b>{column}</b><br>Time: %{{x}}s<br>"
+                            "Parameter value: %{y}<extra></extra>"
+                        ),
+                    ),
+                    row=4,
+                    col=1,
+                )
 
         figure.update_layout(
-            height=max(760, min(1200, 680 + stateflow_task_count * 18)),
+            height=max(1250, min(1700, 1170 + stateflow_task_count * 18)),
             hovermode="closest",
             hoverlabel={"align": "left"},
-            legend={"orientation": "h", "y": -0.18},
-            margin={"b": 112, "l": 96, "r": 24, "t": 72},
+            legend={
+                "orientation": "h", "y": -0.10, "maxheight": 0.18,
+                "groupclick": "toggleitem",
+            },
+            margin={"b": 200, "l": 96, "r": 24, "t": 72},
             template="plotly_white",
             title=f"{scenario_name} / {table_name}",
         )
         figure.update_xaxes(matches="x")
-        figure.update_xaxes(title_text="simulationTime [s]", row=3, col=1)
-        figure.update_yaxes(title_text="scenario", row=1, col=1)
-        figure.update_yaxes(title_text="events", row=2, col=1)
-        figure.update_yaxes(title_text="value", row=3, col=1)
+        figure.update_xaxes(title_text="simulationTime [s]", row=5, col=1)
+        figure.update_yaxes(showticklabels=False, title_text="", row=1, col=1)
+        figure.update_yaxes(showticklabels=False, title_text="", row=2, col=1)
+        figure.update_yaxes(showticklabels=False, title_text="", row=3, col=1)
+        figure.update_yaxes(showticklabels=False, title_text="", row=4, col=1)
+        figure.update_yaxes(showticklabels=False, title_text="", row=5, col=1)
 
         if data_load_error is not None:
             return (
@@ -712,13 +927,20 @@ class DataPlots(features.Feature):
 
         summary = html.Div(
             [
-                html.Span(f"{len(dataframe)} samples" if selected_columns else "0 samples"),
+                html.Span(
+                    f"{len(dataframe)}/{dataframe.attrs.get('total_samples', len(dataframe))} samples plotted"
+                    if selected_columns else "No measurements selected"
+                ),
                 html.Span(" | "),
                 html.Span(f"{len(data_traces)} plotted columns"),
                 html.Span(" | "),
                 html.Span(f"{len(stateflow)} scenario intervals"),
                 html.Span(" | "),
                 html.Span(f"{len(pallet_events)} PalletCreator events"),
+                html.Span(" | "),
+                html.Span(f"{len(faults.columns)} nonzero faults" if fault_error is None else "Fault data unavailable"),
+                html.Span(" | "),
+                html.Span(f"{len(parameters.columns)} parameters" if parameter_error is None else f"Parameter error: {parameter_error}"),
             ],
             style={"color": "#475569", "fontSize": "0.9rem"},
         )
@@ -790,6 +1012,29 @@ class DataPlots(features.Feature):
         return html.Div(
             [
                 html.Div(
+                    [
+                        html.Button(
+                            "Download scenario + data",
+                            id=self._download_button_id,
+                            n_clicks=0,
+                            title="Download scenario JSON and all three parquet files as a ZIP",
+                            style={
+                                "backgroundColor": "#ffffff", "color": "#0f172a",
+                                "border": "1px solid #cbd5e1", "borderRadius": "0.35rem",
+                                "padding": "0.45rem 0.75rem", "whiteSpace": "nowrap",
+                                "cursor": "pointer",
+                            },
+                        ),
+                        dcc.Download(id=self._download_id),
+                    ],
+                    style={"display": "flex", "justifyContent": "flex-end"},
+                ),
+                html.Div(
+                    id=self._download_status_id,
+                    role="alert",
+                    style={"color": "#b91c1c"},
+                ),
+                html.Div(
                     id=self._scenario_info_id,
                     children=initial_scenario_information,
                 ),
@@ -805,7 +1050,24 @@ class DataPlots(features.Feature):
                             className="control_very_wide",
                         ),
                     ],
-                    className="content_control_wide control_very_wide_container",
+                    className="content_control_wide control_very_wide_expandable",
+                ),
+                html.Div(
+                    [
+                        html.Label("Selected Parameters"),
+                        dcc.Dropdown(
+                            id=self._parameters_selector_id,
+                            options=self._dropdown_options(
+                                self._columns(initial_split, initial_scenario, "parameters")
+                            ),
+                            value=[],
+                            placeholder="Select parameter signals to plot",
+                            clearable=True,
+                            multi=True,
+                            className="control_very_wide",
+                        ),
+                    ],
+                    className="content_control_wide control_very_wide_expandable",
                 ),
                 html.Div(
                     [
@@ -834,15 +1096,21 @@ class DataPlots(features.Feature):
         @dash_app.callback(
             Output(self._columns_selector_id, "options"),
             Output(self._columns_selector_id, "value"),
+            Output(self._parameters_selector_id, "options"),
+            Output(self._parameters_selector_id, "value"),
             Input(self._file_selector_id, "value"),
         )
         def update_columns(
             file_value: str,
-        ) -> tuple[list[dict[str, str]], list[str]]:
+        ) -> tuple[list[dict[str, str]], list[str], list[dict[str, str]], list[str]]:
             split_name, scenario_name = self._split_file(file_value)
             column_names = self._columns(split_name, scenario_name, DEFAULT_TABLE)
             selected_columns = list(column_names[:MAX_DEFAULT_COLUMNS])
-            return self._dropdown_options(column_names), selected_columns
+            parameter_names = self._columns(split_name, scenario_name, "parameters")
+            return (
+                self._dropdown_options(column_names), selected_columns,
+                self._dropdown_options(parameter_names), [],
+            )
 
         @dash_app.callback(
             Output(self._scenario_info_id, "children"),
@@ -859,12 +1127,48 @@ class DataPlots(features.Feature):
             Output(self._summary_id, "children"),
             Input(self._file_selector_id, "value"),
             Input(self._columns_selector_id, "value"),
+            Input(self._parameters_selector_id, "value"),
+            # The modal closes after SelfX stores the applied config values.
+            Input(construct_id(self.plant_name or "system", self.feature_name(), "modal"), "is_open"),
         )
         def update_plot(
             file_value: str,
             columns: list[str] | None,
+            parameter_columns: list[str] | None,
+            config_is_open: bool | None,
         ) -> tuple[Any, html.Div]:
+            if config_is_open:
+                raise PreventUpdate
             split_name, scenario_name = self._split_file(file_value)
-            return self._plot_figure(split_name, scenario_name, DEFAULT_TABLE, columns)
+            return self._plot_figure(
+                split_name, scenario_name, DEFAULT_TABLE, columns, parameter_columns
+            )
+
+        @dash_app.callback(
+            Output(self._download_button_id, "disabled"),
+            Output(self._download_button_id, "title"),
+            Input(self._file_selector_id, "value"),
+        )
+        def update_download_availability(file_value: str) -> tuple[bool, str]:
+            try:
+                self._download_files(file_value)
+            except ValueError as error:
+                return True, str(error)
+            return False, "Download scenario JSON and all three parquet files as a ZIP"
+
+        @dash_app.callback(
+            Output(self._download_id, "data"),
+            Output(self._download_status_id, "children"),
+            Input(self._download_button_id, "n_clicks"),
+            State(self._file_selector_id, "value"),
+            prevent_initial_call=True,
+        )
+        def download_scenario(n_clicks: int, file_value: str) -> tuple[Any, str]:
+            if not n_clicks:
+                raise PreventUpdate
+            try:
+                return self._download_bundle(file_value), ""
+            except (OSError, ValueError) as error:
+                return no_update, f"Could not download scenario: {error}"
 
         self._callbacks_registered = True
