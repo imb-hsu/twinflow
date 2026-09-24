@@ -2,3 +2,8 @@
 *.parquet
 *.pyc
 dashboard/Analysis/
+
+# Local MLflow tracking data
+/mlflow.db
+/mlflow.db-*
+/mlruns/
