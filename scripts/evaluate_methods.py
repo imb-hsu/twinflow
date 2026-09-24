@@ -1,12 +1,11 @@
-"""Benchmark the four trained AD/DX methods against the held-out test scenarios.
+"""Benchmark all discovered AD/DX methods against the held-out test scenarios.
 
 Evaluation protocol
 --------------------
 Ground truth is derived from each test scenario's faults.parquet: a sample is
-"anomalous" if any boolean (event-like) fault column is True. Continuous
-severity parameters (e.g. IncreasedDampingFault=0.1) are constant background
-settings rather than events, so they are excluded (consistent with
-scripts/train_case_based.py).
+"anomalous" if any fault column is nonzero. For the current training/test
+recordings, IncreasedDampingFault values of both 0 and 0.1 are normal.
+Missing values are treated as inactive.
 
 Anomaly detection (Range Monitoring, Vanilla Autoencoder):
     BA      - balanced_accuracy_score over all test samples (point-wise).
@@ -15,6 +14,8 @@ Anomaly detection (Range Monitoring, Vanilla Autoencoder):
               recall (a true fault interval counts as recovered if any sample
               inside it is flagged), following Hundman et al. 2018's
               composite-F1 used in time series anomaly detection benchmarks.
+    Confusion counts, precision, recall, accuracy, and error rates are also
+    reported overall and per scenario for both detectors.
 
 Diagnosis (Structural-Knowledge-Based, Case-Based):
     For every true fault interval, diagnosis runs once at the interval's
@@ -24,24 +25,48 @@ Diagnosis (Structural-Knowledge-Based, Case-Based):
     Fault BA/F1  - multiclass balanced accuracy / macro-F1 over the predicted
                    fault type.
 
-Run this script from the repository root, after training all four methods:
+Run this script from the repository root, after training the methods to evaluate:
 
     python scripts/evaluate_methods.py
 """
 
+import importlib
 import json
 import sys
 from pathlib import Path
 
-import joblib
 import numpy as np
 import pandas as pd
 from sklearn.metrics import balanced_accuracy_score, f1_score as sklearn_f1_score, precision_score
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO_ROOT / "dashboard" / "features"))
+sys.path.insert(0, str(REPO_ROOT))
 
-import dataset_utils as ds  # noqa: E402
+METHODS_PATH = REPO_ROOT / "methods"
+DATA_PATH = Path(__file__).resolve().parents[1] / "data"
+
+
+FILENAMES_WITH_INCREASED_DUMPING_CONFLICT = [
+    "0_0pct_faults_rep_1",
+    "0_0pct_faults_rep_2",
+    "0_0pct_faults_rep_3",
+    "10_0pct_faults_rep_1",
+    "10_0pct_faults_rep_2",
+    "10_0pct_faults_rep_3",
+    "1_0pct_faults_rep_1",
+    "1_0pct_faults_rep_2",
+    "1_0pct_faults_rep_3",
+    "AMR_30pct_faults",
+    "AMR_multi_2_30pct_faults",
+    "PAR_30pct_faults",
+    "PAR_multi_2_30pct_faults",
+    "VZ_30pct_faults",
+    "VZ_multi_2_30pct_faults",
+    "WA_30pct_faults",
+    "WA_multi_2_30pct_faults",
+    "WE_30pct_faults",
+    "WE_multi_2_30pct_faults",
+]
 
 
 def balanced_accuracy(tp, tn, fp, fn):
@@ -220,10 +245,6 @@ def compute_event_wise_metrics(y_true, y_pred):
     return tp_event, fn_event
 
 
-def _boolean_fault_columns(faults: pd.DataFrame) -> list[str]:
-    return [column for column in faults.columns if str(faults[column].dtype) == "boolean"]
-
-
 def _segments(active: np.ndarray) -> list[tuple[int, int]]:
     """Return (start_idx, end_idx) integer-position pairs of contiguous True runs."""
     segments = []
@@ -237,37 +258,6 @@ def _segments(active: np.ndarray) -> list[tuple[int, int]]:
     if start is not None:
         segments.append((start, len(active) - 1))
     return segments
-
-
-def _ground_truth_anomaly(faults: pd.DataFrame) -> np.ndarray:
-    bool_columns = _boolean_fault_columns(faults)
-    if not bool_columns:
-        return np.zeros(len(faults), dtype=bool)
-    return faults[bool_columns].fillna(False).to_numpy(dtype=bool).any(axis=1)
-
-
-def _range_monitoring_predict(measurements: pd.DataFrame, thresholds: dict) -> np.ndarray:
-    monitored = [column for column in measurements.columns if column in thresholds]
-    if not monitored:
-        return np.zeros(len(measurements), dtype=bool)
-    out_of_range = np.zeros(len(measurements), dtype=bool)
-    for column in monitored:
-        bounds = thresholds[column]
-        series = measurements[column]
-        out_of_range |= ((series < bounds["min"]) | (series > bounds["max"])).to_numpy()
-    return out_of_range
-
-
-def _autoencoder_predict(measurements: pd.DataFrame, model: dict) -> np.ndarray:
-    columns = model["columns"]
-    if any(column not in measurements.columns for column in columns):
-        return np.zeros(len(measurements), dtype=bool)
-    fill_values = dict(zip(columns, model["scaler"].mean_))
-    X = measurements[columns].fillna(value=fill_values).to_numpy()
-    X_scaled = model["scaler"].transform(X)
-    reconstructed = model["model"].predict(X_scaled)
-    reconstruction_error = np.mean((X_scaled - reconstructed) ** 2, axis=1)
-    return reconstruction_error > model["threshold"]
 
 
 def _composite_f1(y_true: np.ndarray, y_pred: np.ndarray, segment_lengths: list[np.ndarray]) -> float:
@@ -288,168 +278,178 @@ def _composite_f1(y_true: np.ndarray, y_pred: np.ndarray, segment_lengths: list[
     return 2 * precision * recall_event / (precision + recall_event)
 
 
-def evaluate_anomaly_detection(datasets: dict) -> dict:
-    thresholds = json.loads((ds.MODELS_PATH / "range_monitoring.json").read_text(encoding="utf-8"))
-    autoencoder_model = joblib.load(ds.MODELS_PATH / "autoencoder.joblib")
+def calculate_metrics(y_true, y_pred) -> dict:
+    """Use the same point-wise scoring for every anomaly detector."""
+    tp, tn, fp, fn = compute_point_wise_metrics(y_true, y_pred)
+    divide = lambda n, d: n / d if d else 0.0
+    return {
+        "tp": tp, "tn": tn, "fp": fp, "fn": fn,
+        "precision": precision(tp, fp), "recall": recall(tp, fn),
+        "specificity": divide(tn, tn + fp),
+        "accuracy": divide(tp + tn, tp + tn + fp + fn),
+        "f1": f1_score(tp, fp, fn),
+        "false_positive_rate": divide(fp, fp + tn),
+        "false_negative_rate": divide(fn, fn + tp),
+        "BA": balanced_accuracy(tp, tn, fp, fn),
+        "F1": f1_score(tp, fp, fn),
+    }
 
-    y_true_all, y_pred_range_all, y_pred_ae_all = [], [], []
-    true_segments = []
+def extract_fault_labels(faults: pd.DataFrame, filename: str | None = None) -> pd.DataFrame:
+    """Mark nonzero fault values, excluding the current datasets' damping baseline."""
 
-    for scenario_name in datasets.get("test", {}):
-        measurements = ds.load_table(datasets, "test", scenario_name, "measurements")
-        faults = ds.load_table(datasets, "test", scenario_name, "faults")
-        if measurements is None or faults is None:
+    labels = faults.fillna(0).ne(0)
+    # In the current training/test recordings, 0.1 is also normal for this fault.
+    for column in faults.columns:
+        if filename and filename in FILENAMES_WITH_INCREASED_DUMPING_CONFLICT and column.rsplit(".", 1)[-1] == "IncreasedDampingFault":
+            labels[column] &= faults[column].ne(0.1).fillna(False)
+    return labels
+
+
+def evaluate_anomaly_detection(datasets: dict, existing_results: dict | None = None) -> dict:
+    modules = [importlib.import_module(f"methods.ad.{p.stem}") for p in (REPO_ROOT / "methods/ad").glob("[!_]*.py")]
+    models = {}
+    for module in modules:
+        if not callable(getattr(module, "predict", None)):
             continue
+        name = getattr(module, "METHOD_NAME", module.__name__)
+        if name in (existing_results or {}):
+            print(f"Skipping {name}: benchmark result already exists")
+            continue
+        paths = [getattr(module, key) for key in ("MODEL_PATH", "THRESHOLDS_PATH") if hasattr(module, key)]
+        missing = [path for path in paths if not path.is_file()]
+        if missing:
+            print(f"WARNING: Skipping {name}: model JSON not found: {missing[0]}")
+            continue
+        models[name] = module.predict
+    if not models:
+        return {}
 
-        y_true = _ground_truth_anomaly(faults)
-        y_true_all.append(y_true)
+    true_segments: list[np.ndarray] = []
+    predictions = {name: [] for name in models}
+    scenarios = {name: {} for name in models}
+
+    for scenario_name in datasets.keys():
+        measurements = datasets[scenario_name]["measurements"]
+        faults = extract_fault_labels(datasets[scenario_name]["faults"], scenario_name)
+
+        if measurements.empty or not measurements.index.equals(faults.index):
+            raise ValueError(f"{scenario_name}: nonempty measurements and aligned fault indexes are required")
+        y_true = faults.fillna(False).to_numpy(dtype=bool).any(axis=1)
+
         true_segments.append(y_true)
-        y_pred_range_all.append(_range_monitoring_predict(measurements, thresholds))
-        y_pred_ae_all.append(_autoencoder_predict(measurements, autoencoder_model))
+        for name, predict in models.items():
+            y_pred = predict(measurements)
+            predictions[name].append(y_pred)
+            scenarios[name][scenario_name] = {
+                **calculate_metrics(y_true, y_pred),
+                "F1_comp": float(_composite_f1(y_true, y_pred, [y_true])),
+            }
         print(f"Evaluated AD on {scenario_name}: {y_true.sum()}/{len(y_true)} anomalous samples")
-
-    y_true_all = np.concatenate(y_true_all)
-    y_pred_range_all = np.concatenate(y_pred_range_all)
-    y_pred_ae_all = np.concatenate(y_pred_ae_all)
-
+    if not true_segments:
+        raise ValueError("No test scenarios available for evaluation")
+    y_true = np.concatenate(true_segments)
     results = {}
-    for name, y_pred in [
-        ("Range Monitoring", y_pred_range_all),
-        ("Vanilla Autoencoder", y_pred_ae_all),
-    ]:
+    for name in models:
+        y_pred = np.concatenate(predictions[name])
         results[name] = {
-            "BA": float(balanced_accuracy_score(y_true_all, y_pred)),
-            "F1": float(sklearn_f1_score(y_true_all, y_pred, zero_division=0)),
-            "F1_comp": float(_composite_f1(y_true_all, y_pred, true_segments)),
+            **calculate_metrics(y_true, y_pred),
+            "F1_comp": float(_composite_f1(y_true, y_pred, true_segments)),
+            "scenarios": scenarios[name],
         }
     return results
 
 
-def _case_based_diagnose(model: dict, vector: np.ndarray) -> tuple[str, str]:
-    scaled = model["scaler"].transform(vector.reshape(1, -1))
-    distances, indices = model["_neighbors"].kneighbors(scaled)
-    case = model["cases"][indices[0, 0]]
-    return case["component"], case["fault_type"]
-
-
-def _structural_diagnose(
-    model: dict, thresholds: dict, measurements: pd.DataFrame, start: int, end: int, true_fault_type: str
-) -> tuple[str, str]:
-    monitored = [column for column in measurements.columns if column in thresholds]
-    window = measurements.iloc[start : end + 1]
-    hit_counts: dict[str, int] = {}
-    for column in monitored:
-        bounds = thresholds[column]
-        series = window[column]
-        hits = int(((series < bounds["min"]) | (series > bounds["max"])).sum())
-        if hits == 0:
+def evaluate_diagnosis(datasets: dict, existing_results: dict | None = None) -> dict:
+    modules = [importlib.import_module(f"methods.dx.{p.stem}") for p in (REPO_ROOT / "methods/dx").glob("[!_]*.py")]
+    models = {}
+    for module in modules:
+        if not callable(getattr(module, "predict", None)):
             continue
-        component_id, _, _ = column.rpartition(".")
-        hit_counts[component_id or column] = hit_counts.get(component_id or column, 0) + hits
-
-    if not hit_counts:
-        return "unknown", "unknown"
-
-    predicted_component = max(hit_counts, key=hit_counts.get)
-    component_type = model["component_type_by_id"].get(predicted_component)
-    possible_faults = model["faults_by_type"].get(component_type, [])
-    predicted_fault_type = true_fault_type if true_fault_type in possible_faults else (
-        possible_faults[0] if possible_faults else "unknown"
-    )
-    return predicted_component, predicted_fault_type
-
-
-def evaluate_diagnosis(datasets: dict) -> dict:
-    from sklearn.neighbors import NearestNeighbors
-
-    case_based_model = joblib.load(ds.MODELS_PATH / "case_based.joblib")
-    case_based_model["_neighbors"] = NearestNeighbors(n_neighbors=1).fit(
-        np.stack([case["vector"] for case in case_based_model["cases"]])
-    )
-    structural_model = joblib.load(ds.MODELS_PATH / "structural_knowledge.joblib")
-    thresholds = json.loads((ds.MODELS_PATH / "range_monitoring.json").read_text(encoding="utf-8"))
+        name = getattr(module, "METHOD_NAME", module.__name__)
+        if name in (existing_results or {}):
+            print(f"Skipping {name}: benchmark result already exists")
+            continue
+        paths = [getattr(module, key) for key in ("MODEL_PATH", "THRESHOLDS_PATH") if hasattr(module, key)]
+        missing = [path for path in paths if not path.is_file()]
+        if missing:
+            print(f"WARNING: Skipping {name}: model JSON not found: {missing[0]}")
+            continue
+        models[name] = module.predict
+    if not models:
+        return {}
 
     true_components, true_fault_types = [], []
-    pred_components_cb, pred_fault_types_cb = [], []
-    pred_components_sk, pred_fault_types_sk = [], []
-
-    for scenario_name in datasets.get("test", {}):
-        measurements = ds.load_table(datasets, "test", scenario_name, "measurements")
-        faults = ds.load_table(datasets, "test", scenario_name, "faults")
-        if measurements is None or faults is None:
-            continue
-        columns = case_based_model["columns"]
-        if any(column not in measurements.columns for column in columns):
-            continue
-        numeric = measurements[columns].fillna(measurements[columns].mean())
-
-        for fault_column in _boolean_fault_columns(faults):
+    predictions = {name: {"component": [], "fault_type": []} for name in models}
+    for scenario_name in datasets:
+        measurements = datasets[scenario_name]["measurements"]
+        faults = extract_fault_labels(datasets[scenario_name]["faults"], scenario_name)
+        if measurements.empty or not measurements.index.equals(faults.index):
+            raise ValueError(f"{scenario_name}: nonempty measurements and aligned fault indexes are required")
+        midpoints = []
+        for fault_column in faults.columns:
             active = faults[fault_column].fillna(False).to_numpy(dtype=bool)
             for start, end in _segments(active):
-                midpoint = (start + end) // 2
-                true_component, _, true_fault_type = fault_column.rpartition(".")
-                true_components.append(true_component or fault_column)
-                true_fault_types.append(true_fault_type or fault_column)
-
-                pred_component, pred_fault_type = _case_based_diagnose(
-                    case_based_model, numeric.iloc[midpoint].to_numpy()
-                )
-                pred_components_cb.append(pred_component)
-                pred_fault_types_cb.append(pred_fault_type)
-
-                pred_component, pred_fault_type = _structural_diagnose(
-                    structural_model, thresholds, measurements, start, end, true_fault_type or fault_column
-                )
-                pred_components_sk.append(pred_component)
-                pred_fault_types_sk.append(pred_fault_type)
-
+                midpoints.append((start + end) // 2)
+                component, _, fault_type = fault_column.rpartition(".")
+                true_components.append(component or fault_column)
+                true_fault_types.append(fault_type or fault_column)
+        if not midpoints:
+            continue
+        samples = measurements.iloc[midpoints]
+        for name, predict in models.items():
+            result = predict(samples)
+            for column in ("component", "fault_type"):
+                predictions[name][column].extend(result[column].tolist())
         print(f"Evaluated DX on {scenario_name}: {len(true_components)} fault events so far")
 
-    def _macro_scores(y_true, y_pred):
-        return {
-            "BA": float(balanced_accuracy_score(y_true, y_pred)),
-            "F1": float(sklearn_f1_score(y_true, y_pred, average="macro", zero_division=0)),
-        }
-
-    loc_cb = _macro_scores(true_components, pred_components_cb)
-    fault_cb = _macro_scores(true_fault_types, pred_fault_types_cb)
-    loc_sk = _macro_scores(true_components, pred_components_sk)
-    fault_sk = _macro_scores(true_fault_types, pred_fault_types_sk)
-
-    return {
-        "Structural-Knowledge-Based": {
-            "Loc_BA": loc_sk["BA"],
-            "Fault_BA": fault_sk["BA"],
-            "Loc_F1": loc_sk["F1"],
-            "Fault_F1": fault_sk["F1"],
-        },
-        "Case-Based": {
-            "Loc_BA": loc_cb["BA"],
-            "Fault_BA": fault_cb["BA"],
-            "Loc_F1": loc_cb["F1"],
-            "Fault_F1": fault_cb["F1"],
-        },
-    }
+    if not true_components:
+        raise ValueError("No fault events available for diagnosis evaluation")
+    results = {}
+    for name, predicted in predictions.items():
+        results[name] = {}
+        for prefix, target, column in (
+            ("Loc", true_components, "component"),
+            ("Fault", true_fault_types, "fault_type"),
+        ):
+            results[name][f"{prefix}_BA"] = float(balanced_accuracy_score(target, predicted[column]))
+            results[name][f"{prefix}_F1"] = float(
+                sklearn_f1_score(target, predicted[column], average="macro", zero_division=0)
+            )
+    return results
 
 
 def main() -> None:
-    datasets = ds.discover_datasets()
-    if not datasets.get("test"):
-        raise SystemExit("No test scenarios found under data/test")
+    test_dir = REPO_ROOT / "data" / "test"
+
+    test_data = {
+        p.name: {"measurements": pd.read_parquet(p / "measurements.parquet"),
+                 "faults": pd.read_parquet(p / "faults.parquet"),
+                 "parameters": pd.read_parquet(p / "parameters.parquet")
+                 }
+        for p in sorted(test_dir.iterdir()) if p.is_dir()
+    }
 
     print("=== Evaluating anomaly detection methods ===")
-    anomaly_detection = evaluate_anomaly_detection(datasets)
+    ad_output_path = REPO_ROOT / "benchmark_ad.json"
+    ad_results = json.loads(ad_output_path.read_text(encoding="utf-8")) if ad_output_path.exists() else {}
+    if not isinstance(ad_results, dict):
+        raise ValueError(f"{ad_output_path} must contain a JSON object")
+    new_ad_results = evaluate_anomaly_detection(test_data, ad_results)
+    if new_ad_results:
+        ad_results.update(new_ad_results)
+        ad_output_path.write_text(json.dumps(ad_results, indent=2), encoding="utf-8")
+        print(f"Saved new anomaly detection benchmark results to {ad_output_path}")
 
-    print("\n=== Evaluating diagnosis methods ===")
-    diagnosis = evaluate_diagnosis(datasets)
-
-    ds.MODELS_PATH.mkdir(parents=True, exist_ok=True)
-    output_path = ds.MODELS_PATH / "benchmark_results.json"
-    output_path.write_text(
-        json.dumps({"anomaly_detection": anomaly_detection, "diagnosis": diagnosis}, indent=2),
-        encoding="utf-8",
-    )
-    print(f"\nSaved benchmark results to {output_path}")
+    print("=== Evaluating diagnosis methods ===")
+    dx_output_path = REPO_ROOT / "benchmark_dx.json"
+    dx_results = json.loads(dx_output_path.read_text(encoding="utf-8")) if dx_output_path.exists() else {}
+    if not isinstance(dx_results, dict):
+        raise ValueError(f"{dx_output_path} must contain a JSON object")
+    new_dx_results = evaluate_diagnosis(test_data, dx_results)
+    if new_dx_results:
+        dx_results.update(new_dx_results)
+        dx_output_path.write_text(json.dumps(dx_results, indent=2), encoding="utf-8")
+        print(f"Saved new diagnosis benchmark results to {dx_output_path}")
 
 
 if __name__ == "__main__":
