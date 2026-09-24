@@ -65,7 +65,19 @@ class DataPlots(features.Feature):
         }
         self._callbacks_registered = False
         self._set_component_ids()
-        self._datasets = self._discover_datasets()
+        self._datasets = {}
+        if DATA_PATH.exists():
+            for split_path in sorted(DATA_PATH.iterdir()):
+                if not split_path.is_dir():
+                    continue
+                scenario_paths = {
+                    scenario_path.name: scenario_path
+                    for scenario_path in sorted(split_path.iterdir())
+                    if scenario_path.is_dir()
+                    and any((scenario_path / table_file).exists() for table_file in TABLES.values())
+                }
+                if scenario_paths:
+                    self._datasets[split_path.name] = scenario_paths
         self._validate_datasets()
         self._split_names = tuple(sorted(self._datasets, key=self._split_sort_key))
 
@@ -105,29 +117,6 @@ class DataPlots(features.Feature):
         self._download_id = f"{prefix}-download"
         self._download_status_id = f"{prefix}-download-status"
 
-    @staticmethod
-    def _discover_datasets() -> dict[str, dict[str, Path]]:
-        if not DATA_PATH.exists():
-            return {}
-
-        datasets: dict[str, dict[str, Path]] = {}
-        for split_path in sorted(DATA_PATH.iterdir()):
-            if not split_path.is_dir():
-                continue
-
-            scenario_paths = {
-                scenario_path.name: scenario_path
-                for scenario_path in sorted(split_path.iterdir())
-                if scenario_path.is_dir()
-                and any(
-                    (scenario_path / table_file).exists()
-                    for table_file in TABLES.values()
-                )
-            }
-            if scenario_paths:
-                datasets[split_path.name] = scenario_paths
-
-        return datasets
 
     def _validate_datasets(self) -> None:
         if not self._datasets:

@@ -1,3 +1,5 @@
+import json
+from unittest.mock import patch
 import tempfile
 import unittest
 from pathlib import Path
@@ -20,6 +22,38 @@ class RangeMonitoringTests(unittest.TestCase):
         self.feature = RangeMonitoring()
         self.feature._datasets = {"test": {"example": self.path}}
         self.feature._model = {name: {"min": 0., "max": 2.} for name in self.frame}
+
+    def test_missing_model_message_and_recovery(self):
+        model_path = self.path / 'range_monitoring.json'
+        self.feature._model = None
+        with patch.object(self.feature, '_model_path', return_value=model_path):
+            layout = self.feature.layout(None, None, None, None)
+            self.assertIn('No range-monitoring model found', layout.children[0].children)
+            model_path.write_text(json.dumps({'speed': {'type': 'numeric', 'lower': 0., 'upper': 2.}}))
+            model = self.feature._ensure_model()
+        self.assertEqual(model['speed']['min'], 0.)
+        self.assertEqual(model['speed']['max'], 2.)
+        self.assertIsNone(self.feature._model_error)
+
+    def test_saved_numeric_and_categorical_model(self):
+        model_path = self.path / 'range_monitoring.json'
+        model_path.write_text(json.dumps({
+            'speed': {'type': 'numeric', 'lower': 0., 'upper': 2.},
+            'state': {'type': 'categorical', 'categories': ['idle', 'running']},
+            'enabled': {'type': 'categorical', 'categories': ['False']},
+        }))
+        self.feature._model = self.feature._load_model(model_path)
+        frame = pd.DataFrame({'speed': [1., 3., 1.], 'state': ['idle', 'running', 'broken'],
+                              'enabled': [False, True, False]}, index=[0., 1., 2.])
+        frame.to_parquet(self.path / 'measurements.parquet')
+        _, _, options = self.feature._overview(frame, self.feature._model, 'test/example')
+        self.assertEqual({option['value'] for option in options}, {'speed', 'state', 'enabled'})
+        numeric = self.feature._detail_figure('test/example', 'speed')
+        self.assertEqual(list(numeric.data[1].y), [3.])
+        category = self.feature._detail_figure('test/example', 'state')
+        self.assertEqual(list(category.data[1].y), ['broken'])
+        self.assertEqual(category.layout.yaxis.type, 'category')
+        category.to_json()
 
     def test_only_violating_signals_are_offered(self):
         _, _, options = self.feature._overview(self.frame, self.feature._model, "example")

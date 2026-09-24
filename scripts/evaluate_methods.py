@@ -19,7 +19,7 @@ Anomaly detection (Range Monitoring, Vanilla Autoencoder):
 
 Diagnosis (Structural-Knowledge-Based, Case-Based):
     For every true fault interval, diagnosis runs once at the interval's
-    midpoint sample.
+    last faulty sample (before the fault clears).
     Loc. BA/F1   - multiclass balanced accuracy / macro-F1 over the predicted
                    owning component.
     Fault BA/F1  - multiclass balanced accuracy / macro-F1 over the predicted
@@ -305,6 +305,12 @@ def extract_fault_labels(faults: pd.DataFrame, filename: str | None = None) -> p
     return labels
 
 
+def diagnosis_events(labels: pd.DataFrame) -> list[tuple[int, str]]:
+    """Return the last active row and fault label for each per-fault segment."""
+    return sorted((end, column) for column in labels
+                  for _, end in _segments(labels[column].to_numpy(dtype=bool)))
+
+
 def evaluate_anomaly_detection(datasets: dict, existing_results: dict | None = None) -> dict:
     modules = [importlib.import_module(f"methods.ad.{p.stem}") for p in (REPO_ROOT / "methods/ad").glob("[!_]*.py")]
     models = {}
@@ -385,17 +391,14 @@ def evaluate_diagnosis(datasets: dict, existing_results: dict | None = None) -> 
         faults = extract_fault_labels(datasets[scenario_name]["faults"], scenario_name)
         if measurements.empty or not measurements.index.equals(faults.index):
             raise ValueError(f"{scenario_name}: nonempty measurements and aligned fault indexes are required")
-        midpoints = []
-        for fault_column in faults.columns:
-            active = faults[fault_column].fillna(False).to_numpy(dtype=bool)
-            for start, end in _segments(active):
-                midpoints.append((start + end) // 2)
-                component, _, fault_type = fault_column.rpartition(".")
-                true_components.append(component or fault_column)
-                true_fault_types.append(fault_type or fault_column)
-        if not midpoints:
+        events = diagnosis_events(faults)
+        if not events:
             continue
-        samples = measurements.iloc[midpoints]
+        for _, fault_column in events:
+            component, _, fault_type = fault_column.rpartition(".")
+            true_components.append(component or fault_column)
+            true_fault_types.append(fault_type or fault_column)
+        samples = measurements.iloc[[position for position, _ in events]]
         for name, predict in models.items():
             result = predict(samples)
             for column in ("component", "fault_type"):

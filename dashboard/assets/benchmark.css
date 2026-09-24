@@ -89,6 +89,32 @@
 .confusion_label { display: block; color: #606177; font-size: 12px; margin-bottom: 6px; }
 .confusion_value { font-size: 22px; font-weight: 600; }
 
+.benchmark_table.diagnosis_matrix { width: auto; min-width: 0; font-size: 11px; }
+.benchmark_table.diagnosis_matrix .benchmark_caption {
+  padding: 6px 8px;
+  font-size: 12px;
+  border-bottom-width: 1px;
+}
+.benchmark_table.diagnosis_matrix th,
+.benchmark_table.diagnosis_matrix td {
+  padding: 3px 6px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.benchmark_table.diagnosis_matrix th:first-child {
+  width: auto;
+  text-align: left;
+  white-space: nowrap;
+}
+.diagnosis_matrix thead th { vertical-align: bottom; }
+.diagnosis_column_label {
+  display: inline-block;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}
+
 @media (max-width: 640px) {
   .benchmark_table th, .benchmark_table td { padding: 14px 16px; }
   .benchmark_table .benchmark_caption { padding: 18px 16px; }

@@ -1,6 +1,6 @@
 """Benchmark results feature.
 
-Renders the AD and DX benchmark tables (models/benchmark_results.json, produced
+Renders the AD and DX benchmark tables (benchmark_ad.json and benchmark_dx.json, produced
 by scripts/evaluate_methods.py) as static HTML tables, mirroring the LaTeX
 tables used in the paper.
 """
@@ -13,11 +13,14 @@ from typing import Any
 from dash import html
 from selfx.backend import features
 
-from . import dataset_utils as ds
+from pathlib import Path
 
-RESULTS_PATH = ds.MODELS_PATH / "benchmark_results.json"
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
-_NOT_AVAILABLE = "Results are available in the public GitHub repository."
+AD_RESULTS_PATH = REPO_ROOT / "benchmark_ad.json"
+DX_RESULTS_PATH = REPO_ROOT / "benchmark_dx.json"
+
+_NOT_AVAILABLE = "Not evaluated yet. Run scripts/evaluate_methods.py."
 
 
 def _metric_cell(value: float | None) -> str:
@@ -26,6 +29,7 @@ def _metric_cell(value: float | None) -> str:
 
 def _anomaly_detection_table(results: dict[str, dict[str, float]] | None) -> html.Table:
     methods = ["Range Monitoring", "Vanilla Autoencoder"]
+    methods.extend(method for method in (results or {}) if method not in methods)
     rows = []
     for method in methods:
         metrics = (results or {}).get(method)
@@ -60,6 +64,7 @@ def _anomaly_detection_table(results: dict[str, dict[str, float]] | None) -> htm
 
 def _diagnosis_table(results: dict[str, dict[str, float]] | None) -> html.Table:
     methods = ["Structural-Knowledge-Based", "Case-Based"]
+    methods.extend(method for method in (results or {}) if method not in methods)
     rows = []
     for method in methods:
         metrics = (results or {}).get(method)
@@ -109,9 +114,11 @@ class BenchmarkResults(features.Feature):
 
     @staticmethod
     def _load_results() -> dict[str, Any] | None:
-        if not RESULTS_PATH.exists():
-            return None
-        return json.loads(RESULTS_PATH.read_text(encoding="utf-8"))
+        results = {}
+        for task, path in (("anomaly_detection", AD_RESULTS_PATH), ("diagnosis", DX_RESULTS_PATH)):
+            if path.is_file():
+                results[task] = json.loads(path.read_text(encoding="utf-8"))
+        return results or None
 
     def layout(self, role: Any, analysis: Any, start: Any, end: Any) -> html.Div:
         results = self._load_results()
@@ -119,7 +126,7 @@ class BenchmarkResults(features.Feature):
             return html.Div(
                 html.P(
                     f"No benchmark results found. Run scripts/evaluate_methods.py to "
-                    f"generate {RESULTS_PATH}."
+                    f"generate {AD_RESULTS_PATH} and {DX_RESULTS_PATH}."
                 ),
                 style={"padding": "1rem"},
             )

@@ -54,7 +54,7 @@ The repository contains several machine-readable files that describe the benchma
 
 ### Anomaly Detection
 
-Models are trained or configured using nominal system behavior and evaluated on test sequences containing injected faults. The benchmark provides point-wise anomaly labels for evaluating detection performance.
+The included baselines use all training scenarios, including faulty runs, and are evaluated on held-out test sequences containing injected faults. The benchmark provides point-wise anomaly labels for evaluating detection performance.
 
 ### Fault Diagnosis
 
@@ -68,48 +68,163 @@ Initial fault categories include failures affecting conveyors, autonomous mobile
 
 ## Scenarios
 
-Scenario files are stored in [`scenarios/training`](scenarios/training) and [`scenarios/test`](scenarios/test). They are the simulator input definitions used to generate the raw files in [`data/training`](data/training) and [`data/test`](data/test).
+Scenario files are stored in [`scenarios/training`](scenarios/training) and [`scenarios/test`](scenarios/test). They are the simulator input definitions used to generate the datasets in [`data/training`](data/training) and [`data/test`](data/test).
 
 Each scenario JSON contains metadata under `scenario` and a time-ordered `actions` list. Actions create pallets with the `PalletCreator` or inject and repair faults by setting a component property at a specific `startsAt` timestamp. Fault actions are paired with repair actions, so the scenarios define the ground truth for anomaly labels and fault-diagnosis targets.
 
 The training scenarios contain repeated nominal or low-fault-rate runs, such as `0_0pct_faults_rep_1.json`, `1_0pct_faults_rep_1.json`, and `10_0pct_faults_rep_1.json`. The test scenarios contain area-specific and multi-fault evaluations, such as `AMR_30pct_faults.json`, `VZ_multi_2_30pct_faults.json`, and `WE_multi_2_30pct_faults.json`.
 
-Raw simulation export files are stored in the [`data`](data) folder. These files are kept close to the simulator output format. More comprehensable benchmark datasets will be added later through Zenodo.
+## Parquet datasets
 
-Current raw training files in [`data/training`](data/training):
+Simulation data is stored in [Apache Parquet files](data), a column-oriented
+format that preserves numeric, boolean, and categorical values. The dataset is
+available on [Zenodo](https://zenodo.org/uploads/22943653).
 
-- `0_0pct_faults_rep_1.json.zst`
-- `0_0pct_faults_rep_2.json.zst`
-- `0_0pct_faults_rep_3.json.zst`
-- `1_0pct_faults_rep_1.json.zst`
-- `1_0pct_faults_rep_2.json.zst`
-- `1_0pct_faults_rep_3.json.zst`
-- `10_0pct_faults_rep_1.json.zst`
-- `10_0pct_faults_rep_2.json.zst`
-- `10_0pct_faults_rep_3.json.zst`
+Each scenario has its own folder under `data/training` or `data/test`:
 
-Current raw test files in [`data/test`](data/test):
-
-- `AMR_30pct_faults.json.zst`
-- `AMR_multi_2_30pct_faults.json.zst`
-- `PAR_30pct_faults.json.zst`
-- `PAR_multi_2_30pct_faults.json.zst`
-- `VZ_30pct_faults.json.zst`
-- `VZ_multi_2_30pct_faults.json.zst`
-- `WA_30pct_faults.json.zst`
-- `WA_multi_2_30pct_faults.json.zst`
-- `WE_30pct_faults.json.zst`
-- `WE_multi_2_30pct_faults.json.zst`
-
-Example loading workflow:
-
-```python
-from utils import read_json_zst
-
-df = read_json_zst("data/training/0_0pct_faults_rep_1.json.zst")
+```text
+data/
+  training/
+    0_0pct_faults_rep_1/
+      measurements.parquet
+      faults.parquet
+      parameters.parquet
+  test/
+    AMR_30pct_faults/
+      measurements.parquet
+      faults.parquet
+      parameters.parquet
 ```
 
-This reads the compressed simulator export into a pandas DataFrame indexed by `simulationTime`.
+| File | Contents | Use |
+| --- | --- | --- |
+| `measurements.parquet` | Recorded component signals, including numeric measurements, boolean states, and categorical states. | Model inputs and dashboard time-series plots. |
+| `faults.parquet` | Recorded fault values for each component, with columns such as `CC_1.MotorFault`. Values can be boolean or numeric. | Training diagnosis models and deriving evaluation targets. |
+| `parameters.parquet` | Recorded configurable component parameters. | Inspecting the system configuration over time. |
+
+Rows are indexed by `simulationTime` in seconds. The three files in a scenario
+share the same timestamps, so measurements, faults, and parameters can be aligned
+directly. Columns identify component properties, typically as
+`component.property`; vector quantities are split into `.X`, `.Y`, and `.Z`
+columns. Missing observations remain missing values.
+
+Training contains repeated nominal and low-fault-rate scenarios
+(`0_0pct_faults_rep_*`, `1_0pct_faults_rep_*`, and `10_0pct_faults_rep_*`).
+Test folders contain area-specific and simultaneous-fault scenarios, such as
+`AMR_30pct_faults` and `AMR_multi_2_30pct_faults`.
+
+Load a scenario directly with pandas:
+
+```python
+from pathlib import Path
+import pandas as pd
+
+scenario = Path("data/test/AMR_30pct_faults")
+measurements = pd.read_parquet(scenario / "measurements.parquet")
+faults = pd.read_parquet(scenario / "faults.parquet")
+parameters = pd.read_parquet(scenario / "parameters.parquet")
+
+assert measurements.index.equals(faults.index)
+assert measurements.index.equals(parameters.index)
+```
+
+The saved index is restored automatically. To read selected signals only, pass
+`columns=["component.property"]` to `pd.read_parquet`, using names present in the
+file. Pandas requires a Parquet engine such as `pyarrow`.
+
+Use `extract_fault_labels(faults, scenario.name)` from
+`scripts.evaluate_methods` to derive boolean targets consistently: nonzero values
+indicate active faults, missing values are treated as inactive, and
+`IncreasedDampingFault=0.1` is also normal for the listed benchmark scenarios.
+
+## Training and evaluation
+
+Each method script exposes `train()` and `predict(measurements)`. Running the
+script calls `train()` and saves its model as JSON at the module's `MODEL_PATH`.
+Each `predict()` loads that file itself; the evaluator only supplies measurements
+and calculates metrics. Anomaly detectors return a boolean array, while diagnosis
+methods return a DataFrame with `component` and `fault_type` columns. Structural
+diagnosis also loads its range thresholds from `THRESHOLDS_PATH`.
+
+The evaluator discovers Python scripts directly under `methods/ad` and
+`methods/dx`, skipping filenames starting with `_`. No evaluator changes are
+needed when adding a method. Optional `METHOD_NAME` sets its benchmark label.
+Missing `MODEL_PATH` or `THRESHOLDS_PATH` files print a warning and skip the
+method during evaluation.
+
+Both diagnosis methods use every folder under `data/training` and the same
+nonzero fault-label rules as evaluation, including the damping exception.
+Case-based training encodes numeric, boolean (0/1), and categorical (one-hot)
+measurements. It builds one fault case from the last active sample of each fault
+segment. Nominal cases are excluded from diagnosis training and prediction.
+
+Train and evaluate with:
+
+```sh
+python methods/ad/range_monitoring.py
+python methods/ad/autoencoder.py
+python methods/dx/case_based.py
+python methods/dx/structural_knowledge.py
+python scripts/evaluate_methods.py
+```
+
+Range monitoring and the autoencoder load measurements from all scenario folders
+under `data/training`, including faulty training scenarios. The autoencoder
+retains its configurable row subsampling (`ROW_STRIDE = 5`). It includes numeric
+measurements, boolean values encoded as 0/1, and one-hot categorical features.
+The model JSON stores the encoding and category order; categories unseen during
+training produce an all-zero one-hot group. Retrain existing numeric-only models
+to include these additional features. All four models are plain JSON;
+scaler parameters, autoencoder weights, and case vectors are stored as lists.
+Evaluation uses the saved models without retraining and the same test scenarios,
+fault labels, and metrics for both anomaly detectors. Nonzero fault values are
+active; for the listed current scenarios, `IncreasedDampingFault=0.1` is normal.
+Structural diagnosis learns component fault candidates from all training
+`faults.parquet` files using the evaluator's label rules, and keeps component/area
+mappings from the structural hierarchy. Diagnosis methods and dashboard confusion
+matrices use the last active sample of each individual fault segment; ambiguous structural
+fault types are reported as `unknown`, without access to the true fault type.
+AD results are saved to `benchmark_ad.json` and DX results to `benchmark_dx.json`. Detection results include per-scenario and overall metrics;
+composite F1 keeps event boundaries separate between scenarios. Existing method
+entries are skipped on subsequent runs; only new evaluations are added. Remove
+a method's entry from its benchmark JSON to evaluate it again.
+
+## Dashboard
+
+Run the following commands from the repository root. Create a virtual environment
+and install the dependencies once:
+
+```sh
+python -m venv .venv
+```
+
+Activate it in Windows PowerShell with `.\.venv\Scripts\Activate.ps1`, or on
+Linux/macOS with `source .venv/bin/activate`, then run:
+
+```sh
+python -m pip install -r requirements.txt
+python dashboard/run_dashboard.py
+```
+
+Open [http://localhost:8050/selfx/](http://localhost:8050/selfx/) in your browser.
+Keep the terminal running; press `Ctrl+C` to stop the dashboard.
+
+For scenario plots, place the prepared dataset in
+`data/training/<scenario>/` and `data/test/<scenario>/`. Each scenario folder
+contains `measurements.parquet`, `faults.parquet`, and `parameters.parquet`.
+See [Parquet datasets](#parquet-datasets) for file contents and loading examples.
+
+Use the sidebar to browse system knowledge, measurements, anomaly detection,
+diagnosis, and benchmark results. Select a scenario using the dropdown at the top.
+Detection and diagnosis views load saved JSON models from `models/`; run the
+commands in [Training and evaluation](#training-and-evaluation) to generate them.
+Diagnosis plots and confusion matrices use the last faulty sample of each fault
+segment. The benchmark tables read `benchmark_ad.json` and `benchmark_dx.json`
+from the repository root each time the page renders.
+
+After retraining models, restart the dashboard and refresh your browser to clear
+cached models. If a page is blank, verify that the server is running and that
+the URL includes `/selfx/`; check the terminal for errors.
 
 ## Pallet configurations
 

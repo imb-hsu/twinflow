@@ -1,5 +1,8 @@
 import os
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 os.environ["DASH_DEBUG"] = "false"
 os.environ["DASH_HOT_RELOAD"] = "false"
@@ -18,10 +21,6 @@ from features.benchmark_results import BenchmarkResults
 
 cyto.load_extra_layouts()
 
-# Default maximum measurement samples per trace (editable in Data Plots > Configure).
-# Set to None, or leave the Configure field blank, to show all samples.
-# Fault/parameter transitions and downloaded files are unaffected.
-DataPlots.max_plot_points = 5_000
 
 dashboard = Dash4CPS(
     css_overrides=[
