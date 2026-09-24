@@ -7,3 +7,4 @@ dashboard/Analysis/
 /mlflow.db
 /mlflow.db-*
 /mlruns/
+Analysis/
