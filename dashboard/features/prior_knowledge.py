@@ -7,12 +7,38 @@ from pathlib import Path
 from typing import Any
 
 import dash_cytoscape as cyto
-from dash import ALL, Input, Output, State, callback_context, dcc, html
+from dash import ALL, Input, Output, State, callback_context, dcc, html, no_update
 from selfx.backend import features
 
 
+DOWNLOAD_BUTTON_STYLE = {
+    "backgroundColor": "#ffffff",
+    "border": "1px solid #cbd5e1",
+    "borderRadius": "0.35rem",
+    "color": "#0f172a",
+    "cursor": "pointer",
+    "fontWeight": 700,
+    "padding": "0.45rem 0.75rem",
+}
+
+
+def _download_json_control(button_id: str, download_id: str) -> html.Div:
+    return html.Div(
+        [
+            html.Button(
+                "Download JSON",
+                id=button_id,
+                n_clicks=0,
+                style=DOWNLOAD_BUTTON_STYLE,
+            ),
+            dcc.Download(id=download_id),
+        ],
+        style={"display": "inline-block"},
+    )
+
+
 STRUCTURAL_HIERARCHY_PATH = (
-    Path(__file__).resolve().parents[2] / "structural_hierarchy.json"
+    Path(__file__).resolve().parents[2] / "prior_knowledge" / "structural_hierarchy.json"
 )
 
 
@@ -57,6 +83,8 @@ class StructuralHierarchy(features.Feature):
         prefix = f"{system_name}-structural-hierarchy"
         self._collapse_all_id = f"{prefix}-collapse-all"
         self._expand_all_id = f"{prefix}-expand-all"
+        self._download_button_id = f"{prefix}-download-button"
+        self._download_id = f"{prefix}-download"
         self._details_node_id = {
             "feature": prefix,
             "detail": ALL,
@@ -285,15 +313,11 @@ class StructuralHierarchy(features.Feature):
                             "Collapse all",
                             id=self._collapse_all_id,
                             n_clicks=0,
-                            style={
-                                "backgroundColor": "#ffffff",
-                                "border": "1px solid #cbd5e1",
-                                "borderRadius": "0.35rem",
-                                "color": "#0f172a",
-                                "cursor": "pointer",
-                                "fontWeight": 700,
-                                "padding": "0.45rem 0.75rem",
-                            },
+                            style=DOWNLOAD_BUTTON_STYLE,
+                        ),
+                        _download_json_control(
+                            self._download_button_id,
+                            self._download_id,
                         ),
                     ],
                     style={
@@ -338,15 +362,29 @@ class StructuralHierarchy(features.Feature):
             if not detail_ids:
                 return []
 
-            triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
-            is_expanded = triggered_id == self._expand_all_id
-            return [is_expanded for _ in detail_ids]
+            triggered_id = callback_context.triggered_id
+            if triggered_id == self._collapse_all_id:
+                return [False] * len(detail_ids)
+            if triggered_id == self._expand_all_id:
+                return [True] * len(detail_ids)
+            return [no_update] * len(detail_ids)
+
+        @dash_app.callback(
+            Output(self._download_id, "data"),
+            Input(self._download_button_id, "n_clicks"),
+            prevent_initial_call=True,
+        )
+        def download_structural_hierarchy(n_clicks: int) -> dict[str, Any]:
+            return dcc.send_file(
+                str(STRUCTURAL_HIERARCHY_PATH),
+                filename="structural_hierarchy.json",
+            )
 
         self._callbacks_registered = True
 
-MATERIAL_FLOW_PATH = Path(__file__).resolve().parents[2] / "material_flow.json"
+MATERIAL_FLOW_PATH = Path(__file__).resolve().parents[2] / "prior_knowledge" / "material_flow.json"
 STRUCTURAL_HIERARCHY_PATH = (
-    Path(__file__).resolve().parents[2] / "structural_hierarchy.json"
+    Path(__file__).resolve().parents[2] / "prior_knowledge" / "structural_hierarchy.json"
 )
 TRANSPORTED_ITEM_STYLES = {
     "pallet": {
@@ -389,6 +427,7 @@ class MaterialFlow(features.Feature):
         fetching: bool = False,
     ) -> None:
         super().__init__(tr=tr, periodic=periodic, fetching=fetching)
+        self._callbacks_registered = False
         self._set_component_ids()
         self._material_flow = self._read_material_flow()
         (
@@ -470,6 +509,8 @@ class MaterialFlow(features.Feature):
         system_name = self._css_token(self.plant_name or "system")
         prefix = f"{system_name}-material-flow"
         self._graph_id = f"{prefix}-graph"
+        self._download_button_id = f"{prefix}-download-button"
+        self._download_id = f"{prefix}-download"
 
     def _validate_material_flow(self) -> None:
         nodes = self._material_flow.get("nodes")
@@ -897,6 +938,13 @@ class MaterialFlow(features.Feature):
         return html.Div(
             [
                 html.Div(
+                    _download_json_control(
+                        self._download_button_id,
+                        self._download_id,
+                    ),
+                    style={"display": "flex", "justifyContent": "flex-end"},
+                ),
+                html.Div(
                     [
                         cyto.Cytoscape(
                             id=self._graph_id,
@@ -947,13 +995,30 @@ class MaterialFlow(features.Feature):
         )
 
     def register_callbacks(self, dash_app: Any, analysis: Any) -> None:
-        """No callbacks are required for the static material-flow graph."""
+        """Register the material-flow download callback."""
+        if self._callbacks_registered:
+            return
+
+        self._set_component_ids()
+
+        @dash_app.callback(
+            Output(self._download_id, "data"),
+            Input(self._download_button_id, "n_clicks"),
+            prevent_initial_call=True,
+        )
+        def download_material_flow(n_clicks: int) -> dict[str, Any]:
+            return dcc.send_file(
+                str(MATERIAL_FLOW_PATH),
+                filename="material_flow.json",
+            )
+
+        self._callbacks_registered = True
 
 COMPONENT_TYPE_KNOWLEDGE_PATH = (
-    Path(__file__).resolve().parents[2] / "component_type_knowledge.json"
+    Path(__file__).resolve().parents[2] / "prior_knowledge" / "component_type_knowledge.json"
 )
 PALLET_CONFIGURATIONS_PATH = (
-    Path(__file__).resolve().parents[2] / "pallet_configurations.json"
+    Path(__file__).resolve().parents[2] / "prior_knowledge" / "pallet_configurations.json"
 )
 
 
@@ -996,6 +1061,8 @@ class ComponentTypeKnowledge(features.Feature):
         prefix = f"{system_name}-component-knowledge"
         self._component_type_selector_id = f"{prefix}-component-type-selector"
         self._details_id = f"{prefix}-details"
+        self._download_button_id = f"{prefix}-download-button"
+        self._download_id = f"{prefix}-download"
 
     def _validate_component_knowledge(self) -> None:
         if not self._component_knowledge:
@@ -1159,23 +1226,6 @@ class ComponentTypeKnowledge(features.Feature):
             ]
         )
 
-    @staticmethod
-    def _statistic(label: str, value: int) -> html.Div:
-        return html.Div(
-            [
-                html.Div(str(value), style={"fontSize": "1.5rem", "fontWeight": 700}),
-                html.Div(label, style={"color": "#475569", "fontSize": "0.85rem"}),
-            ],
-            style={
-                "backgroundColor": "#f8fafc",
-                "border": "1px solid #e2e8f0",
-                "borderRadius": "0.5rem",
-                "minWidth": "10rem",
-                "padding": "0.75rem 1rem",
-                "textAlign": "center",
-            },
-        )
-
     def perform(self, start: Any, end: Any) -> dict[str, int]:
         """Return static metadata when SelfX requests feature computation."""
         return {
@@ -1205,31 +1255,15 @@ class ComponentTypeKnowledge(features.Feature):
     def layout(self, role: Any, analysis: Any, start: Any, end: Any) -> html.Div:
         """Build the component knowledge layout."""
         initial_component_type = self._component_types[0]
-        metadata = self.perform(start, end)
 
         return html.Div(
             [
-                html.P(
-                    "Select a component type to inspect its observable variables, "
-                    "configurable parameters, and fault types."
-                ),
                 html.Div(
-                    [
-                        self._statistic(
-                            "component types",
-                            metadata["component_types"],
-                        ),
-                        self._statistic(
-                            "observable variables",
-                            metadata["observable_variables"],
-                        ),
-                        self._statistic(
-                            "configurable parameters",
-                            metadata["configurable_parameters"],
-                        ),
-                        self._statistic("fault types", metadata["fault_types"]),
-                    ],
-                    style={"display": "flex", "flexWrap": "wrap", "gap": "0.75rem"},
+                    _download_json_control(
+                        self._download_button_id,
+                        self._download_id,
+                    ),
+                    style={"display": "flex", "justifyContent": "flex-end"},
                 ),
                 html.Div(
                     [
@@ -1279,6 +1313,17 @@ class ComponentTypeKnowledge(features.Feature):
         def show_component_details(component_type: str) -> html.Div:
             return self._component_details(component_type)
 
+        @dash_app.callback(
+            Output(self._download_id, "data"),
+            Input(self._download_button_id, "n_clicks"),
+            prevent_initial_call=True,
+        )
+        def download_component_type_knowledge(n_clicks: int) -> dict[str, Any]:
+            return dcc.send_file(
+                str(COMPONENT_TYPE_KNOWLEDGE_PATH),
+                filename="component_type_knowledge.json",
+            )
+
         self._callbacks_registered = True
 
 
@@ -1303,8 +1348,23 @@ class PalletConfigurations(features.Feature):
         fetching: bool = False,
     ) -> None:
         super().__init__(tr=tr, periodic=periodic, fetching=fetching)
+        self._callbacks_registered = False
+        self._set_component_ids()
         self._pallet_configurations = self._read_pallet_configurations()
         self._validate_pallet_configurations()
+
+    @staticmethod
+    def _css_token(value: str) -> str:
+        return "".join(
+            character if character.isalnum() or character in "-_" else "-"
+            for character in value
+        )
+
+    def _set_component_ids(self) -> None:
+        system_name = self._css_token(self.plant_name or "system")
+        prefix = f"{system_name}-pallet-configurations"
+        self._download_button_id = f"{prefix}-download-button"
+        self._download_id = f"{prefix}-download"
 
     @staticmethod
     def _read_pallet_configurations() -> dict[str, Any]:
@@ -1504,6 +1564,13 @@ class PalletConfigurations(features.Feature):
             [
                 html.P("Inspect pallet configurations and their products."),
                 html.Div(
+                    _download_json_control(
+                        self._download_button_id,
+                        self._download_id,
+                    ),
+                    style={"display": "flex", "justifyContent": "flex-end"},
+                ),
+                html.Div(
                     [
                         self._statistic("configurations", metadata["configurations"]),
                         self._statistic("products", metadata["products"]),
@@ -1529,7 +1596,24 @@ class PalletConfigurations(features.Feature):
         )
 
     def register_callbacks(self, dash_app: Any, analysis: Any) -> None:
-        """No callbacks are required for the static pallet configuration view."""
+        """Register the pallet configuration download callback."""
+        if self._callbacks_registered:
+            return
+
+        self._set_component_ids()
+
+        @dash_app.callback(
+            Output(self._download_id, "data"),
+            Input(self._download_button_id, "n_clicks"),
+            prevent_initial_call=True,
+        )
+        def download_pallet_configurations(n_clicks: int) -> dict[str, Any]:
+            return dcc.send_file(
+                str(PALLET_CONFIGURATIONS_PATH),
+                filename="pallet_configurations.json",
+            )
+
+        self._callbacks_registered = True
 
 
 class PriorKnowledge(features.Feature):

@@ -46,9 +46,9 @@ This repository is intended to store:
 
 The repository contains several machine-readable files that describe the benchmark system independently from the generated time-series data:
 
-- [`component_type_knowledge.json`](component_type_knowledge.json) defines reusable knowledge per component type prefix, such as `CC`, `RC`, `CLT`, `AMR`, `PR`, `RB`, and `RS`. Each entry separates observable variables, configurable parameters, and injectable fault types. Numeric configurable parameters include their valid `min` and `max` range, while fault types include the value used to repair or reset the injected fault.
-- [`conveyor_segments.json`](conveyor_segments.json) groups adjacent conveyor components into named logical segments, for example consecutive `CC_*` or `RC_*` transport paths. These groups are useful for plotting, aggregation, and interpreting faults that affect a local transport section rather than a single isolated conveyor.
-- [`structural_hierarchy.json`](structural_hierarchy.json) defines the physical hierarchy of the digital twin as area -> component type -> component identifiers. It assigns components to functional areas such as AMR, PAR, VZ, WA, and WE, and intentionally keeps variable and fault definitions separate from the hierarchy.
+- [`component_type_knowledge.json`](prior_knowledge/component_type_knowledge.json) defines reusable knowledge per component type prefix, such as `CC`, `RC`, `CLT`, `AMR`, `PR`, `RB`, and `RS`. Each entry separates observable variables, configurable parameters, and injectable fault types. Numeric configurable parameters include their valid `min` and `max` range, while fault types include the value used to repair or reset the injected fault.
+- [`conveyor_segments.json`](prior_knowledge/conveyor_segments.json) groups adjacent conveyor components into named logical segments, for example consecutive `CC_*` or `RC_*` transport paths. These groups are useful for plotting, aggregation, and interpreting faults that affect a local transport section rather than a single isolated conveyor.
+- [`structural_hierarchy.json`](prior_knowledge/structural_hierarchy.json) defines the physical hierarchy of the digital twin as area -> component type -> component identifiers. It assigns components to functional areas such as AMR, PAR, VZ, WA, and WE, and intentionally keeps variable and fault definitions separate from the hierarchy.
 
 ## Benchmark Tasks
 
@@ -113,7 +113,7 @@ This reads the compressed simulator export into a pandas DataFrame indexed by `s
 
 ## Pallet configurations
 
-The benchmark includes several predefined pallet configurations used by the scenario generator. These configurations define the product types placed on a pallet and their production routes through the robot stations. They are defined in [`pallet_configurations.json`](pallet_configurations.json).
+The benchmark includes several predefined pallet configurations used by the scenario generator. These configurations define the product types placed on a pallet and their production routes through the robot stations. They are defined in [`pallet_configurations.json`](prior_knowledge/pallet_configurations.json).
 
 Currently, defined configurations include:
 
@@ -122,6 +122,11 @@ Currently, defined configurations include:
 - `HSU-1Box`
 
 For details on product layouts and production routes, see [`docs/pallet_configurations.md`](docs/pallet_configurations.md).
+
+## Known Problems
+
+- In [`pallet_configurations.json`](prior_knowledge/pallet_configurations.json), `PalletConfiguration-NOVA-DTF-HSU-Mix` assigns two products to the same position: `HeightPosition=1`, `LengthPosition=2`, `WidthPosition=1`. As a result, its 12 products occupy only 11 distinct configured positions.
+- `IncreasedDampingFault` is assigned a default value of `0.1` by the simulation in some cases even when this value was not explicitly present in the scenario definition. Because that default is not a scenario-specified fault and is used as a neutral/normal baseline, the dashboard treats it as non-faulty and only flags values different from both `0` and `0.1`.
 
 ## Citation
 

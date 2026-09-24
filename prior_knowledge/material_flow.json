@@ -360,24 +360,15 @@
                   },
                   {
                       "id":  "AMR_1",
-                      "type":  "AMR",
-                      "shared_with":  [
-                                          "AMP_1"
-                                      ]
+                      "type":  "AMR"
                   },
                   {
                       "id":  "AMR_2",
-                      "type":  "AMR",
-                      "shared_with":  [
-                                          "AMP_2"
-                                      ]
+                      "type":  "AMR"
                   },
                   {
                       "id":  "AMR_3",
-                      "type":  "AMR",
-                      "shared_with":  [
-                                          "AMP_3"
-                                      ]
+                      "type":  "AMR"
                   },
                   {
                       "id":  "RS_1",
@@ -718,18 +709,6 @@
                       "id":  "CC_158",
                       "type":  "CC",
                       "is_sink":  true
-                  },
-                  {
-                      "id":  "AMP_1",
-                      "type":  "AMP"
-                  },
-                  {
-                      "id":  "AMP_2",
-                      "type":  "AMP"
-                  },
-                  {
-                      "id":  "AMP_3",
-                      "type":  "AMP"
                   },
                   {
                       "id":  "RB_1",

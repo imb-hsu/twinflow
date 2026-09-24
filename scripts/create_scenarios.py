@@ -16,7 +16,9 @@ from pathlib import Path
 from typing import Any
 from datetime import datetime, timezone
 
-PALLET_CONFIGURATIONS_PATH = Path("pallet_configurations.json")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+PALLET_CONFIGURATIONS_PATH = REPO_ROOT / "prior_knowledge" / "pallet_configurations.json"
 
 
 def load_pallet_configuration_names(
@@ -215,15 +217,15 @@ def create_scenario(
 
     # Initialize random number generator with seed for reproducibility
     rng = random.Random(seed)
-    hierarchy_path = Path("structural_hierarchy.json")
+    hierarchy_path = REPO_ROOT / "prior_knowledge" / "structural_hierarchy.json"
     with hierarchy_path.open("r", encoding="utf-8") as f:
         structural_knowledge = json.load(f)
 
-    conveyor_segments_path = Path("conveyor_segments.json")
+    conveyor_segments_path = REPO_ROOT / "prior_knowledge" / "conveyor_segments.json"
     with conveyor_segments_path.open("r", encoding="utf-8") as f:
         conveyor_segments = json.load(f)
 
-    fault_knowledge_path = Path("component_type_knowledge.json")
+    fault_knowledge_path = REPO_ROOT / "prior_knowledge" / "component_type_knowledge.json"
     with fault_knowledge_path.open("r", encoding="utf-8") as f:
         fault_knowledge = json.load(f)
 
@@ -390,7 +392,7 @@ def create_scenario(
 
 if __name__ == "__main__":
     # Create directory structure for scenario files
-    output_dir = Path("scenarios")
+    output_dir = REPO_ROOT / "scenarios"
     output_dir.mkdir(exist_ok=True)
 
     training_dir = output_dir / "training"

@@ -1,6 +1,6 @@
 ### Pallet configurations
 
-The scenario generator supports three main pallet configurations used to create products in the system. They are defined together in [`../pallet_configurations.json`](../pallet_configurations.json).
+The scenario generator supports three main pallet configurations used to create products in the system. They are defined together in [`../prior_knowledge/pallet_configurations.json`](../prior_knowledge/pallet_configurations.json).
 
 #### `PalletConfiguration-NOVA-6-DTF-6`
 
