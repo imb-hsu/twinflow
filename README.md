@@ -10,15 +10,34 @@ The benchmark is designed for research on:
 - AI-based fault handling in production systems
 - Digital-twin-generated industrial datasets
 
-## Authors
+## Reference
 
-- Nemanja Hranisavljevic — Helmut Schmidt University, Hamburg, Germany
-- Alexander Diedrich — Helmut Schmidt University, Hamburg, Germany
-- Lukas Moddemann — Helmut Schmidt University, Hamburg, Germany
-- Domenic Schaeffer — Digital Twin Factory GmbH, Bad Oeynhausen, Germany
-- Frank Marek — Novatio Solutions GmbH, Monheim, Germany
-- Ingo Pill — Graz University of Technology, Graz, Austria
-- Oliver Niggemann — Helmut Schmidt University, Hamburg, Germany
+```bibtex
+@InProceedings{hranisavljevic_et_al:OASIcs.DX.2026.7,
+  author = {Hranisavljevic, Nemanja and Diedrich, Alexander and Moddemann, Lukas and
+            Schaeffer, Domenic and Marek, Frank and Pill, Ingo and Niggemann, Oliver},
+  title = {{HSU TwinFlow: A Living Benchmark for Evaluating Anomaly Detection and
+            Diagnosis Methods in Cyber-Physical Production Systems Using
+            Digital-Twin-Generated Data}},
+  booktitle = {37th International Conference on Principles of Diagnosis and
+               Resilient Systems (DX 2026)},
+  pages = {7:1--7:14},
+  series = {Open Access Series in Informatics (OASIcs)},
+  ISBN = {978-3-95977-455-0},
+  ISSN = {2190-6807},
+  year = {2026},
+  volume = {148},
+  editor = {Pill, Ingo and Zanella, Marina and Provan, Gregory},
+  publisher = {Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik},
+  address = {Dagstuhl, Germany},
+  URL = {https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.DX.2026.7},
+  URN = {urn:nbn:de:0030-drops-278212},
+  doi = {10.4230/OASIcs.DX.2026.7},
+  annote = {Keywords: Benchmark, Digital Twin, Manufacturing, Production Systems,
+            Cyber-Physical Systems, Artificial Intelligence, Anomaly Detection,
+            Diagnosis, System Reconfiguration}
+}
+```
 
 ## Overview
 
