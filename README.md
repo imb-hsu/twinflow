@@ -12,6 +12,8 @@ The benchmark is designed for research on:
 
 ## Reference
 
+Paper is available at [here](https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.DX.2026.7).
+
 ```bibtex
 @InProceedings{hranisavljevic_et_al:OASIcs.DX.2026.7,
   author = {Hranisavljevic, Nemanja and Diedrich, Alexander and Moddemann, Lukas and
