@@ -1,5 +1,4 @@
 .idea/
-*.parquet
 *.pyc
 dashboard/Analysis/
 
