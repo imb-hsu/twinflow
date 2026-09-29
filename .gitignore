@@ -7,3 +7,5 @@ dashboard/Analysis/
 /mlflow.db-*
 /mlruns/
 Analysis/
+data/test/test.zip
+data/training/training.zip
