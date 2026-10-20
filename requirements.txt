@@ -1,2 +1,2 @@
-ai4cps==0.1.42
+ai4cps==0.1.44
 zstandard
