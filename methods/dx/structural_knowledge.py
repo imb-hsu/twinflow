@@ -9,7 +9,7 @@ knowledge files instead of a bespoke config format:
 The resulting artifact maps a measurement/fault column (e.g. "RC_144.MotorFault")
 to its owning component, component type, production area, and the possible
 faults for that component type. Applying this model still requires anomaly
-flags (e.g. from models/range_monitoring.json) to know *which* variables are
+flags from the 0%-only model (models/range_monitoring_0pct.json) to know which variables are
 currently anomalous.
 
 Run this script from the repository root:
@@ -30,7 +30,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 MODELS_PATH = Path(__file__).resolve().parents[2] / "models"
 MODEL_PATH = REPO_ROOT / "models" / "structural_knowledge.json"
-THRESHOLDS_PATH = REPO_ROOT / "models" / "range_monitoring.json"
+THRESHOLDS_PATH = REPO_ROOT / "models" / "range_monitoring_0pct.json"
 from methods.ad.range_monitoring import predict_column_anomalies  # noqa: E402
 from scripts.evaluate_methods import extract_fault_labels  # noqa: E402
 

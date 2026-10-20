@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-from methods.ad import autoencoder, range_monitoring
+from methods.ad import autoencoder, range_monitoring, range_monitoring_0_1pct, range_monitoring_0pct
 from methods.dx import case_based, structural_knowledge
 from scripts import evaluate_methods as evaluate
 
@@ -24,9 +24,10 @@ class EvaluationTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.models = self.root / 'models'
         self.models.mkdir()
-        for module in (range_monitoring, autoencoder, case_based, structural_knowledge):
+        for module in (range_monitoring, range_monitoring_0_1pct, range_monitoring_0pct,
+                       autoencoder, case_based, structural_knowledge):
             self.enterContext(patch.object(module, 'MODEL_PATH', self.models / (module.__name__.rsplit('.', 1)[-1] + '.json')))
-        self.enterContext(patch.object(structural_knowledge, 'THRESHOLDS_PATH', self.models / 'range_monitoring.json'))
+        self.enterContext(patch.object(structural_knowledge, 'THRESHOLDS_PATH', self.models / 'range_monitoring_0pct.json'))
         training = self.root / 'data/training/0_0pct_test'
         training.mkdir(parents=True)
         (training / 'measurements.parquet').touch()
@@ -41,10 +42,34 @@ class EvaluationTests(unittest.TestCase):
         model = json.loads((self.models / 'range_monitoring.json').read_text())
         self.assertEqual(model['speed'], {'type': 'numeric', 'lower': 0., 'upper': 1.})
         self.assertEqual(model['state']['categories'], ['idle', 'run'])
-        predictions = range_monitoring.predict(
-            pd.DataFrame({'speed': [0., 2., 0., np.nan],
-                          'state': ['idle', 'run', 'unknown', 'idle']}))
-        self.assertEqual(predictions.tolist(), [False, True, True, True])
+        with self.assertWarnsRegex(RuntimeWarning, 'speed: 1'):
+            predictions = range_monitoring.predict(
+                pd.DataFrame({'speed': [0., 2., 0., np.nan],
+                              'state': ['idle', 'run', 'unknown', 'idle']}))
+        self.assertEqual(predictions.tolist(), [False, True, True, False])
+
+    def test_autoencoder_ignores_missing_feature_errors_and_warns(self):
+        model = {'columns': ['speed', 'state', 'enabled'], 'encoding': {
+            'speed': {'type': 'numeric', 'fill_value': 0.},
+            'state': {'type': 'categorical', 'categories': ['Idle', 'Moving']},
+            'enabled': {'type': 'boolean'},
+        }, 'scaler': {'mean': [0.] * 4, 'scale': [1.] * 4},
+                 'layers': [{'weights': np.zeros((4, 4)).tolist(), 'bias': [0., 50., 50., 0.]}],
+                 'threshold': 1.}
+        frame = pd.DataFrame({'speed': [0., 3., np.nan, 0.],
+                              'state': pd.array([None, None, None, 'Idle'], dtype='string'),
+                              'enabled': pd.array([False, False, None, False], dtype='boolean')})
+        autoencoder.MODEL_PATH.write_text(json.dumps(model))
+        with self.assertWarnsRegex(RuntimeWarning, 'state: 3'):
+            predictions = autoencoder.predict(frame)
+        self.assertEqual(predictions.tolist(), [False, True, False, True])
+        from dashboard.features import autoencoder as view
+        feature = view.AutoencoderAD()
+        with patch.object(view, 'load_table', side_effect=[frame, None]):
+            figure, summary = feature._analyze('test', 'missing', model)
+        self.assertIn('state: 3', summary.children[1].children)
+        scores = next(trace for trace in figure.data if trace.name == 'Reconstruction error').y
+        np.testing.assert_array_equal(np.asarray(scores) > model['threshold'], predictions)
 
     def test_saved_detectors_use_the_same_labels_and_metrics(self):
         (self.models / 'range_monitoring.json').write_text(json.dumps({
@@ -80,7 +105,7 @@ class EvaluationTests(unittest.TestCase):
         (self.models / 'structural_knowledge.json').write_text(json.dumps({
             'component_type_by_id': {'CC_1': 'CC'},
             'faults_by_type': {'CC': ['MotorFault']}}))
-        (self.models / 'range_monitoring.json').write_text(json.dumps({
+        structural_knowledge.THRESHOLDS_PATH.write_text(json.dumps({
             'CC_1.speed': {'type': 'numeric', 'lower': 0., 'upper': 1.}}))
         directory = self.root / 'scenario'
         directory.mkdir()
@@ -124,7 +149,8 @@ class EvaluationTests(unittest.TestCase):
         measurements = pd.DataFrame({'x': np.linspace(-2, 2, 40),
                                      'y': np.sin(np.linspace(-2, 2, 40)),
                                      'enabled': [True, False] * 20,
-                                     'state': ['idle'] * 20 + ['running'] * 20})
+                                     'state': ['idle'] * 20 + ['running'] * 20,
+                                     'RB_1.Axis4.CurrentPosition': np.arange(40) * 1000.})
         fitted = MLPRegressor(hidden_layer_sizes=(3,), activation='relu',
                               solver='lbfgs', max_iter=1000, random_state=1)
         measurements.iloc[:20].to_parquet(self.root / 'data/training/0_0pct_test/measurements.parquet')
@@ -141,6 +167,8 @@ class EvaluationTests(unittest.TestCase):
                 contextlib.redirect_stdout(io.StringIO()):
             autoencoder.train()
         model = json.loads((self.models / 'autoencoder.json').read_text())
+        self.assertNotIn('RB_1.Axis4.CurrentPosition', model['columns'])
+        self.assertNotIn('RB_1.Axis4.CurrentPosition', model['encoding'])
         self.assertEqual(model['encoding']['enabled']['type'], 'boolean')
         self.assertEqual(model['encoding']['state']['categories'], ['idle', 'running'])
         encoded = autoencoder.encode_measurements(measurements, model)
@@ -150,6 +178,9 @@ class EvaluationTests(unittest.TestCase):
         scaled = (autoencoder.encode_measurements(probe, model) - model['scaler']['mean']) / model['scaler']['scale']
         expected_errors = np.mean((scaled - fitted.predict(scaled)) ** 2, axis=1)
         np.testing.assert_array_equal(autoencoder.predict(probe), expected_errors > model['threshold'])
+        changed_positions = probe.copy()
+        changed_positions['RB_1.Axis4.CurrentPosition'] = np.nan
+        np.testing.assert_array_equal(autoencoder.predict(probe), autoencoder.predict(changed_positions))
         # Dashboard reconstruction must also load the same JSON artifact.
         from dashboard.features.autoencoder import AutoencoderAD
         from dashboard.features import autoencoder as view
@@ -191,14 +222,14 @@ class EvaluationTests(unittest.TestCase):
         for filename in ('range_monitoring.json', 'autoencoder.json',
                          'case_based.json', 'structural_knowledge.json'):
             self.assertIn(filename, output.getvalue())
-        self.assertEqual(output.getvalue().count('WARNING:'), 4)
+        self.assertEqual(output.getvalue().count('WARNING:'), 6)
 
     def test_missing_structural_thresholds_warn_and_skip(self):
         (self.models / 'structural_knowledge.json').write_text('{}')
         output = io.StringIO()
         with contextlib.nullcontext(), contextlib.redirect_stdout(output):
             self.assertEqual(evaluate.evaluate_diagnosis({}), {})
-        self.assertIn('range_monitoring.json', output.getvalue())
+        self.assertIn('range_monitoring_0pct.json', output.getvalue())
 
     def test_available_detector_runs_when_other_model_is_missing(self):
         (self.models / 'range_monitoring.json').write_text(json.dumps({
@@ -365,6 +396,23 @@ class EvaluationTests(unittest.TestCase):
                 'measurements': pd.DataFrame({'speed': [0.]}, index=[1]),
                 'faults': pd.DataFrame({'fault': [False]}, index=[2]),
             }})
+
+    def test_missing_fault_values_require_preparation(self):
+        for column in (
+            pd.Series([0.0, np.nan]),
+            pd.Series([False, None], dtype="boolean"),
+        ):
+            with self.subTest(dtype=column.dtype), self.assertRaisesRegex(ValueError, "--faults-only"):
+                evaluate.extract_fault_labels(pd.DataFrame({"CC_1.MotorFault": column}))
+
+    def test_prepared_fault_values_produce_nonzero_labels_without_filling(self):
+        faults = pd.DataFrame({
+            "CC_1.MotorFault": pd.array([False, True, False], dtype="boolean"),
+            "CC_1.WearFault": [0.0, 0.2, -0.1],
+        })
+        labels = evaluate.extract_fault_labels(faults)
+        self.assertEqual(labels["CC_1.MotorFault"].tolist(), [False, True, False])
+        self.assertEqual(labels["CC_1.WearFault"].tolist(), [False, True, True])
 
     def test_missing_model_inputs_are_rejected(self):
         range_monitoring.MODEL_PATH.write_text(json.dumps({'speed': {}}))

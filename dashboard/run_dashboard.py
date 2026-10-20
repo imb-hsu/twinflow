@@ -13,7 +13,7 @@ from ai4cps.dash.dashboard import Dash4CPS
 
 from features.data_plots import DataPlots
 from features.prior_knowledge import PriorKnowledge
-from features.range_monitoring import RangeMonitoring
+from features.range_monitoring import RangeMonitoringAll, RangeMonitoring01Pct, RangeMonitoring0Pct
 from features.autoencoder import AutoencoderAD
 from features.case_based import CaseBasedDX
 from features.structural_knowledge import StructKnowledgeDX
@@ -34,7 +34,9 @@ dashboard.add_system(
     features=[
         PriorKnowledge,
         DataPlots,
-        RangeMonitoring,
+        RangeMonitoringAll,
+        RangeMonitoring01Pct,
+        RangeMonitoring0Pct,
         AutoencoderAD,
         CaseBasedDX,
         StructKnowledgeDX,

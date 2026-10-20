@@ -58,6 +58,31 @@ class DataPlotsTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "max_plot_points"):
                     data_plots.DataPlots()
 
+    def test_all_measurement_types_are_selectable_and_plotted_together(self):
+        index = pd.Index([0.0, 1.0, 2.0], name="simulationTime")
+        frame = pd.DataFrame({
+            "speed": [1.5, 2.0, 3.0],
+            "active": pd.array([False, True, None], dtype="boolean"),
+            "direction": pd.array(["Forward", "Reverse", None], dtype="string"),
+            "state": pd.array(["Idle", "Moving", "Idle"], dtype="string"),
+        }, index=index)
+        frame.to_parquet(self.data / "measurements.parquet")
+        columns = self.feature._columns("test", "example", "measurements")
+        self.assertEqual(set(columns), set(frame.columns))
+        figure, _ = self.feature._plot_figure("test", "example", "measurements", list(columns))
+        traces = {trace.name: trace for trace in figure.data if trace.name in columns}
+        self.assertEqual(set(traces), set(columns))
+        self.assertEqual(list(traces["active"].y), [0, 1, None])
+        self.assertEqual(list(traces["direction"].y), ["Forward", "Reverse", None])
+        self.assertEqual(list(traces["speed"].y), [1.5, 2.0, 3.0])
+        for column in columns:
+            self.assertEqual(list(traces[column].x), list(index))
+            self.assertEqual(traces[column].yaxis, "y6" if column in {"direction", "state"} else "y5")
+            self.assertEqual(traces[column].line.shape, "linear" if column == "speed" else "hv")
+        self.assertEqual(figure.layout.yaxis5.type, "linear")
+        self.assertEqual(figure.layout.yaxis6.type, "category")
+        figure.to_json()
+
     def test_empty_and_missing_faults_are_explained(self):
         pd.DataFrame({"zero": [0, 0]}).to_parquet(self.data / "faults.parquet")
         figure, _ = self.feature._plot_figure("test", "example", "measurements", ["speed"])

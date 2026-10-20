@@ -11,6 +11,7 @@ Run this script from the repository root:
 """
 
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -21,6 +22,8 @@ from sklearn.preprocessing import StandardScaler
 METHOD_NAME = "Vanilla Autoencoder"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+from methods.ad._signals import is_ad_signal, validate_autoencoder_columns, warn_missing_values
 
 MODEL_PATH = REPO_ROOT / "models" / "autoencoder.json"
 
@@ -28,6 +31,7 @@ MODEL_PATH = REPO_ROOT / "models" / "autoencoder.json"
 def encode_measurements(measurements: pd.DataFrame, model: dict) -> np.ndarray:
     """Apply saved feature order and one-hot categories; unseen categories are all-zero."""
     columns = model["columns"]
+    validate_autoencoder_columns(columns)
     missing = set(columns) - set(measurements.columns)
     if missing:
         raise ValueError(f"Missing measurement columns: {sorted(missing)}")
@@ -57,9 +61,21 @@ HIDDEN_LAYER_SIZES = (128, 64, 16, 64, 128)
 ROW_STRIDE = 5
 
 
-def predict(measurements: pd.DataFrame) -> np.ndarray:
-    model = json.loads(MODEL_PATH.read_text(encoding="utf-8"))
+def reconstruction_scores(measurements: pd.DataFrame, model: dict, warn: bool = True) -> np.ndarray:
+    """Score observed values only, with missing inputs neutralized at training means."""
     X = encode_measurements(measurements, model)
+    missing = measurements[model["columns"]].isna()
+    observed = None
+    if missing.to_numpy().any():
+        if warn:
+            warn_missing_values(measurements, model["columns"])
+        blocks = []
+        for column in model["columns"]:
+            spec = model.get("encoding", {}).get(column, {"type": "numeric"})
+            width = len(spec["categories"]) if spec["type"] == "categorical" else 1
+            blocks.append(np.repeat(missing[column].to_numpy()[:, None], width, axis=1))
+        observed = ~np.concatenate(blocks, axis=1)
+        X = np.where(observed, X, np.asarray(model["scaler"]["mean"]))
     X_scaled = (X - np.asarray(model["scaler"]["mean"])) / np.asarray(model["scaler"]["scale"])
     reconstructed = X_scaled
     layers = model["layers"]
@@ -67,8 +83,17 @@ def predict(measurements: pd.DataFrame) -> np.ndarray:
         reconstructed = reconstructed @ np.asarray(layer["weights"]) + np.asarray(layer["bias"])
         if index < len(layers) - 1:
             reconstructed = np.maximum(reconstructed, 0)  # ReLU hidden layers; linear output.
-    reconstruction_error = np.mean((X_scaled - reconstructed) ** 2, axis=1)
-    return reconstruction_error > model["threshold"]
+    errors = (X_scaled - reconstructed) ** 2
+    if observed is None:
+        return errors.mean(axis=1)
+    counts = observed.sum(axis=1)
+    return np.divide(np.where(observed, errors, 0).sum(axis=1), counts,
+                     out=np.zeros(len(measurements)), where=counts > 0)
+
+
+def predict(measurements: pd.DataFrame) -> np.ndarray:
+    model = json.loads(MODEL_PATH.read_text(encoding="utf-8"))
+    return reconstruction_scores(measurements, model) > model["threshold"]
 
 
 
@@ -83,7 +108,10 @@ def train() -> None:
         raise SystemExit("No training scenarios found under data/training")
 
     combined = pd.concat(train_data.values(), axis=0, ignore_index=True)
-    columns = list(combined.columns)
+    columns = [column for column in combined.columns if is_ad_signal(column)]
+    if not columns:
+        raise ValueError("No AD signals remain after excluding CurrentPosition")
+    warn_missing_values(combined, columns)
     encoding = {}
     for column in columns:
         values = combined[column]

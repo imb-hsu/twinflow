@@ -4,6 +4,10 @@ Run this script from the repository root:
 
     python scripts/prepare_data.py
 
+To update only existing faults parquet files without rereading raw exports:
+
+    python scripts/prepare_data.py --faults-only
+
 Data paths are resolved relative to this file, regardless of the working directory.
 
 It reads all JSONL samples from each ``.json.zst`` file in
@@ -19,10 +23,18 @@ AMP entries are assigned to the AMR with the same numeric suffix, producing
 
 Vectors expand into numeric .X/.Y/.Z columns. Boolean values remain booleans,
 categorical labels remain strings, and blank values become missing values.
+Faults are zeroed while their component's CurrentState is inactive (False or
+Idle). Nested parts use their own state; PR robots use their three axis states.
+The nominal IncreasedDampingFault baseline 0.1 is always replaced with 0.
+Missing fault values are always replaced with 0 (False for booleans).
+Other fault values are preserved when activity is unknown or no state is exported.
+After all exports are prepared, a final pass reloads faults and measurements
+and overwrites each faults.parquet with the activity-masked values.
 
 EXCLUDED_COLUMNS and EXCLUDED_COLUMN_PREFIXES are used to filter out unwanted columns from the input data.
 """
 
+import argparse
 import io
 from functools import lru_cache
 import re
@@ -278,6 +290,59 @@ def normalize_dataframe(df: pd.DataFrame, knowledge: dict) -> pd.DataFrame:
     return pd.DataFrame(converted, index=df.index)
 
 
+def mask_inactive_faults(faults: pd.DataFrame, measurements: pd.DataFrame) -> pd.DataFrame:
+    """Zero missing faults, nominal damping, and faults of inactive components."""
+    if not faults.index.equals(measurements.index):
+        raise ValueError("Faults and measurements must have identical simulationTime indexes")
+    faults = faults.copy()
+    # Mask each component's faults using its own state, including Lift and AMP.
+    # Keep booleans as False (the boolean zero) and numeric fault magnitudes as 0.
+    columns_by_name = {str(column).casefold(): column for column in measurements.columns}
+    faults_by_component = {}
+    for column in faults.columns:
+        # Store missing faults as normal regardless of component activity.
+        zero = False if pd.api.types.is_bool_dtype(faults[column].dtype) else 0
+        faults[column] = faults[column].fillna(zero)
+        # The simulator's default damping baseline is normal, even while active.
+        if str(column).rsplit(".", 1)[-1].casefold() == "increaseddampingfault":
+            faults.loc[faults[column].eq(0.1).fillna(False), column] = 0
+        component = str(column).rsplit(".", 1)[0].casefold()
+        faults_by_component.setdefault(component, []).append(column)
+
+    for component, columns in faults_by_component.items():
+        state_column = columns_by_name.get(f"{component}.currentstate")
+        if state_column is not None:
+            state = measurements[state_column]
+            inactive = (state.eq(False) | state.eq("Idle")).fillna(False)
+        elif component.startswith("pr_") and "." not in component:
+            # PR faults belong to the whole robot; it is off only if all axes are off.
+            axis_states = [
+                columns_by_name.get(f"{component}.{axis}.currentstate")
+                for axis in ("x", "y", "z")
+            ]
+            if any(column is None for column in axis_states):
+                continue
+            inactive = measurements[axis_states].eq(False).fillna(False).all(axis=1)
+        else:
+            # For example, RB exports have no activity state to base masking on.
+            continue
+
+        for column in columns:
+            zero = False if pd.api.types.is_bool_dtype(faults[column].dtype) else 0
+            faults.loc[inactive, column] = zero
+    return faults
+
+
+def update_faults_parquet(output_dir: Path | str) -> None:
+    """Reload saved faults and measurements, then overwrite the masked faults."""
+    output_dir = Path(output_dir)
+    faults_path = output_dir / "faults.parquet"
+    faults = pd.read_parquet(faults_path)
+    measurements = pd.read_parquet(output_dir / "measurements.parquet")
+    faults = mask_inactive_faults(faults, measurements)
+    faults.to_parquet(faults_path, index=True)
+
+
 def split_dataframe(df: pd.DataFrame, output_dir: Path|str) -> None:
     """Split a dataframe into measurement, fault, and parameter parquet files."""
     output_dir = Path(output_dir)
@@ -331,6 +396,8 @@ def split_dataframe(df: pd.DataFrame, output_dir: Path|str) -> None:
     parameters = df[parameter_cols].copy()
     data = df.drop(columns=fault_cols + parameter_cols).copy()
 
+    faults = mask_inactive_faults(faults, data)
+
     print(f"Regular dataframe shape: {data.shape}")
     print(f"Faults dataframe shape: {faults.shape}")
     print(f"Parameters dataframe shape: {parameters.shape}")
@@ -357,7 +424,7 @@ def split_dataframe(df: pd.DataFrame, output_dir: Path|str) -> None:
     parameters.to_parquet(output_dir / "parameters.parquet", index=True)
 
 
-def main() -> None:
+def prepare_exports() -> None:
     # Process training and test exports separately, in deterministic filename order.
     for dir_tr in DIRS_TO_TRANSFORM:
         input_files = sorted(
@@ -386,6 +453,7 @@ def main() -> None:
                 ]
                 output_dir.mkdir(exist_ok=True)
                 split_dataframe(df, output_dir)
+                del df
                 print(f"Saved prepared parquet files to {output_dir}")
                 processed_files += 1
             except Exception as error:
@@ -405,6 +473,41 @@ def main() -> None:
         )
 
 
+def update_prepared_faults() -> None:
+    """Apply the final fault-masking pass to all existing prepared exports."""
+    for directory in DIRS_TO_TRANSFORM:
+        updated_files = 0
+        failed_files = 0
+        for faults_path in sorted(Path(directory).glob("*/faults.parquet")):
+            try:
+                update_faults_parquet(faults_path.parent)
+                print(f"Updated activity-masked faults in {faults_path}")
+                updated_files += 1
+            except Exception as error:
+                failed_files += 1
+                print(
+                    f"Failed to update {faults_path}: {type(error).__name__}: {error}",
+                    file=sys.stderr,
+                )
+                traceback.print_exc()
+        print(
+            f"Finished updating faults in {directory}: "
+            f"{updated_files} updated, {failed_files} failed."
+        )
+
+
+def main(*, faults_only: bool = False) -> None:
+    if not faults_only:
+        prepare_exports()
+    update_prepared_faults()
+
+
 # Importing helpers must not trigger conversion of the full dataset.
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--faults-only",
+        action="store_true",
+        help="Reload existing faults and measurements and update faults without converting raw exports.",
+    )
+    main(faults_only=parser.parse_args().faults_only)

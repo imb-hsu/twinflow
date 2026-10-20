@@ -5,7 +5,7 @@ Evaluation protocol
 Ground truth is derived from each test scenario's faults.parquet: a sample is
 "anomalous" if any fault column is nonzero. For the current training/test
 recordings, IncreasedDampingFault values of both 0 and 0.1 are normal.
-Missing values are treated as inactive.
+Missing fault values must be replaced with zero by scripts/prepare_data.py.
 
 Anomaly detection (Range Monitoring, Vanilla Autoencoder):
     BA      - balanced_accuracy_score over all test samples (point-wise).
@@ -297,11 +297,15 @@ def calculate_metrics(y_true, y_pred) -> dict:
 def extract_fault_labels(faults: pd.DataFrame, filename: str | None = None) -> pd.DataFrame:
     """Mark nonzero fault values, excluding the current datasets' damping baseline."""
 
-    labels = faults.fillna(0).ne(0)
+    if faults.isna().any().any():
+        raise ValueError(
+            "Missing fault values: run python scripts/prepare_data.py --faults-only before evaluation"
+        )
+    labels = faults.ne(0)
     # In the current training/test recordings, 0.1 is also normal for this fault.
     for column in faults.columns:
         if filename and filename in FILENAMES_WITH_INCREASED_DUMPING_CONFLICT and column.rsplit(".", 1)[-1] == "IncreasedDampingFault":
-            labels[column] &= faults[column].ne(0.1).fillna(False)
+            labels[column] &= faults[column].ne(0.1)
     return labels
 
 
@@ -340,7 +344,7 @@ def evaluate_anomaly_detection(datasets: dict, existing_results: dict | None = N
 
         if measurements.empty or not measurements.index.equals(faults.index):
             raise ValueError(f"{scenario_name}: nonempty measurements and aligned fault indexes are required")
-        y_true = faults.fillna(False).to_numpy(dtype=bool).any(axis=1)
+        y_true = faults.to_numpy(dtype=bool).any(axis=1)
 
         true_segments.append(y_true)
         for name, predict in models.items():

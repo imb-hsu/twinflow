@@ -20,6 +20,8 @@ import pandas as pd
 from plotly.subplots import make_subplots
 
 from .range_monitoring import anomaly_stateflow, plot_stateflow
+from methods.ad._signals import validate_autoencoder_columns, missing_value_warning
+from methods.ad.autoencoder import reconstruction_scores
 
 TABLES = {
     "measurements": "measurements.parquet",
@@ -112,6 +114,7 @@ def initial_selection(datasets: dict[str, dict[str, Path]]) -> tuple[str | None,
 def encode_measurements(measurements: pd.DataFrame, model: dict) -> np.ndarray:
     """Apply saved feature order and one-hot categories; unseen categories are all-zero."""
     columns = model["columns"]
+    validate_autoencoder_columns(columns)
     missing = set(columns) - set(measurements.columns)
     if missing:
         raise ValueError(f"Missing measurement columns: {sorted(missing)}")
@@ -144,7 +147,9 @@ class AutoencoderAD(features.Feature):
         return "psychology"
 
     def _load_model(self, model_path: Path) -> dict:
-        return json.loads(model_path.read_text(encoding="utf-8"))
+        model = json.loads(model_path.read_text(encoding="utf-8"))
+        validate_autoencoder_columns(model["columns"])
+        return model
 
     def _analyze(self, split_name: str, scenario_name: str, model: dict):
         import plotly.graph_objects as go
@@ -162,15 +167,7 @@ class AutoencoderAD(features.Feature):
                 f"(e.g. {missing[0]}).",
             )
 
-        X = encode_measurements(measurements, model)
-        X_scaled = (X - np.asarray(model["scaler"]["mean"])) / np.asarray(model["scaler"]["scale"])
-        reconstructed = X_scaled
-        layers = model["layers"]
-        for index, layer in enumerate(layers):
-            reconstructed = reconstructed @ np.asarray(layer["weights"]) + np.asarray(layer["bias"])
-            if index < len(layers) - 1:
-                reconstructed = np.maximum(reconstructed, 0)
-        reconstruction_error = np.mean((X_scaled - reconstructed) ** 2, axis=1)
+        reconstruction_error = reconstruction_scores(measurements, model, warn=False)
         threshold = model["threshold"]
 
         anomalous = reconstruction_error > threshold
@@ -219,11 +216,14 @@ class AutoencoderAD(features.Feature):
             margin=dict(l=85, r=30, t=60, b=90),
         )
 
+        missing_warning = missing_value_warning(measurements, columns)
         summary = html.Div(
-            html.P(
+            [html.P(
                 f"{int(anomalous.sum())}/{len(measurements)} samples exceed the "
                 f"reconstruction-error threshold ({threshold:.4f})."
-            )
+            ), html.P(missing_warning, role="alert",
+                      style={"color": "#b45309"})
+            if missing_warning else None]
         )
         return figure, summary
 

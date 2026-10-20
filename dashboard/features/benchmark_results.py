@@ -28,7 +28,8 @@ def _metric_cell(value: float | None) -> str:
 
 
 def _anomaly_detection_table(results: dict[str, dict[str, float]] | None) -> html.Table:
-    methods = ["Range Monitoring", "Vanilla Autoencoder"]
+    methods = ["Range Monitoring", "Range Monitoring (0% + 1%)",
+               "Range Monitoring (0%)", "Vanilla Autoencoder"]
     methods.extend(method for method in (results or {}) if method not in methods)
     rows = []
     for method in methods:

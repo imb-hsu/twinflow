@@ -2,7 +2,7 @@
 
 Loads the structural knowledge model (models/structural_knowledge.json,
 trained by methods/dx/structural_knowledge.py) together with the range-
-monitoring thresholds (models/range_monitoring.json) that flag anomalous
+monitoring thresholds (models/range_monitoring_0pct.json, trained on 0% recordings) that flag anomalous
 variables, then maps anomalous variables to owning components and their
 possible fault types.
 """
@@ -19,7 +19,7 @@ from dash import Input, Output, dcc, html
 
 import pandas as pd
 from scripts.evaluate_methods import extract_fault_labels, diagnosis_events
-from .range_monitoring import RangeMonitoring
+from methods.ad.range_monitoring import predict_column_anomalies
 from .case_based import diagnosis_plot
 
 MODELS_PATH = Path(__file__).resolve().parents[2] / "models"
@@ -121,10 +121,10 @@ class StructKnowledgeDX(features.Feature):
 
     def _load_model(self, model_path: Path) -> dict:
         model = json.loads(model_path.read_text(encoding="utf-8"))
-        thresholds_path = MODELS_PATH / "range_monitoring.json"
+        thresholds_path = MODELS_PATH / "range_monitoring_0pct.json"
         if not thresholds_path.exists():
             raise FileNotFoundError(
-                f"{thresholds_path} not found; run methods/ad/range_monitoring.py "
+                f"{thresholds_path} not found; run methods/ad/range_monitoring_0pct.py "
                 "first so this feature knows which variables are anomalous."
             )
         model["thresholds"] = json.loads(thresholds_path.read_text(encoding="utf-8"))
@@ -148,10 +148,7 @@ class StructKnowledgeDX(features.Feature):
         if measurements.empty:
             return go.Figure(), "No faulty intervals in this scenario."
 
-        violations = pd.DataFrame({
-            column: RangeMonitoring._violation_flags(measurements[column], bounds)
-            for column, bounds in model["thresholds"].items() if column in measurements
-        }, index=measurements.index)
+        violations = predict_column_anomalies(measurements, model["thresholds"], warn=False)
         predictions = []
         for row in violations.itertuples(index=False, name=None):
             hits = {}

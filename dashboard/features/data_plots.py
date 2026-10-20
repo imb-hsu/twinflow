@@ -734,6 +734,7 @@ class DataPlots(features.Feature):
             rows=5,
             cols=1,
             shared_xaxes=True,
+            specs=[[{}], [{}], [{}], [{}], [{"secondary_y": True}]],
             vertical_spacing=0.045,
             row_heights=[0.17, 0.08, 0.22, 0.20, 0.33],
             subplot_titles=[
@@ -809,30 +810,37 @@ class DataPlots(features.Feature):
         elif not selected_columns:
             self._add_empty_row_message(figure, 5, "Select at least one column")
         else:
-            data_traces = [
-                go.Scatter(
+            for column in selected_columns:
+                if column not in dataframe:
+                    continue
+                series = dataframe[column]
+                is_boolean = pd.api.types.is_bool_dtype(series.dtype)
+                is_text = not is_boolean and not pd.api.types.is_numeric_dtype(series.dtype)
+                values = self._json_values(series)
+                trace = go.Scatter(
                     mode="lines",
                     name=column,
                     x=self._json_values(dataframe.index),
-                    y=self._json_values(dataframe[column]),
+                    y=[None if value is None else int(value) for value in values]
+                    if is_boolean else values,
+                    customdata=values,
+                    line={"shape": "hv" if is_boolean or is_text else "linear"},
+                    connectgaps=False,
                     hovertemplate=(
                         f"<b>{column}</b><br>"
                         "Time: %{x}s<br>"
-                        "Value: %{y}"
+                        "Value: %{customdata}"
                         "<extra></extra>"
                     ),
                 )
-                for column in selected_columns
-                if column in dataframe
-            ]
+                data_traces.append(trace)
+                figure.add_trace(trace, row=5, col=1, secondary_y=is_text)
             if not data_traces:
                 self._add_empty_row_message(
                     figure,
                     5,
                     "Selected columns were not found",
                 )
-            for trace in data_traces:
-                figure.add_trace(trace, row=5, col=1)
 
         if fault_error is not None:
             self._add_empty_row_message(figure, 3, f"Could not load faults: {fault_error}")
@@ -907,6 +915,11 @@ class DataPlots(features.Feature):
         figure.update_yaxes(showticklabels=False, title_text="", row=3, col=1)
         figure.update_yaxes(showticklabels=False, title_text="", row=4, col=1)
         figure.update_yaxes(showticklabels=False, title_text="", row=5, col=1)
+        figure.update_yaxes(type="linear", row=5, col=1, secondary_y=False)
+        figure.update_yaxes(
+            type="category", showticklabels=True, showgrid=False,
+            row=5, col=1, secondary_y=True,
+        )
 
         if data_load_error is not None:
             return (
@@ -972,6 +985,8 @@ class DataPlots(features.Feature):
                     id=self._file_selector_id,
                     options=self._file_options(),
                     value=initial_file,
+                    persistence=True,
+                    persistence_type="local",
                     clearable=False,
                     className="file_dropdown",
                 ),
@@ -1034,6 +1049,8 @@ class DataPlots(features.Feature):
                             id=self._columns_selector_id,
                             options=self._dropdown_options(initial_columns),
                             value=initial_selected_columns,
+                            persistence=True,
+                            persistence_type="local",
                             clearable=False,
                             multi=True,
                             className="control_very_wide",
@@ -1050,6 +1067,8 @@ class DataPlots(features.Feature):
                                 self._columns(initial_split, initial_scenario, "parameters")
                             ),
                             value=[],
+                            persistence=True,
+                            persistence_type="local",
                             placeholder="Select parameter signals to plot",
                             clearable=True,
                             multi=True,
@@ -1088,17 +1107,29 @@ class DataPlots(features.Feature):
             Output(self._parameters_selector_id, "options"),
             Output(self._parameters_selector_id, "value"),
             Input(self._file_selector_id, "value"),
+            State(self._columns_selector_id, "value"),
+            State(self._parameters_selector_id, "value"),
         )
         def update_columns(
             file_value: str,
-        ) -> tuple[list[dict[str, str]], list[str], list[dict[str, str]], list[str]]:
+            current_columns: list[str] | None,
+            current_parameters: list[str] | None,
+        ) -> tuple[list[dict[str, str]], Any, list[dict[str, str]], Any]:
             split_name, scenario_name = self._split_file(file_value)
             column_names = self._columns(split_name, scenario_name, DEFAULT_TABLE)
-            selected_columns = list(column_names[:MAX_DEFAULT_COLUMNS])
             parameter_names = self._columns(split_name, scenario_name, "parameters")
+            selected_columns = (
+                [column for column in current_columns if column in column_names]
+                if current_columns is not None else list(column_names[:MAX_DEFAULT_COLUMNS])
+            )
+            selected_parameters = [
+                column for column in current_parameters or [] if column in parameter_names
+            ]
             return (
-                self._dropdown_options(column_names), selected_columns,
-                self._dropdown_options(parameter_names), [],
+                self._dropdown_options(column_names),
+                no_update if selected_columns == current_columns else selected_columns,
+                self._dropdown_options(parameter_names),
+                no_update if selected_parameters == current_parameters else selected_parameters,
             )
 
         @dash_app.callback(

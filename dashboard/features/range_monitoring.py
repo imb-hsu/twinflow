@@ -21,6 +21,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from dash import Input, Output, dcc, html
+from methods.ad._signals import is_ad_signal, missing_value_warning
+from methods.ad.range_monitoring import predict_column_anomalies, violation_flags
 
 try:
     from ml4cps import plot_stateflow
@@ -143,14 +145,23 @@ def _target_labels(index, faults):
     active = np.zeros(len(index), dtype=bool)
     known = np.zeros(len(index), dtype=bool)
     if faults is not None:
-        columns = [column for column in faults if pd.api.types.is_bool_dtype(faults[column].dtype)]
+        columns = [column for column in faults
+                   if (pd.api.types.is_bool_dtype(faults[column].dtype)
+                       or pd.api.types.is_numeric_dtype(faults[column].dtype))
+                   and faults[column].notna().any()]
         if columns:
             aligned = faults[columns].reindex(index)
-            active = aligned.fillna(False).any(axis=1).to_numpy(dtype=bool)
+            labels = aligned.notna() & aligned.ne(0).fillna(False)
+            # The prepared recordings use 0.1 as the nominal damping baseline.
+            # Both reset (0) and that baseline must remain nominal.
+            for column in columns:
+                if str(column).rsplit(".", 1)[-1] == "IncreasedDampingFault":
+                    labels[column] &= aligned[column].ne(0.1).fillna(False)
+            active = labels.any(axis=1).to_numpy(dtype=bool)
             known = aligned.notna().all(axis=1).to_numpy(dtype=bool)
             target_states[:] = "Nominal"
             for column in columns:
-                mask = aligned[column].fillna(False).to_numpy(dtype=bool)
+                mask = labels[column].to_numpy(dtype=bool)
                 target_states[mask] = np.where(
                     target_states[mask] == "Nominal", column,
                     target_states[mask] + " + " + column,
@@ -172,6 +183,7 @@ class RangeMonitoring(features.Feature):
 
     abstract = False
     MODEL_FILENAME = "range_monitoring.json"
+    TRAINING_SCRIPT = "range_monitoring.py"
 
     def _set_component_ids(self):
         prefix = self._id_prefix()
@@ -180,6 +192,7 @@ class RangeMonitoring(features.Feature):
         self._summary_id = f"{prefix}-summary"
         prefix = self._id_prefix()
         self._signal_id = f"{prefix}-signal"
+        self._all_signal_id = f"{prefix}-all-signal"
         self._overview_store_id = f"{prefix}-overview"
 
     def icon(self) -> str:
@@ -190,25 +203,30 @@ class RangeMonitoring(features.Feature):
         if not isinstance(model, dict) or not model:
             raise ValueError("The range-monitoring model must contain signal thresholds.")
         for column, bounds in model.items():
-            if bounds.get("type", "numeric") == "numeric":
-                bounds["min"] = bounds.get("lower", bounds.get("min"))
-                bounds["max"] = bounds.get("upper", bounds.get("max"))
-                if bounds["min"] is None or bounds["max"] is None:
-                    raise ValueError(f"Missing numeric bounds for {column}")
-            elif bounds["type"] == "categorical":
-                if not isinstance(bounds.get("categories"), list):
-                    raise ValueError(f"Missing categories for {column}")
+            if not is_ad_signal(column):
+                continue
+            if "state_column" in bounds:
+                if not isinstance(bounds.get("states"), dict) or not bounds["states"]:
+                    raise ValueError(f"Missing state profiles for {column}")
+                profiles = bounds["states"].values()
             else:
-                raise ValueError(f"Unknown threshold type for {column}")
-        return model
+                profiles = [bounds]
+            for profile in profiles:
+                if profile.get("type", "numeric") == "numeric":
+                    profile["min"] = profile.get("lower", profile.get("min"))
+                    profile["max"] = profile.get("upper", profile.get("max"))
+                    if profile["min"] is None or profile["max"] is None:
+                        raise ValueError(f"Missing numeric bounds for {column}")
+                elif profile["type"] == "categorical":
+                    if not isinstance(profile.get("categories"), list):
+                        raise ValueError(f"Missing categories for {column}")
+                else:
+                    raise ValueError(f"Unknown threshold type for {column}")
+        return {column: bounds for column, bounds in model.items() if is_ad_signal(column)}
 
     @staticmethod
     def _violation_flags(series, bounds):
-        if bounds.get("type", "numeric") == "categorical":
-            return series.isna() | ~series.astype(str).isin(bounds["categories"])
-        lower = bounds.get("lower", bounds.get("min"))
-        upper = bounds.get("upper", bounds.get("max"))
-        return (series.isna() | (series < lower) | (series > upper)).fillna(True)
+        return violation_flags(series, bounds)
 
     def _analyze(self, split_name: str, scenario_name: str, model: dict):
         measurements = load_table(self._datasets, split_name, scenario_name, "measurements")
@@ -220,18 +238,16 @@ class RangeMonitoring(features.Feature):
         if measurements is None:
             return _empty_figure("No measurements found."), "No measurements found for this scenario.", []
 
-        monitored_columns = [column for column in measurements.columns if column in thresholds]
+        monitored_columns = [column for column in measurements.columns
+                             if column in thresholds and is_ad_signal(column)]
         if not monitored_columns:
             return _empty_figure("No monitored signals found."), "None of the trained columns are present in this scenario.", []
 
         measurements = measurements.sort_index()
-        out_of_range = {}
-        for column in monitored_columns:
-            bounds = thresholds[column]
-            series = measurements[column]
-            out_of_range[column] = self._violation_flags(series, bounds)
-
-        predicted = pd.DataFrame(out_of_range).any(axis=1)
+        out_of_range = predict_column_anomalies(
+            measurements, {column: thresholds[column] for column in monitored_columns}, warn=False
+        )
+        predicted = out_of_range.any(axis=1)
         stateflow = anomaly_stateflow(measurements.index, predicted, faults)
         colors = {state: "#dc2626" for state in stateflow.State.unique()}
         colors.update({"Nominal": "#0d9488", "Unavailable": "#94a3b8"})
@@ -293,6 +309,11 @@ class RangeMonitoring(features.Feature):
             className="benchmark_card", tabIndex=0, role="region",
             **{"aria-label": "Range monitoring confusion counts"},
         )
+        required_columns = set(monitored_columns) | {
+            thresholds[column]["state_column"] for column in monitored_columns
+            if "state_column" in thresholds[column]
+        }
+        missing_warning = missing_value_warning(measurements, sorted(required_columns))
         summary = html.Div(
             [
                 metrics_table,
@@ -300,6 +321,9 @@ class RangeMonitoring(features.Feature):
                        className="benchmark_legend") if not known.all() else None,
                 html.P(f"{len(ranked)} signals exceed their training limits. Select a signal below.")
                 if ranked else None,
+                html.P(missing_warning,
+                       role="alert", style={"color": "#b45309"})
+                if missing_warning else None,
             ]
         )
         options = [{"label": f"{column} ({count:,} out-of-range samples)", "value": column}
@@ -318,6 +342,12 @@ class RangeMonitoring(features.Feature):
                 dcc.Dropdown(id=self._signal_id, options=[], clearable=False,
                              placeholder="No out-of-range signals", className="control_very_wide"),
             ], className="content_control_wide control_very_wide_expandable"),
+            html.Div([
+                html.Label("Any measurement signal", htmlFor=self._all_signal_id),
+                dcc.Dropdown(id=self._all_signal_id, options=[], clearable=True,
+                             placeholder="Select an additional signal to inspect",
+                             className="control_very_wide"),
+            ], className="content_control_wide control_very_wide_expandable"),
             html.P("Complete selected signal. Red markers show samples outside the training limits.",
                    style={"fontSize": "13px", "marginTop": "12px"}),
             dcc.Loading(dcc.Graph(id=self._graph_id, figure=_empty_figure(message or "Select a scenario."))),
@@ -327,21 +357,26 @@ class RangeMonitoring(features.Feature):
         split_name, scenario_name = split_file(file_value)
         path = scenario_path(self._datasets, split_name, scenario_name)
         model = self._ensure_model()
-        if path is None or model is None or signal not in model:
+        if path is None or not signal:
             return None
-        # Read the complete selected signal without downsampling.
-        frame = pd.read_parquet(path / TABLES["measurements"], columns=[signal]).sort_index()
-        bounds = model[signal]
-        flags = self._violation_flags(frame[signal], bounds)
+        bounds = (model or {}).get(signal) if is_ad_signal(signal) else None
+        # A state-conditioned signal needs its owning state as well as its values.
+        columns = [signal]
+        if bounds is not None and bounds.get("state_column") not in (None, signal):
+            columns.append(bounds["state_column"])
+        frame = pd.read_parquet(path / TABLES["measurements"], columns=columns).sort_index()
+        flags = (predict_column_anomalies(frame, {signal: bounds}, warn=False)[signal] if bounds is not None
+                 else pd.Series(False, index=frame.index))
         return frame, flags, bounds
 
     def _detail_figure(self, file_value, signal):
         data = self._signal_data(file_value, signal)
         if data is None:
-            return _empty_figure("Select an out-of-range signal.")
+            return _empty_figure("Select a signal.")
         frame, flags, bounds = data
         series = frame[signal]
-        categorical = bounds.get("type", "numeric") == "categorical"
+        categorical = (bounds.get("type", "numeric") == "categorical" if bounds is not None
+                       else not pd.api.types.is_numeric_dtype(series.dtype))
         plotted = series.astype("string").fillna("Missing") if categorical else series.astype(float)
         violations = plotted[flags]
         figure = go.Figure([
@@ -353,32 +388,65 @@ class RangeMonitoring(features.Feature):
         ])
         if categorical:
             figure.update_yaxes(type="category")
-            figure.add_annotation(text="Training values: " + ", ".join(bounds["categories"]),
+            if bounds is not None:
+                values = ("; ".join(f"{state}: {', '.join(profile['categories'])}"
+                                    for state, profile in bounds["states"].items())
+                          if "state_column" in bounds else ", ".join(bounds["categories"]))
+                figure.add_annotation(text="Training values: " + values,
+                                      x=0, y=1.08, xref="paper", yref="paper", showarrow=False)
+        elif bounds is not None and "state_column" in bounds:
+            state_keys = frame[bounds["state_column"]].astype("string")
+            for key, label in [("lower", "Training minimum"), ("upper", "Training maximum")]:
+                limits = state_keys.map({state: profile[key] for state, profile in bounds["states"].items()})
+                figure.add_trace(go.Scatter(
+                    x=series.index.tolist(), y=limits.tolist(), name=label,
+                    mode="lines", line=dict(color="#64748b", dash="dash", shape="hv"),
+                    connectgaps=False,
+                ))
+            figure.add_annotation(text=f"Training limits follow {bounds['state_column']}",
                                   x=0, y=1.08, xref="paper", yref="paper", showarrow=False)
-        else:
+        elif bounds is not None:
             for key, label in [("min", "Training minimum"), ("max", "Training maximum")]:
                 figure.add_hline(y=bounds[key], line_dash="dash", line_color="#64748b",
                                  annotation_text=f"{label}: {bounds[key]:g}", annotation_position="top left")
             figure.add_hrect(y0=bounds["min"], y1=bounds["max"], fillcolor="#14b8a6", opacity=0.07,
                             line_width=0, layer="below")
+        if bounds is None:
+            figure.add_annotation(text="No training limits available for this signal",
+                                  x=0, y=1.08, xref="paper", yref="paper", showarrow=False)
+        if series.isna().any():
+            figure.add_annotation(text=f"Warning: {int(series.isna().sum()):,} missing samples; ignored for anomaly scoring",
+                                  x=0, y=1.16, xref="paper", yref="paper", showarrow=False,
+                                  font={"color": "#b45309"})
+        if bounds is not None and "state_column" in bounds and frame[bounds["state_column"]].isna().any():
+            count = int(frame[bounds["state_column"]].isna().sum())
+            figure.add_annotation(text=f"Warning: {count:,} missing component states; ignored for anomaly scoring",
+                                  x=0, y=1.24, xref="paper", yref="paper", showarrow=False,
+                                  font={"color": "#b45309"})
         figure.update_layout(template="plotly_white", height=480,
-                             xaxis_title="simulationTime [s]", hovermode="x unified",
+                             xaxis_title="simulationTime [s]", hovermode="closest",
                              legend=dict(orientation="h", y=-0.2), margin=dict(l=65, r=30, t=30, b=90))
         return figure
 
     @staticmethod
-    def _combined_figure(overview, detail):
-        figure = make_subplots(rows=2, cols=1, shared_xaxes=True,
-                               row_heights=[0.3, 0.7], vertical_spacing=0.09)
+    def _combined_figure(overview, detail, additional_detail=None):
+        sources = [go.Figure(overview), detail]
+        if additional_detail is not None:
+            sources.append(additional_detail)
+        figure = make_subplots(rows=len(sources), cols=1, shared_xaxes=True,
+                               row_heights=[0.3, 0.7] if len(sources) == 2 else [0.2, 0.4, 0.4],
+                               vertical_spacing=0.09)
         for trace in go.Figure(overview).data:
             figure.add_trace(trace, row=1, col=1)
-        for trace in detail.data:
-            figure.add_trace(trace, row=2, col=1)
-        for shape in detail.layout.shapes:
-            properties = shape.to_plotly_json()
-            properties.update(xref="x2 domain", yref="y2")
-            figure.add_shape(properties)
-        for row, source in [(1, go.Figure(overview)), (2, detail)]:
+        for row, source in enumerate(sources[1:], start=2):
+            for trace in source.data:
+                figure.add_trace(trace, row=row, col=1)
+            for shape in source.layout.shapes:
+                properties = shape.to_plotly_json()
+                properties.update(xref=f"x{row} domain", yref=f"y{row}")
+                figure.add_shape(properties)
+            figure.update_yaxes(type=source.layout.yaxis.type, row=row, col=1)
+        for row, source in enumerate(sources, start=1):
             for annotation in source.layout.annotations:
                 properties = annotation.to_plotly_json()
                 axis = "" if row == 1 else "2"
@@ -387,8 +455,9 @@ class RangeMonitoring(features.Feature):
                 figure.add_annotation(properties)
         figure.update_yaxes(type="category", categoryorder="array",
                             categoryarray=["Target", "Predicted"], row=1, col=1)
-        figure.update_xaxes(title_text="simulationTime [s]", row=2, col=1)
-        figure.update_layout(template="plotly_white", height=760, hovermode="x unified",
+        figure.update_xaxes(title_text="simulationTime [s]", row=len(sources), col=1)
+        figure.update_layout(template="plotly_white", height=760 if len(sources) == 2 else 1100,
+                             hovermode="closest",
                              legend=dict(orientation="h", y=-0.12),
                              margin=dict(l=85, r=30, t=30, b=90))
         return figure
@@ -400,30 +469,38 @@ class RangeMonitoring(features.Feature):
 
         @dash_app.callback(Output(self._overview_store_id, "data"), Output(self._summary_id, "children"),
                            Output(self._signal_id, "options"), Output(self._signal_id, "value"),
+                           Output(self._all_signal_id, "options"),
                            Input(self._file_selector_id, "value"))
         def update_scenario(file_value):
             model = self._ensure_model()
             if model is None:
-                return {"file": file_value, "figure": _empty_figure(self._model_error or "Model unavailable.").to_dict()}, self._model_error, [], None
+                return {"file": file_value, "figure": _empty_figure(self._model_error or "Model unavailable.").to_dict()}, self._model_error, [], None, []
             split_name, scenario_name = split_file(file_value)
             try:
                 frame = load_table(self._datasets, split_name, scenario_name, "measurements")
                 faults = load_table(self._datasets, split_name, scenario_name, "faults")
                 figure, summary, options = self._overview(frame, model, file_value or "Select a scenario", faults)
-                return {"file": file_value, "figure": figure.to_dict()}, summary, options, options[0]["value"] if options else None
+                all_options = [{"label": str(column), "value": str(column)} for column in frame] if frame is not None else []
+                return {"file": file_value, "figure": figure.to_dict()}, summary, options, options[0]["value"] if options else None, all_options
             except Exception as error:
-                return {"file": file_value, "figure": _empty_figure("Could not analyze scenario.").to_dict()}, str(error), [], None
+                return {"file": file_value, "figure": _empty_figure("Could not analyze scenario.").to_dict()}, str(error), [], None, []
 
         @dash_app.callback(Output(self._graph_id, "figure"), Input(self._overview_store_id, "data"),
-                           Input(self._signal_id, "value"))
-        def update_detail(overview, signal):
+                           Input(self._signal_id, "value"), Input(self._all_signal_id, "value"))
+        def update_detail(overview, signal, additional_signal=None):
             if not overview:
                 return _empty_figure("Select a scenario.")
             try:
                 detail = self._detail_figure(overview["file"], signal)
             except (OSError, ValueError, KeyError) as error:
                 detail = _empty_figure(f"Could not load signal: {error}")
-            return self._combined_figure(overview["figure"], detail)
+            additional_detail = None
+            if additional_signal:
+                try:
+                    additional_detail = self._detail_figure(overview["file"], additional_signal)
+                except (OSError, ValueError, KeyError) as error:
+                    additional_detail = _empty_figure(f"Could not load signal: {error}")
+            return self._combined_figure(overview["figure"], detail, additional_detail)
 
     def __init__(self, tr: Any = None, periodic: bool = False, fetching: bool = False) -> None:
         super().__init__(tr=tr, periodic=periodic, fetching=fetching)
@@ -471,7 +548,7 @@ class RangeMonitoring(features.Feature):
         except FileNotFoundError:
             self._model_error = (
                 f"No range-monitoring model found at {model_path}. "
-                "Run python methods/ad/range_monitoring.py to train and save it."
+                f"Run python methods/ad/{self.TRAINING_SCRIPT} to train and save it."
             )
         except (OSError, ValueError, TypeError, AttributeError) as error:
             self._model_error = f"Could not load range-monitoring model: {error}"
@@ -496,3 +573,21 @@ class RangeMonitoring(features.Feature):
             ],
             className="topbar_data_controls",
         )
+
+
+class RangeMonitoringAll(RangeMonitoring):
+    """Range monitoring trained on all training recordings."""
+
+
+class RangeMonitoring01Pct(RangeMonitoring):
+    """Range monitoring trained on 0% and 1% fault recordings."""
+
+    MODEL_FILENAME = "range_monitoring_0_1pct.json"
+    TRAINING_SCRIPT = "range_monitoring_0_1pct.py"
+
+
+class RangeMonitoring0Pct(RangeMonitoring):
+    """Range monitoring trained only on 0% fault recordings."""
+
+    MODEL_FILENAME = "range_monitoring_0pct.json"
+    TRAINING_SCRIPT = "range_monitoring_0pct.py"

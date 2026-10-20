@@ -120,14 +120,15 @@ data/
 | File | Contents | Use |
 | --- | --- | --- |
 | `measurements.parquet` | Recorded component signals, including numeric measurements, boolean states, and categorical states. | Model inputs and dashboard time-series plots. |
-| `faults.parquet` | Recorded fault values for each component, with columns such as `CC_1.MotorFault`. Values can be boolean or numeric. | Training diagnosis models and deriving evaluation targets. |
+| `faults.parquet` | Fault values for each component, with columns such as `CC_1.MotorFault`, zeroed while the component is inactive. Values can be boolean or numeric. | Training diagnosis models and deriving evaluation targets. |
 | `parameters.parquet` | Recorded configurable component parameters. | Inspecting the system configuration over time. |
 
 Rows are indexed by `simulationTime` in seconds. The three files in a scenario
 share the same timestamps, so measurements, faults, and parameters can be aligned
 directly. Columns identify component properties, typically as
 `component.property`; vector quantities are split into `.X`, `.Y`, and `.Z`
-columns. Missing observations remain missing values.
+columns. Preparation replaces all missing fault values with `0` (`False` for
+boolean faults). Missing measurements and parameters remain missing values.
 
 Training contains repeated nominal and low-fault-rate scenarios
 (`0_0pct_faults_rep_*`, `1_0pct_faults_rep_*`, and `10_0pct_faults_rep_*`).
@@ -155,8 +156,48 @@ file. Pandas requires a Parquet engine such as `pyarrow`.
 
 Use `extract_fault_labels(faults, scenario.name)` from
 `scripts.evaluate_methods` to derive boolean targets consistently: nonzero values
-indicate active faults, missing values are treated as inactive, and
-`IncreasedDampingFault=0.1` is also normal for the listed benchmark scenarios.
+indicate active faults. Preparation replaces missing fault values with `0`;
+evaluation requires prepared fault values and rejects missing values rather
+than filling them. Preparation also normalizes the nominal
+`IncreasedDampingFault=0.1` baseline to `0`; evaluation
+also treats `0.1` as normal for older files from the listed benchmark scenarios.
+
+### Preparing and updating datasets
+
+Run the preparation script from the repository root to convert `.json.zst`
+exports in `data/training` and `data/test` into the three parquet files:
+
+```sh
+python scripts/prepare_data.py
+```
+
+After all conversions finish, a final pass loads `faults.parquet` and
+`measurements.parquet` from every prepared scenario folder in both directories.
+It overwrites `faults.parquet`, setting numeric faults to `0` and boolean faults
+to `False` while their component is inactive. All missing fault values are also
+replaced with `0` (`False` for booleans), regardless of activity or whether a
+state is exported. This includes missing `PeWrongCalibration` values.
+It also replaces every `IncreasedDampingFault` value exactly equal to `0.1` with
+`0`, regardless of component activity. This removes the simulator's nominal
+damping baseline from fault labels, including for nested parts such as Lift
+and AMP. Other damping values remain subject to the activity mask.
+
+Activity comes from the component's `CurrentState`: `False` means inactive for
+boolean states, and `Idle` means inactive for AMRs. Nested parts such as
+`CLT_15.Lift` and `AMR_1.AMP` use their own state. A PR robot is inactive only
+when all three X/Y/Z axis states are `False`. Apart from missing-value and
+damping-baseline normalization, fault values are preserved when activity is
+unknown or no state is exported, including RB robots.
+
+To apply this final pass to existing parquet files without converting raw exports:
+
+```sh
+python scripts/prepare_data.py --faults-only
+```
+
+This mode updates only `faults.parquet`; measurements and parameters stay
+unchanged. Faults and measurements must have identical `simulationTime` indexes.
+Repeated updates produce the same fault values.
 
 ## Training and evaluation
 
@@ -165,7 +206,9 @@ script calls `train()` and saves its model as JSON at the module's `MODEL_PATH`.
 Each `predict()` loads that file itself; the evaluator only supplies measurements
 and calculates metrics. Anomaly detectors return a boolean array, while diagnosis
 methods return a DataFrame with `component` and `fault_type` columns. Structural
-diagnosis also loads its range thresholds from `THRESHOLDS_PATH`.
+diagnosis loads its state-specific range thresholds from
+`models/range_monitoring_0pct.json` (`THRESHOLDS_PATH`), trained only on 0%
+recordings. Its fault candidates are still learned from all training folders.
 
 The evaluator discovers Python scripts directly under `methods/ad` and
 `methods/dx`, skipping filenames starting with `_`. No evaluator changes are
@@ -183,22 +226,65 @@ Train and evaluate with:
 
 ```sh
 python methods/ad/range_monitoring.py
+python methods/ad/range_monitoring_0_1pct.py
+python methods/ad/range_monitoring_0pct.py
 python methods/ad/autoencoder.py
 python methods/dx/case_based.py
 python methods/dx/structural_knowledge.py
 python scripts/evaluate_methods.py
 ```
 
-Range monitoring and the autoencoder load measurements from all scenario folders
-under `data/training`, including faulty training scenarios. The autoencoder
+Range monitoring has three variants using complete recordings from `data/training`:
+`RangeMonitoringAll` uses every training folder (`models/range_monitoring.json`),
+`RangeMonitoring01Pct` uses only 0% and 1% folders (`models/range_monitoring_0_1pct.json`),
+and `RangeMonitoring0Pct` uses only 0% folders (`models/range_monitoring_0pct.json`).
+The benchmark labels the original all-files variant `Range Monitoring` and the
+additional variants `Range Monitoring (0% + 1%)` and `Range Monitoring (0%)`.
+All three learn separate profiles for each state of the corresponding component:
+observed minima/maxima for numeric signals and observed categories for text/boolean
+signals. For example, `CC_1.CurrentSpeed` has separate thresholds for
+`CC_1.CurrentState=False` (off) and `True` (on). AMR profiles use their named
+states such as `Idle`, `Moving`, and `Turning`. Nested Lift and AMP parts and PR
+axes use their own `CurrentState`; vector coordinates use their owning component's
+state. Components without an exported state retain unconditional thresholds.
+
+Prediction selects the profile for the state at each timestamp. An observed state
+absent from training is anomalous; a missing state value skips scoring for that
+component and produces a warning. A required state column absent from the input
+raises an error. The dashboard uses the same prediction logic and displays
+numeric training bounds that change with the component state. Saved models store
+each signal's `state_column` and per-state profiles under `states`; older global
+models remain readable but must be retrained to use state-specific thresholds.
+Folder filtering does not remove individual faulty samples.
+The dashboard offers each variant separately and evaluation discovers all three.
+After retraining, remove the previous range-monitoring entries from
+`benchmark_ad.json` before running evaluation again, since existing method
+results are skipped. Structural diagnosis uses the 0%-only range model, so
+refresh its entry in `benchmark_dx.json` after changing those thresholds.
+
+All anomaly detectors exclude signals whose final field is `CurrentPosition`
+(including robot axes and X/Y/Z axes) from training and detection. These signals
+remain available for plotting. Retrain saved models and refresh AD benchmark
+results after changing this signal policy; old autoencoder models containing
+excluded signals require retraining.
+
+Missing measurement values do not trigger anomalies. Range monitoring ignores
+them, and the autoencoder scores only observed features while filling missing
+inputs with their training means. A sample with no observed model features has
+zero reconstruction score. Dashboard summaries and prediction scripts warn about
+missing signals and sample counts; observed violations in the same sample still
+trigger an anomaly.
+
+The autoencoder loads measurements from all training folders, including faulty
+training scenarios, and
 retains its configurable row subsampling (`ROW_STRIDE = 5`). It includes numeric
 measurements, boolean values encoded as 0/1, and one-hot categorical features.
 The model JSON stores the encoding and category order; categories unseen during
 training produce an all-zero one-hot group. Retrain existing numeric-only models
-to include these additional features. All four models are plain JSON;
+to include these additional features. All six models are plain JSON;
 scaler parameters, autoencoder weights, and case vectors are stored as lists.
 Evaluation uses the saved models without retraining and the same test scenarios,
-fault labels, and metrics for both anomaly detectors. Nonzero fault values are
+fault labels, and metrics for all anomaly detectors. Nonzero fault values are
 active; for the listed current scenarios, `IncreasedDampingFault=0.1` is normal.
 Structural diagnosis learns component fault candidates from all training
 `faults.parquet` files using the evaluator's label rules, and keeps component/area
@@ -262,7 +348,7 @@ For details on product layouts and production routes, see [`docs/pallet_configur
 ## Known Problems
 
 - In [`pallet_configurations.json`](prior_knowledge/pallet_configurations.json), `PalletConfiguration-NOVA-DTF-HSU-Mix` assigns two products to the same position: `HeightPosition=1`, `LengthPosition=2`, `WidthPosition=1`. As a result, its 12 products occupy only 11 distinct configured positions.
-- `IncreasedDampingFault` is assigned a default value of `0.1` by the simulation in some cases even when this value was not explicitly present in the scenario definition. Because that default is not a scenario-specified fault and is used as a neutral/normal baseline, the dashboard treats it as non-faulty and only flags values different from both `0` and `0.1`.
+- `IncreasedDampingFault` is assigned a default value of `0.1` by the simulation in some cases even when this value was not explicitly present in the scenario definition. Preparation replaces this nominal baseline with `0` in `faults.parquet`, including during active operation. Run `python scripts/prepare_data.py --faults-only` to normalize existing prepared files. The dashboard and evaluation retain their `0.1` exception for older files from the listed benchmark scenarios.
 
 ## Citation
 
